@@ -83,7 +83,7 @@
   <div class="payment-container">
     <h1>💰 Pay with mCoins</h1>
     <p>Patient: <span id="patientName" class="highlight"></span></p>
-    <p>Current Balance: <span id="walletBalance" class="highlight"></span> mCoins</p>
+    <p>Current Balance: <span id="coinsBalance" class="highlight"></span> mCoins</p>
     <p>Appointment Fee: <span id="fee" class="highlight">200</span> mCoins</p>
 
     <button id="payBtn" class="btn pay-btn">✅ Pay & Confirm</button>
@@ -127,7 +127,7 @@ function makePayment() {
   localStorage.setItem("currentUser", JSON.stringify(currentUser));
   updateUsersList(currentUser);
 
-  document.getElementById("walletBalance").textContent = currentUser.coins;
+  document.getElementById("coinsBalance").textContent = currentUser.coins;
   alert("✅ Payment successful! " + FEE + " coins deducted.");
 }
 
@@ -138,7 +138,7 @@ document.getElementById("payBtn").addEventListener("click", makePayment);
 window.onload = function() {
   let currentUser = getCurrentUser();
   if (currentUser && typeof currentUser.coins === "number") {
-    document.getElementById("walletBalance").textContent = currentUser.coins;
+    document.getElementById("coinsBalance").textContent = currentUser.coins;
   }
 };
 </script>
