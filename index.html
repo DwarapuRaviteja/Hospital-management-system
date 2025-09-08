@@ -203,8 +203,9 @@
     return;
   }
 
-  // Get both default demo users and stored registered users
+  // Get registered users from localStorage
   let storedUsers = JSON.parse(localStorage.getItem("users")) || [];
+  // Combine demo + stored users
   let allUsers = validUsers.concat(storedUsers);
 
   const match = allUsers.find(u => u.email === email && u.password === password);
@@ -213,7 +214,12 @@
     error.classList.remove("hidden");
     return;
   }
-  window.location.href = "homepage.html";  // redirect after login
+
+  // Save logged-in user as currentUser
+  localStorage.setItem("currentUser", JSON.stringify(match));
+
+  // Redirect to homepage
+  window.location.href = "homepage.html";
 }
 
 function register() {
