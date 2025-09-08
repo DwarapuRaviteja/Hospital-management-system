@@ -245,9 +245,25 @@ function register() {
   }
 
   // Save to localStorage
-  let users = JSON.parse(localStorage.getItem("users")) || [];
-  users.push({ email, password });
-  localStorage.setItem("users", JSON.stringify(users));
+  // Collect all fields
+let name = document.getElementById("regName").value.trim();
+let phone = document.getElementById("regPhone").value.trim();
+let gender = document.getElementById("regGender").value;
+let dob = document.getElementById("regDob").value;
+let address = document.getElementById("regAddress").value.trim();
+
+// Save full user object
+let users = JSON.parse(localStorage.getItem("users")) || [];
+users.push({
+  name,
+  email,
+  phone,
+  gender,
+  dob,
+  address,
+  password
+});
+localStorage.setItem("users", JSON.stringify(users));
 
   alert("Registration successful! Please login.");
   toggleForm();  // switch to login form
