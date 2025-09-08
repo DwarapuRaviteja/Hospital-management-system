@@ -192,56 +192,66 @@
     }
 
     function login() {
-      let email = document.getElementById("loginEmail").value.trim();
-      let password = document.getElementById("loginPassword").value.trim();
-      let error = document.getElementById("loginError");
-      error.classList.add("hidden");
+  let email = document.getElementById("loginEmail").value.trim();
+  let password = document.getElementById("loginPassword").value.trim();
+  let error = document.getElementById("loginError");
+  error.classList.add("hidden");
 
-      if (email === "" || password === "") {
-        error.textContent = "Please fill all fields!";
-        error.classList.remove("hidden");
-        return;
-      }
+  if (email === "" || password === "") {
+    error.textContent = "Please fill all fields!";
+    error.classList.remove("hidden");
+    return;
+  }
 
-      const match = validUsers.find(u => u.email === email && u.password === password);      
-      if (!match) {
-        error.textContent = "Invalid password!";
-        error.classList.remove("hidden");
-        return;
-      }
-      window.location.href = "homepage.html";
-    }
+  // Get both default demo users and stored registered users
+  let storedUsers = JSON.parse(localStorage.getItem("users")) || [];
+  let allUsers = validUsers.concat(storedUsers);
 
-    function register() {
-      let email = document.getElementById("regEmail").value.trim();
-      let password = document.getElementById("regPassword").value;
-      let confirmPassword = document.getElementById("regConfirmPassword").value;
+  const match = allUsers.find(u => u.email === email && u.password === password);
+  if (!match) {
+    error.textContent = "Invalid email or password!";
+    error.classList.remove("hidden");
+    return;
+  }
+  window.location.href = "homepage.html";  // redirect after login
+}
 
-      let emailError = document.getElementById("emailError");
-      let passwordError = document.getElementById("passwordError");
+function register() {
+  let email = document.getElementById("regEmail").value.trim();
+  let password = document.getElementById("regPassword").value;
+  let confirmPassword = document.getElementById("regConfirmPassword").value;
 
-      emailError.classList.add("hidden");
-      passwordError.classList.add("hidden");
+  let emailError = document.getElementById("emailError");
+  let passwordError = document.getElementById("passwordError");
 
-      let emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
-      if (!email.match(emailPattern)) {
-        emailError.textContent = "Invalid email format!";
-        emailError.classList.remove("hidden");
-        return;
-      }
-      if (password.length < 6) {
-        passwordError.textContent = "Password must be at least 6 characters!";
-        passwordError.classList.remove("hidden");
-        return;
-      }
-      if (password !== confirmPassword) {
-        passwordError.textContent = "Passwords do not match!";
-        passwordError.classList.remove("hidden");
-        return;
-      }
-      // Registration logic here – You can add the registered user to validUsers array if needed.
-      window.location.href = "homepage.html";
-    }
+  emailError.classList.add("hidden");
+  passwordError.classList.add("hidden");
+
+  let emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
+  if (!email.match(emailPattern)) {
+    emailError.textContent = "Invalid email format!";
+    emailError.classList.remove("hidden");
+    return;
+  }
+  if (password.length < 6) {
+    passwordError.textContent = "Password must be at least 6 characters!";
+    passwordError.classList.remove("hidden");
+    return;
+  }
+  if (password !== confirmPassword) {
+    passwordError.textContent = "Passwords do not match!";
+    passwordError.classList.remove("hidden");
+    return;
+  }
+
+  // Save to localStorage
+  let users = JSON.parse(localStorage.getItem("users")) || [];
+  users.push({ email, password });
+  localStorage.setItem("users", JSON.stringify(users));
+
+  alert("Registration successful! Please login.");
+  toggleForm();  // switch to login form
+}
   </script>
 </body>
 </html>
