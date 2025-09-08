@@ -68,19 +68,40 @@
     <button class="back-btn" onclick="history.back()">⬅ Back</button>
   </div>
 
-  <script>
-    if(!localStorage.getItem("coins")) {
-      localStorage.setItem("coins", 200);
-    }
-    document.getElementById("coinBalance").innerText = localStorage.getItem("coins");
+  // Load current user
+let currentUser = JSON.parse(localStorage.getItem("currentUser"));
 
-    function topUp(amount) {
-      let coins = parseInt(localStorage.getItem("coins"));
-      coins += amount;
-      localStorage.setItem("coins", coins);
-      document.getElementById("coinBalance").innerText = coins;
-      alert(amount + " coins added successfully!");
-    }
-  </script>
+if (!currentUser) {
+  alert("You are not logged in! Redirecting...");
+  window.location.href = "index.html";
+}
+
+// If user has no coins yet, start with 200
+if (!currentUser.coins) {
+  currentUser.coins = 200;
+  localStorage.setItem("currentUser", JSON.stringify(currentUser));
+
+  // Also update users list
+  let users = JSON.parse(localStorage.getItem("users")) || [];
+  users = users.map(u => u.email === currentUser.email ? currentUser : u);
+  localStorage.setItem("users", JSON.stringify(users));
+}
+
+// Show balance
+document.getElementById("coinBalance").innerText = currentUser.coins;
+
+// Top up function
+function topUp(amount) {
+  currentUser.coins += amount;
+
+  // Save back to localStorage
+  localStorage.setItem("currentUser", JSON.stringify(currentUser));
+  let users = JSON.parse(localStorage.getItem("users")) || [];
+  users = users.map(u => u.email === currentUser.email ? currentUser : u);
+  localStorage.setItem("users", JSON.stringify(users));
+
+  document.getElementById("coinBalance").innerText = currentUser.coins;
+  alert(amount + " coins added successfully!");
+}
 </body>
 </html>
