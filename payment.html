@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment with mCoins</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f9fafb;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .payment-container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      max-width: 420px;
+      width: 95%;
+      animation: fade-in 0.8s ease-in-out;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      color: #111827;
+    }
+
+    p {
+      margin: 10px 0;
+      font-size: 16px;
+      color: #374151;
+    }
+
+    .highlight {
+      font-weight: bold;
+      color: #2563eb;
+    }
+
+    .btn {
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      margin-top: 15px;
+      transition: 0.3s;
+      width: 100%;
+      font-size: 16px;
+    }
+
+    .pay-btn {
+      background: #16a34a;
+      color: white;
+    }
+
+    .pay-btn:hover {
+      background: #15803d;
+    }
+
+    .back-btn {
+      background: #f3f4f6;
+      color: #111827;
+      border: 1px solid #d1d5db;
+    }
+
+    .back-btn:hover {
+      background: #e5e7eb;
+    }
+
+    @keyframes fade-in {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="payment-container">
+    <h1>💰 Pay with mCoins</h1>
+    <p>Patient: <span id="patientName" class="highlight"></span></p>
+    <p>Current Balance: <span id="walletBalance" class="highlight"></span> mCoins</p>
+    <p>Appointment Fee: <span id="fee" class="highlight">200</span> mCoins</p>
+
+    <button id="payBtn" class="btn pay-btn">✅ Pay & Confirm</button>
+    <button class="btn back-btn" onclick="window.location.href='appointment.html'">⬅ Back to Appointment</button>
+  </div>
+
+  <script>
+    const FEE = 200; // fixed fee for booking
+    let balance = 0;
+
+    // Load patient & wallet data
+    window.onload = function() {
+      const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+      balance = parseInt(localStorage.getItem("walletBalance")) || 0;
+
+      if (currentUser) {
+        document.getElementById("patientName").textContent = currentUser.name || "";
+      }
+      document.getElementById("walletBalance").textContent = balance;
+    };
+
+    // Payment logic
+    document.getElementById("payBtn").addEventListener("click", function() {
+      if (balance < FEE) {
+        alert("❌ Not enough mCoins! Please recharge your wallet.");
+        return;
+      }
+
+      balance -= FEE;
+      localStorage.setItem("walletBalance", balance);
+
+      // Fetch appointment info (stored in appointment.html)
+      const appointment = {
+        problem: localStorage.getItem("problem"),
+        department: localStorage.getItem("department"),
+        ward: localStorage.getItem("ward"),
+        date: localStorage.getItem("date"),
+        slot: localStorage.getItem("slot"),
+        age: localStorage.getItem("age")
+      };
+
+      localStorage.setItem("appointment", JSON.stringify(appointment));
+
+      alert("✅ Payment successful! Remaining balance: " + balance + " mCoins");
+      window.location.href = "op-sheet.html";
+    });
+  </script>
+</body>
+</html>
