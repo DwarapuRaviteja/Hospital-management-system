@@ -1,0 +1,60 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Bookings - RS Hospital</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .booking-card {
+      background: white;
+      padding: 20px;
+      margin: 15px auto;
+      border-radius: 12px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+      max-width: 500px;
+      animation: fadeIn 0.8s ease-in-out;
+    }
+    .booking-card h3 { color: #1e40af; margin-bottom: 8px; }
+    .booking-card p { color: #334155; }
+    .back-btn {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 18px;
+      border-radius: 8px;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .back-btn:hover { background: #1e40af; transform: scale(1.05); }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(20px);} to{opacity:1;transform:translateY(0);} }
+  </style>
+</head>
+<body>
+  <h2 style="text-align:center; margin-top:30px;">📅 My Bookings</h2>
+  <div id="bookingsList"></div>
+  <button class="back-btn" onclick="history.back()">⬅ Back</button>
+
+  <script>
+    let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+    let container = document.getElementById("bookingsList");
+
+    if(bookings.length === 0) {
+      container.innerHTML = "<p style='text-align:center; color:#334155;'>No bookings yet.</p>";
+    } else {
+      bookings.forEach(b => {
+        let div = document.createElement("div");
+        div.classList.add("booking-card");
+        div.innerHTML = `
+          <h3>Booking ID: ${b.id}</h3>
+          <p>${b.details}</p>
+          <p><b>${b.stamp}</b></p>
+        `;
+        container.appendChild(div);
+      });
+    }
+  </script>
+</body>
+</html>

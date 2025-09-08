@@ -1,0 +1,237 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book Appointment</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f9fafb;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .appointment-container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      max-width: 600px;
+      width: 95%;
+      animation: fade-in 1s ease-in-out;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #111827;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    label {
+      font-weight: bold;
+      color: #374151;
+      font-size: 14px;
+    }
+
+    input, select, textarea {
+      padding: 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      transition: 0.3s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: #2563eb;
+      outline: none;
+      box-shadow: 0 0 6px rgba(37, 99, 235, 0.3);
+    }
+
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    .btn {
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      margin-top: 15px;
+      transition: 0.3s;
+    }
+
+    .submit-btn {
+      background: #16a34a;
+      color: white;
+    }
+
+    .submit-btn:hover {
+      background: #15803d;
+    }
+
+    .back-btn {
+      background: #f3f4f6;
+      color: #111827;
+      margin-top: 10px;
+      border: 1px solid #d1d5db;
+    }
+
+    .back-btn:hover {
+      background: #e5e7eb;
+    }
+
+    @keyframes fade-in {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="appointment-container">
+    <h1>📅 Book Appointment</h1>
+    <form id="appointmentForm">
+      <label>Full Name:</label>
+      <input type="text" id="name" disabled>
+
+      <label>Email:</label>
+      <input type="email" id="email" disabled>
+
+      <label>Phone:</label>
+      <input type="tel" id="phone" disabled>
+
+      <label>Age:</label>
+      <input type="text" id="age" disabled>
+
+      <label>Gender:</label>
+      <input type="text" id="gender" disabled>
+
+      <label>Address:</label>
+      <input type="text" id="address" disabled>
+
+      <label>Your Problem:</label>
+      <textarea id="problem" placeholder="Describe your problem..."></textarea>
+
+      <label>Department:</label>
+      <input type="text" id="department" disabled>
+
+      <label>Ward No:</label>
+      <input type="text" id="ward" disabled>
+
+      <label>Select Date:</label>
+      <select id="date"></select>
+
+      <label>Available Slots:</label>
+      <select id="slots"></select>
+
+      <button type="submit" class="btn submit-btn">Proceed to Payment</button>
+    </form>
+    <button class="btn back-btn" onclick="window.location.href='homepage.html'">⬅ Back to Home</button>
+  </div>
+
+  <script>
+    // Auto-fill profile info
+    window.onload = function() {
+      const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+      if (!currentUser) {
+        alert("You are not logged in! Redirecting...");
+        window.location.href = "index.html";
+        return;
+      }
+
+      document.getElementById("name").value = currentUser.name || "";
+      document.getElementById("email").value = currentUser.email || "";
+      document.getElementById("phone").value = currentUser.phone || "";
+      document.getElementById("gender").value = currentUser.gender || "";
+      document.getElementById("address").value = currentUser.address || "";
+
+      // Auto calculate Age
+      if (currentUser.dob) {
+        const dob = new Date(currentUser.dob);
+        const age = new Date().getFullYear() - dob.getFullYear();
+        document.getElementById("age").value = age;
+      }
+
+      // Fill next 15 days for appointment
+      const dateSelect = document.getElementById("date");
+      let today = new Date();
+      for (let i = 0; i < 15; i++) {
+        let nextDay = new Date(today);
+        nextDay.setDate(today.getDate() + i);
+        let option = document.createElement("option");
+        option.value = nextDay.toISOString().split('T')[0];
+        option.textContent = nextDay.toDateString();
+        dateSelect.appendChild(option);
+      }
+    };
+
+    // Problem-to-Department Mapping
+    const departmentKeywords = {
+      "Cardiology": ["heart", "chest pain", "palpitation", "breath"],
+      "Neurology": ["headache", "seizure", "paralysis", "brain", "nerves"],
+      "Orthopedics": ["bone", "fracture", "joint", "back pain", "knee"],
+      "Dermatology": ["skin", "rash", "acne", "allergy"],
+      "ENT": ["ear", "nose", "throat", "hearing", "tonsil"],
+      "Gastroenterology": ["stomach", "liver", "digestion", "vomit", "abdomen"],
+      "Oncology": ["cancer", "tumor", "chemotherapy"],
+      "Pediatrics": ["child", "baby", "infant", "kids"]
+    };
+
+    const wardNumbers = {
+      "Cardiology": "201",
+      "Neurology": "301",
+      "Orthopedics": "401",
+      "Dermatology": "501",
+      "ENT": "601",
+      "Gastroenterology": "701",
+      "Oncology": "801",
+      "Pediatrics": "901"
+    };
+
+    document.getElementById("problem").addEventListener("input", function() {
+      let problemText = this.value.toLowerCase();
+      let selectedDept = "General";
+      for (let dept in departmentKeywords) {
+        for (let word of departmentKeywords[dept]) {
+          if (problemText.includes(word)) {
+            selectedDept = dept;
+            break;
+          }
+        }
+      }
+      document.getElementById("department").value = selectedDept;
+      document.getElementById("ward").value = wardNumbers[selectedDept] || "101";
+    });
+
+    // Generate random slots for selected date
+    document.getElementById("date").addEventListener("change", function() {
+      const slots = document.getElementById("slots");
+      slots.innerHTML = "";
+      let availableSlots = ["9:00 AM", "10:00 AM", "11:30 AM", "2:00 PM", "3:30 PM", "5:00 PM"];
+      availableSlots.forEach(slot => {
+        let option = document.createElement("option");
+        option.value = slot;
+        option.textContent = slot + " (Vacant)";
+        slots.appendChild(option);
+      });
+    });
+
+    // Submit → Payment → OP Sheet
+    document.getElementById("appointmentForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      alert("Redirecting to payment page...");
+      window.location.href = "payment.html"; // After payment → OP sheet
+    });
+  </script>
+</body>
+</html>

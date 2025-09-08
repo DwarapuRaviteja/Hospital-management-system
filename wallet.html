@@ -1,0 +1,86 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wallet - RS Hospital</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .wallet-box {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      text-align: center;
+      max-width: 400px;
+      margin: 60px auto;
+      animation: fadeIn 1s ease-in-out;
+    }
+    .wallet-box h3 {
+      margin-top: 20px;
+      margin-bottom: 15px;
+      color: #1e40af;
+    }
+    .wallet-box p {
+      font-size: 20px;
+      color: #334155;
+    }
+    .topup-options button {
+      padding: 12px 20px;
+      margin: 10px;
+      border: none;
+      border-radius: 10px;
+      background: #2563eb;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: transform 0.3s, background 0.3s;
+    }
+    .topup-options button:hover {
+      background: #1e3a8a;
+      transform: scale(1.05);
+    }
+    .back-btn {
+      margin-top: 20px;
+      padding: 10px 18px;
+      border-radius: 8px;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .back-btn:hover { background: #1e40af; }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(30px);} to{opacity:1;transform:translateY(0);} }
+  </style>
+</head>
+<body>
+  <h2 style="text-align:center; margin-top:30px;">💳 My Wallet</h2>
+  <div class="wallet-box">
+    <p>Available MedCoins: <span id="coinBalance">0</span></p>
+
+    <h3>🔼 Top Up MedCoins</h3>
+    <div class="topup-options">
+      <button onclick="topUp(200)">200 Coins - ₹200</button>
+      <button onclick="topUp(300)">300 Coins - ₹300</button>
+      <button onclick="topUp(500)">500 Coins - ₹500</button>
+    </div>
+    <button class="back-btn" onclick="history.back()">⬅ Back</button>
+  </div>
+
+  <script>
+    if(!localStorage.getItem("coins")) {
+      localStorage.setItem("coins", 200);
+    }
+    document.getElementById("coinBalance").innerText = localStorage.getItem("coins");
+
+    function topUp(amount) {
+      let coins = parseInt(localStorage.getItem("coins"));
+      coins += amount;
+      localStorage.setItem("coins", coins);
+      document.getElementById("coinBalance").innerText = coins;
+      alert(amount + " coins added successfully!");
+    }
+  </script>
+</body>
+</html>

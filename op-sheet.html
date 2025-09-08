@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Outpatient Sheet</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f3f4f6;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .op-sheet {
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      max-width: 700px;
+      width: 100%;
+      border: 2px solid #111827;
+      position: relative;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #111827;
+      padding-bottom: 15px;
+    }
+
+    .header img {
+      width: 80px;
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      opacity: 0.8;
+    }
+
+    .header h1 {
+      margin: 0;
+      color: #1e3a8a;
+    }
+
+    .header p {
+      margin: 5px 0;
+      color: #374151;
+    }
+
+    .details {
+      margin-top: 20px;
+    }
+
+    .details h2 {
+      color: #111827;
+      margin-bottom: 10px;
+    }
+
+    .details table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .details td {
+      padding: 8px;
+      border: 1px solid #d1d5db;
+    }
+
+    .footer {
+      text-align: right;
+      margin-top: 20px;
+      font-style: italic;
+      color: #374151;
+    }
+
+    .btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      background: #2563eb;
+      color: white;
+      transition: 0.3s;
+    }
+
+    .btn:hover {
+      background: #1e40af;
+    }
+  </style>
+</head>
+<body>
+  <div class="op-sheet" id="opSheet">
+    <div class="header">
+      <img src="hospital_stamp.png" alt="Hospital Stamp">
+      <h1>🏥 Likhith Cancer Hospital</h1>
+      <p>Outpatient Department - OP Sheet</p>
+    </div>
+
+    <div class="details">
+      <h2>Patient Details</h2>
+      <table>
+        <tr><td><b>OP Number</b></td><td id="opNumber"></td></tr>
+        <tr><td><b>Name</b></td><td id="name"></td></tr>
+        <tr><td><b>Age</b></td><td id="age"></td></tr>
+        <tr><td><b>Gender</b></td><td id="gender"></td></tr>
+        <tr><td><b>Phone</b></td><td id="phone"></td></tr>
+        <tr><td><b>Email</b></td><td id="email"></td></tr>
+        <tr><td><b>Address</b></td><td id="address"></td></tr>
+      </table>
+
+      <h2>Appointment Details</h2>
+      <table>
+        <tr><td><b>Problem</b></td><td id="problem"></td></tr>
+        <tr><td><b>Department</b></td><td id="department"></td></tr>
+        <tr><td><b>Ward No</b></td><td id="ward"></td></tr>
+        <tr><td><b>Date</b></td><td id="date"></td></tr>
+        <tr><td><b>Slot</b></td><td id="slot"></td></tr>
+      </table>
+    </div>
+
+    <div class="footer">
+      <p>Authorized by: Likhith Cancer Hospital</p>
+    </div>
+
+    <button class="btn" onclick="window.print()">🖨 Print / Download</button>
+  </div>
+
+  <script>
+    // Generate OP number
+    function generateOpNumber() {
+      return "OP-" + Math.floor(100000 + Math.random() * 900000);
+    }
+
+    // Load appointment data
+    window.onload = function() {
+      const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+      const appointment = JSON.parse(localStorage.getItem("appointment"));
+
+      if (!currentUser || !appointment) {
+        alert("⚠ No appointment found! Redirecting...");
+        window.location.href = "appointment.html";
+        return;
+      }
+
+      // Generate OP number
+      const opNo = generateOpNumber();
+
+      // Fill patient details
+      document.getElementById("opNumber").textContent = opNo;
+      document.getElementById("name").textContent = currentUser.name || "";
+      document.getElementById("age").textContent = appointment.age || "";
+      document.getElementById("gender").textContent = currentUser.gender || "";
+      document.getElementById("phone").textContent = currentUser.phone || "";
+      document.getElementById("email").textContent = currentUser.email || "";
+      document.getElementById("address").textContent = currentUser.address || "";
+
+      // Fill appointment details
+      document.getElementById("problem").textContent = appointment.problem || "";
+      document.getElementById("department").textContent = appointment.department || "";
+      document.getElementById("ward").textContent = appointment.ward || "";
+      document.getElementById("date").textContent = appointment.date || "";
+      document.getElementById("slot").textContent = appointment.slot || "";
+
+      // Save to MyBookings
+      let bookings = JSON.parse(localStorage.getItem("myBookings")) || [];
+      const bookingRecord = {
+        opNumber: opNo,
+        name: currentUser.name,
+        age: appointment.age,
+        gender: currentUser.gender,
+        phone: currentUser.phone,
+        email: currentUser.email,
+        address: currentUser.address,
+        problem: appointment.problem,
+        department: appointment.department,
+        ward: appointment.ward,
+        date: appointment.date,
+        slot: appointment.slot,
+        bookedAt: new Date().toISOString()
+      };
+      bookings.push(bookingRecord);
+      localStorage.setItem("myBookings", JSON.stringify(bookings));
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,247 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CityCare Hospital Portal</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      background: #e0f2fe;
+    }
+    .header {
+      width: 100%;
+      text-align: center;
+      padding: 20px 0;
+      font-size: 32px;
+      font-family: Georgia, serif;
+      font-weight: bold;
+      color: #0d47a1;
+      letter-spacing: 1px;
+      background: transparent;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 100;
+    }
+    .container {
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      width: 370px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      text-align: center;
+      overflow-y: auto;
+      max-height: 80vh;
+      margin-top: 90px;
+    }
+    h2 {
+      margin-bottom: 15px;
+      color: #333;
+    }
+    label {
+      display: block;
+      text-align: left;
+      margin: 6px 0 3px;
+      font-weight: 600;
+      color: #0d47a1;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 6px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    .password-box {
+      position: relative;
+    }
+    .toggle-password {
+      position: absolute;
+      top: 30%;
+      right: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      color: #007bff;
+      user-select: none;
+    }
+    .error {
+      color: red;
+      font-size: 13px;
+      text-align: left;
+      margin: -3px 0 6px;
+    }
+    .error::before {
+      content: "⚠️ ";
+    }
+    button {
+      width: 100%;
+      background: #007bff;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .toggle-link {
+      margin-top: 15px;
+      font-size: 14px;
+    }
+    .toggle-link a {
+      color: #007bff;
+      text-decoration: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .toggle-link a:hover {
+      text-decoration: underline;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">R S Hospital</div>
+  <div class="container">
+    <!-- Login Form -->
+    <div id="loginForm">
+      <h2>User Login</h2>
+      <label>Email or Mobile</label>
+      <input type="text" id="loginEmail">
+      <label>Password</label>
+      <div class="password-box">
+        <input type="password" id="loginPassword">
+        <span class="toggle-password" onclick="togglePassword('loginPassword', this)">👁</span>
+      </div>
+      <div id="loginError" class="error hidden"></div>
+      <button onclick="login()">Login</button>
+      <p class="toggle-link">Don't have an account? <a onclick="toggleForm()">Register here</a></p>
+    </div>
+    <!-- Register Form -->
+    <div id="registerForm" class="hidden">
+      <h2>User Register</h2>
+      <label>Full Name</label>
+      <input type="text" id="regName">
+      <label>Email ID</label>
+      <input type="email" id="regEmail">
+      <div id="emailError" class="error hidden"></div>
+      <label>Mobile Number</label>
+      <input type="text" id="regPhone">
+      <label>Gender</label>
+      <select id="regGender">
+        <option value="">Select Gender</option>
+        <option>Male</option>
+        <option>Female</option>
+        <option>Other</option>
+      </select>
+      <label>Date of Birth</label>
+      <input type="date" id="regDob">
+      <label>Create Password</label>
+      <div class="password-box">
+        <input type="password" id="regPassword">
+        <span class="toggle-password" onclick="togglePassword('regPassword', this)">👁</span>
+      </div>
+      <div id="passwordError" class="error hidden"></div>
+      <label>Confirm Password</label>
+      <div class="password-box">
+        <input type="password" id="regConfirmPassword">
+        <span class="toggle-password" onclick="togglePassword('regConfirmPassword', this)">👁</span>
+      </div>
+      <label>Address</label>
+      <textarea id="regAddress" rows="3"></textarea>
+      <button onclick="register()">Register</button>
+      <p class="toggle-link">Already have an account? <a onclick="toggleForm()">Login here</a></p>
+    </div>
+  </div>
+  <script>
+    // Demo credentials, replace or extend for your scenario
+    const validUsers = [
+      { email: "user@example.com", password: "pass123" },
+      { email: "admin@example.com", password: "admin123" }
+    ];
+
+    function toggleForm() {
+      document.getElementById("loginForm").classList.toggle("hidden");
+      document.getElementById("registerForm").classList.toggle("hidden");
+      const err = document.getElementById("loginError");
+      if (err) err.classList.add("hidden");
+    }
+
+    function togglePassword(fieldId, el) {
+      const field = document.getElementById(fieldId);
+      if (field.type === "password") {
+        field.type = "text";
+        el.textContent = "🙈";
+      } else {
+        field.type = "password";
+        el.textContent = "👁";
+      }
+    }
+
+    function login() {
+      let email = document.getElementById("loginEmail").value.trim();
+      let password = document.getElementById("loginPassword").value.trim();
+      let error = document.getElementById("loginError");
+      error.classList.add("hidden");
+
+      if (email === "" || password === "") {
+        error.textContent = "Please fill all fields!";
+        error.classList.remove("hidden");
+        return;
+      }
+
+      const match = validUsers.find(u => u.email === email && u.password === password);      
+      if (!match) {
+        error.textContent = "Invalid password!";
+        error.classList.remove("hidden");
+        return;
+      }
+      window.location.href = "homepage.html";
+    }
+
+    function register() {
+      let email = document.getElementById("regEmail").value.trim();
+      let password = document.getElementById("regPassword").value;
+      let confirmPassword = document.getElementById("regConfirmPassword").value;
+
+      let emailError = document.getElementById("emailError");
+      let passwordError = document.getElementById("passwordError");
+
+      emailError.classList.add("hidden");
+      passwordError.classList.add("hidden");
+
+      let emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
+      if (!email.match(emailPattern)) {
+        emailError.textContent = "Invalid email format!";
+        emailError.classList.remove("hidden");
+        return;
+      }
+      if (password.length < 6) {
+        passwordError.textContent = "Password must be at least 6 characters!";
+        passwordError.classList.remove("hidden");
+        return;
+      }
+      if (password !== confirmPassword) {
+        passwordError.textContent = "Passwords do not match!";
+        passwordError.classList.remove("hidden");
+        return;
+      }
+      // Registration logic here – You can add the registered user to validUsers array if needed.
+      window.location.href = "homepage.html";
+    }
+  </script>
+</body>
+</html>
