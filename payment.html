@@ -89,47 +89,58 @@
     <button id="payBtn" class="btn pay-btn">✅ Pay & Confirm</button>
     <button class="btn back-btn" onclick="window.location.href='appointment.html'">⬅ Back to Appointment</button>
   </div>
+<script>
+  const FEE = 200; // Cost per payment
 
-  <script>
-    const FEE = 200; // fixed fee for booking
-    let balance = 0;
+// Safely read wallet and handle missing/invalid user
+function getCurrentUser() {
+  const raw = localStorage.getItem("currentUser");
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
 
-    // Load patient & wallet data
-    window.onload = function() {
-      const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-      balance = parseInt(localStorage.getItem("walletBalance")) || 0;
+// Safely update users list after payment
+function updateUsersList(currentUser) {
+  let users = JSON.parse(localStorage.getItem("users")) || [];
+  users = users.map(u => u.email === currentUser.email ? currentUser : u);
+  localStorage.setItem("users", JSON.stringify(users));
+}
 
-      if (currentUser) {
-        document.getElementById("patientName").textContent = currentUser.name || "";
-      }
-      document.getElementById("walletBalance").textContent = balance;
-    };
+// Perform payment and decrement coins
+function makePayment() {
+  let currentUser = getCurrentUser();
+  if (!currentUser) {
+    alert("You are not logged in! Redirecting...");
+    window.location.href = "index.html";
+    return;
+  }
+  if (typeof currentUser.coins !== "number" || currentUser.coins < FEE) {
+    alert("❌ Not enough coins! Please top-up.");
+    return;
+  }
 
-    // Payment logic
-    document.getElementById("payBtn").addEventListener("click", function() {
-      if (balance < FEE) {
-        alert("❌ Not enough mCoins! Please recharge your wallet.");
-        return;
-      }
+  currentUser.coins -= FEE;
+  localStorage.setItem("currentUser", JSON.stringify(currentUser));
+  updateUsersList(currentUser);
 
-      balance -= FEE;
-      localStorage.setItem("walletBalance", balance);
+  document.getElementById("walletBalance").textContent = currentUser.coins;
+  alert("✅ Payment successful! " + FEE + " coins deducted.");
+}
 
-      // Fetch appointment info (stored in appointment.html)
-      const appointment = {
-        problem: localStorage.getItem("problem"),
-        department: localStorage.getItem("department"),
-        ward: localStorage.getItem("ward"),
-        date: localStorage.getItem("date"),
-        slot: localStorage.getItem("slot"),
-        age: localStorage.getItem("age")
-      };
+// Use this with your button
+document.getElementById("payBtn").addEventListener("click", makePayment);
 
-      localStorage.setItem("appointment", JSON.stringify(appointment));
-
-      alert("✅ Payment successful! Remaining balance: " + balance + " mCoins");
-      window.location.href = "op-sheet.html";
-    });
-  </script>
+// Initial balance display
+window.onload = function() {
+  let currentUser = getCurrentUser();
+  if (currentUser && typeof currentUser.coins === "number") {
+    document.getElementById("walletBalance").textContent = currentUser.coins;
+  }
+};
+</script>
 </body>
 </html>
