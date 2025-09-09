@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Reports - R S Hospital</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f0f4f8;
+      margin: 0;
+      padding: 40px 20px;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      color: #333;
+    }
+
+    .container {
+      max-width: 1000px;
+      width: 100%;
+      background: #fff;
+      padding: 30px 40px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeIn 1s ease forwards;
+    }
+
+    h1 {
+      font-weight: 700;
+      color: #1e3a8a;
+      margin-bottom: 25px;
+      letter-spacing: 1px;
+    }
+
+    .reports-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 25px;
+      width: 100%;
+      padding-bottom: 15px;
+      min-height: 180px;
+    }
+
+    .report-card {
+      background: #f9fafb;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+      padding: 15px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      animation: fadeInUp 0.5s ease forwards;
+    }
+
+    .report-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
+    .report-thumb {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 12px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 3px rgba(0,0,0,0.1));
+    }
+
+    .report-name {
+      font-weight: 600;
+      font-size: 15px;
+      color: #111827;
+      word-break: break-word;
+    }
+
+    /* Placeholder icon for PDF */
+    .pdf-icon {
+      font-size: 48px;
+      color: #ef4444; /* red-500 */
+      margin-bottom: 12px;
+      user-select: none;
+    }
+
+    /* No reports message */
+    .no-reports {
+      font-size: 22px;
+      color: #6b7280;
+      margin-top: 50px;
+      opacity: 0;
+      animation: fadeIn 1.5s ease forwards;
+    }
+
+    /* Modal styles */
+    .modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .modal.active {
+      display: flex;
+      animation: fadeIn 0.3s ease forwards;
+    }
+
+    .modal-content {
+      background: white;
+      max-width: 90vw;
+      max-height: 90vh;
+      border-radius: 15px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .modal-content iframe,
+    .modal-content img {
+      width: 100%;
+      height: 80vh;
+      border: none;
+      display: block;
+      object-fit: contain;
+      user-select: none;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: #ef4444;
+      border: none;
+      color: white;
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1;
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      transition: background 0.3s ease;
+    }
+
+    .close-btn:hover {
+      background: #b91c1c;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📄 Admin Reports</h1>
+    <div id="reportsGrid" class="reports-grid"></div>
+    <div id="noReports" class="no-reports" style="display:none;">No reports here.</div>
+  </div>
+
+  <!-- Modal for preview -->
+  <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <button class="close-btn" id="closeModal" aria-label="Close">&times;</button>
+    <div class="modal-content" id="modalContent"></div>
+  </div>
+
+  <script>
+    const reportsGrid = document.getElementById('reportsGrid');
+    const noReports = document.getElementById('noReports');
+    const modal = document.getElementById('modal');
+    const modalContent = document.getElementById('modalContent');
+    const closeModalBtn = document.getElementById('closeModal');
+
+    // Sample report structure:
+    // { id: 'r1', name: 'Blood Report.pdf', type: 'pdf'/'image', url: 'path_or_data_url' }
+
+    function loadReports() {
+      const reports = JSON.parse(localStorage.getItem('adminReports')) || [];
+
+      if (reports.length === 0) {
+        noReports.style.display = 'block';
+        return;
+      }
+
+      noReports.style.display = 'none';
+
+      reports.forEach((report, index) => {
+        const card = document.createElement('div');
+        card.className = 'report-card';
+
+        let thumbHTML = '';
+        if (report.type === 'pdf') {
+          thumbHTML = `<div class="pdf-icon" title="PDF Report">&#128209;</div>`;
+        } else if (report.type === 'image') {
+          thumbHTML = `<img src="${report.url}" alt="${report.name}" class="report-thumb" loading="lazy" />`;
+        } else {
+          thumbHTML = `<div class="pdf-icon" title="File">&#128196;</div>`;
+        }
+
+        card.innerHTML = `
+          ${thumbHTML}
+          <div class="report-name" title="${report.name}">${report.name}</div>
+        `;
+
+        card.addEventListener('click', () => previewReport(report));
+
+        reportsGrid.appendChild(card);
+      });
+    }
+
+    function previewReport(report) {
+      modalContent.innerHTML = '';
+      if (report.type === 'pdf') {
+        // Use iframe for pdf preview
+        const iframe = document.createElement('iframe');
+        iframe.src = report.url;
+        iframe.title = report.name;
+        modalContent.appendChild(iframe);
+      } else if (report.type === 'image') {
+        const img = document.createElement('img');
+        img.src = report.url;
+        img.alt = report.name;
+        modalContent.appendChild(img);
+      } else {
+        modalContent.innerHTML = `<p style="padding:20px; font-size:18px;">Preview not available for this file type.</p>`;
+      }
+      modal.classList.add('active');
+    }
+
+    closeModalBtn.addEventListener('click', () => {
+      modal.classList.remove('active');
+      modalContent.innerHTML = '';
+    });
+
+    // Close modal on outside click
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.classList.remove('active');
+        modalContent.innerHTML = '';
+      }
+    });
+
+    window.onload = loadReports;
+  </script>
+</body>
+</html>
