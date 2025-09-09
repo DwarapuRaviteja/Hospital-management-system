@@ -1,60 +1,270 @@
-<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Bookings - RS Hospital</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Bookings - R S Hospital</title>
   <style>
-    .booking-card {
-      background: white;
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f3f4f6;
+      margin: 0;
       padding: 20px;
-      margin: 15px auto;
-      border-radius: 12px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-      max-width: 500px;
-      animation: fadeIn 0.8s ease-in-out;
+      display: flex;
+      justify-content: center;
     }
-    .booking-card h3 { color: #1e40af; margin-bottom: 8px; }
-    .booking-card p { color: #334155; }
-    .back-btn {
-      display: block;
-      margin: 20px auto;
-      padding: 10px 18px;
-      border-radius: 8px;
-      background: #3b82f6;
+
+    .container {
+      max-width: 900px;
+      width: 100%;
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: #1e3a8a;
+      margin-bottom: 25px;
+    }
+
+    .booking-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .booking-item {
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      padding: 15px 20px;
+      margin-bottom: 15px;
+      background: #f9fafb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .booking-summary {
+      flex: 1 1 60%;
+      color: #374151;
+    }
+
+    .booking-summary b {
+      color: #111827;
+    }
+
+    .booking-date {
+      color: #6b7280;
+      font-size: 14px;
+      flex: 1 1 20%;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .view-btn {
+      background: #2563eb;
       color: white;
       border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
       cursor: pointer;
-      transition: 0.3s;
+      transition: background 0.3s;
+      flex: 1 1 15%;
+      min-width: 110px;
     }
-    .back-btn:hover { background: #1e40af; transform: scale(1.05); }
-    @keyframes fadeIn { from{opacity:0;transform:translateY(20px);} to{opacity:1;transform:translateY(0);} }
+
+    .view-btn:hover {
+      background: #1e40af;
+    }
+
+    /* Modal styles */
+    .modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      z-index: 9999;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      max-width: 600px;
+      width: 100%;
+      max-height: 80vh;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .modal-content h2 {
+      margin-top: 0;
+      color: #1e3a8a;
+      margin-bottom: 20px;
+    }
+
+    .modal-content table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .modal-content td {
+      padding: 8px;
+      border-bottom: 1px solid #e5e7eb;
+      vertical-align: top;
+    }
+
+    .modal-content td:first-child {
+      font-weight: 600;
+      width: 40%;
+      color: #374151;
+    }
+
+    .modal-content td:last-child {
+      color: #1f2937;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 12px;
+      right: 15px;
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #6b7280;
+      background: none;
+      border: none;
+    }
+
+    .close-btn:hover {
+      color: #111827;
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .booking-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .booking-date, .view-btn {
+        text-align: left;
+        flex: 1 1 100%;
+        margin-top: 8px;
+      }
+    }
   </style>
 </head>
 <body>
-  <h2 style="text-align:center; margin-top:30px;">📅 My Bookings</h2>
-  <div id="bookingsList"></div>
-  <button class="back-btn" onclick="history.back()">⬅ Back</button>
+  <div class="container">
+    <h1>📅 My Bookings</h1>
+    <ul id="bookingList" class="booking-list"></ul>
+  </div>
+
+  <!-- Modal for full details -->
+  <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalDesc">
+    <div class="modal-content">
+      <button class="close-btn" id="closeModal" aria-label="Close">&times;</button>
+      <h2 id="modalTitle">Booking Details</h2>
+      <table id="modalTable"></table>
+    </div>
+  </div>
 
   <script>
-    let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
-    let container = document.getElementById("bookingsList");
+    const bookingList = document.getElementById('bookingList');
+    const modal = document.getElementById('modal');
+    const modalTable = document.getElementById('modalTable');
+    const closeModalBtn = document.getElementById('closeModal');
 
-    if(bookings.length === 0) {
-      container.innerHTML = "<p style='text-align:center; color:#334155;'>No bookings yet.</p>";
-    } else {
-      bookings.forEach(b => {
-        let div = document.createElement("div");
-        div.classList.add("booking-card");
-        div.innerHTML = `
-          <h3>Booking ID: ${b.id}</h3>
-          <p>${b.details}</p>
-          <p><b>${b.stamp}</b></p>
+    // Format date nicely
+    function formatDate(dateStr) {
+      const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+      return new Date(dateStr).toLocaleString(undefined, options);
+    }
+
+    function loadBookings() {
+      let bookings = JSON.parse(localStorage.getItem('myBookings')) || [];
+
+      if (bookings.length === 0) {
+        bookingList.innerHTML = '<p style="text-align:center; color:#6b7280;">No bookings found.</p>';
+        return;
+      }
+
+      // Sort by booking date (descending)
+      bookings.sort((a, b) => new Date(b.bookedAt) - new Date(a.bookedAt));
+
+      bookingList.innerHTML = '';
+
+      bookings.forEach((booking, idx) => {
+        const li = document.createElement('li');
+        li.className = 'booking-item';
+
+        li.innerHTML = `
+          <div class="booking-summary">
+            <div><b>OP Number:</b> ${booking.opNumber}</div>
+            <div><b>Patient:</b> ${booking.name}</div>
+            <div><b>Department:</b> ${booking.department}</div>
+          </div>
+          <div class="booking-date">${formatDate(booking.bookedAt)}</div>
+          <button class="view-btn" data-index="${idx}">View Details</button>
         `;
-        container.appendChild(div);
+
+        bookingList.appendChild(li);
+      });
+
+      // Add event listeners to all view buttons
+      document.querySelectorAll('.view-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const idx = e.target.getAttribute('data-index');
+          showBookingDetails(bookings[idx]);
+        });
       });
     }
+
+    function showBookingDetails(booking) {
+      modalTable.innerHTML = '';
+
+      for (const [key, value] of Object.entries(booking)) {
+        let label = key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1');
+        // Beautify some keys
+        label = label
+          .replace('Op Number', 'OP Number')
+          .replace('Booked At', 'Booking Date')
+          .replace('Phone', 'Phone Number')
+          .replace('Email', 'Email Address')
+          .replace('Ward', 'Ward No');
+        
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${label}</td><td>${value || '-'}</td>`;
+        modalTable.appendChild(tr);
+      }
+
+      modal.classList.add('active');
+    }
+
+    closeModalBtn.addEventListener('click', () => {
+      modal.classList.remove('active');
+    });
+
+    // Close modal on outside click
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.classList.remove('active');
+      }
+    });
+
+    window.onload = loadBookings;
   </script>
 </body>
 </html>
