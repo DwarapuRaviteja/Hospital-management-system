@@ -281,30 +281,28 @@
       });
     });
 
-    document
-      .getElementById("appointmentForm")
-      .addEventListener("submit", function (e) {
-        e.preventDefault();
+    document.getElementById("appointmentForm").addEventListener("submit", function(e) {
+  e.preventDefault();
 
-        // Validate problem field
-        if (!document.getElementById("problem").value.trim()) {
-          alert("Please describe your problem.");
-          return;
-        }
-        // Save appointment info before redirecting
-        const appointment = {
-          age: document.getElementById("age").value,
-          problem: document.getElementById("problem").value.trim(),
-          department: document.getElementById("department").value,
-          ward: document.getElementById("ward").value,
-          date: document.getElementById("date").value,
-          slot: document.getElementById("slots").value,
-        };
-        localStorage.setItem("appointment", JSON.stringify(appointment));
+  // Collect appointment info
+  const problem = document.getElementById("problem").value;
+  const department = document.getElementById("department").value;
+  const ward = document.getElementById("ward").value;
+  const date = document.getElementById("date").value;
+  const slot = document.getElementById("slots").value;
 
-        alert("Redirecting to payment page...");
-        window.location.href = "payment.html";
-      });
+  localStorage.setItem("appointmentData", JSON.stringify({
+    problem,
+    department,
+    ward,
+    date,
+    slot
+  }));
+
+  alert("Redirecting to payment page...");
+  window.location.href = "payment.html"; // After payment → OP sheet
+});
+
   </script>
 </body>
 </html>
