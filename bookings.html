@@ -69,13 +69,10 @@
   <div class="booking-list" id="bookingList"></div>
 
   <script>
-    // Get stored appointments (from profile/appointment/op-sheet pages)
     let appointments = JSON.parse(localStorage.getItem("appointments")) || [];
 
-    // Update total count
     document.getElementById("count").textContent = appointments.length;
 
-    // Display each booking
     let list = document.getElementById("bookingList");
     appointments.forEach((appt, index) => {
       let card = document.createElement("div");
@@ -99,7 +96,6 @@
       list.appendChild(card);
     });
 
-    // Download OP sheet as text file
     function downloadOP(index) {
       let appt = appointments[index];
       let content = `
