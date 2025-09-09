@@ -1,99 +1,150 @@
-<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Book Appointment</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap');
+
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f9fafb;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #e0e7ff, #f9fafb);
       margin: 0;
       padding: 0;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
+      overflow-x: hidden;
     }
 
     .appointment-container {
       background: #fff;
-      padding: 30px;
-      border-radius: 16px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-      max-width: 600px;
+      padding: 32px 36px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(37, 99, 235, 0.15);
+      max-width: 650px;
       width: 95%;
-      animation: fade-in 1s ease-in-out;
+      animation: fadeSlideIn 0.7s ease forwards;
+      opacity: 0;
+      transform: translateY(30px);
     }
 
     h1 {
       text-align: center;
-      margin-bottom: 20px;
-      color: #111827;
+      margin-bottom: 25px;
+      color: #1e3a8a;
+      font-weight: 700;
+      font-size: 2rem;
+      letter-spacing: 1.2px;
+      user-select: none;
     }
 
     form {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 16px;
     }
 
     label {
-      font-weight: bold;
+      font-weight: 600;
       color: #374151;
-      font-size: 14px;
+      font-size: 14.5px;
+      user-select: none;
     }
 
     input, select, textarea {
-      padding: 10px;
-      border: 1px solid #d1d5db;
-      border-radius: 8px;
-      transition: 0.3s;
+      padding: 12px 14px;
+      border: 1.8px solid #d1d5db;
+      border-radius: 12px;
+      font-size: 15px;
+      color: #111827;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      resize: vertical;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     input:focus, select:focus, textarea:focus {
       border-color: #2563eb;
       outline: none;
-      box-shadow: 0 0 6px rgba(37, 99, 235, 0.3);
+      box-shadow: 0 0 10px rgba(37, 99, 235, 0.4);
+      background: #f0f5ff;
+    }
+
+    input[disabled] {
+      background-color: #f3f4f6;
+      color: #6b7280;
+      cursor: not-allowed;
     }
 
     textarea {
-      min-height: 80px;
-      resize: vertical;
+      min-height: 90px;
     }
 
     .btn {
-      padding: 12px;
-      border-radius: 8px;
+      padding: 14px;
+      border-radius: 14px;
       border: none;
       cursor: pointer;
-      margin-top: 15px;
-      transition: 0.3s;
+      font-weight: 600;
+      font-size: 1.1rem;
+      letter-spacing: 0.6px;
+      transition: all 0.35s ease;
+      box-shadow: 0 6px 12px rgba(22, 163, 74, 0.4);
+      user-select: none;
     }
 
     .submit-btn {
-      background: #16a34a;
+      background: linear-gradient(45deg, #16a34a, #4ade80);
       color: white;
+      box-shadow: 0 8px 15px rgba(22, 163, 74, 0.6);
+      filter: drop-shadow(0 5px 5px rgba(22, 163, 74, 0.3));
     }
 
     .submit-btn:hover {
-      background: #15803d;
+      background: linear-gradient(45deg, #15803d, #22c55e);
+      box-shadow: 0 12px 20px rgba(22, 163, 74, 0.9);
+      transform: translateY(-3px);
     }
 
     .back-btn {
       background: #f3f4f6;
-      color: #111827;
-      margin-top: 10px;
-      border: 1px solid #d1d5db;
+      color: #374151;
+      margin-top: 12px;
+      border: 1.8px solid #d1d5db;
+      box-shadow: none;
+      filter: none;
     }
 
     .back-btn:hover {
       background: #e5e7eb;
+      border-color: #9ca3af;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
 
-    @keyframes fade-in {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+    /* Animation keyframes */
+    @keyframes fadeSlideIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Responsive tweaks */
+    @media (max-width: 480px) {
+      .appointment-container {
+        padding: 25px 20px;
+      }
+
+      h1 {
+        font-size: 1.6rem;
+      }
+
+      .btn {
+        font-size: 1rem;
+      }
     }
   </style>
 </head>
@@ -101,38 +152,38 @@
   <div class="appointment-container">
     <h1>📅 Book Appointment</h1>
     <form id="appointmentForm">
-      <label>Full Name:</label>
-      <input type="text" id="name" disabled>
+      <label for="name">Full Name:</label>
+      <input type="text" id="name" disabled />
 
-      <label>Email:</label>
-      <input type="email" id="email" disabled>
+      <label for="email">Email:</label>
+      <input type="email" id="email" disabled />
 
-      <label>Phone:</label>
-      <input type="tel" id="phone" disabled>
+      <label for="phone">Phone:</label>
+      <input type="tel" id="phone" disabled />
 
-      <label>Age:</label>
-      <input type="text" id="age" disabled>
+      <label for="age">Age:</label>
+      <input type="text" id="age" disabled />
 
-      <label>Gender:</label>
-      <input type="text" id="gender" disabled>
+      <label for="gender">Gender:</label>
+      <input type="text" id="gender" disabled />
 
-      <label>Address:</label>
-      <input type="text" id="address" disabled>
+      <label for="address">Address:</label>
+      <input type="text" id="address" disabled />
 
-      <label>Your Problem:</label>
-      <textarea id="problem" placeholder="Describe your problem..."></textarea>
+      <label for="problem">Your Problem:</label>
+      <textarea id="problem" placeholder="Describe your problem..." required></textarea>
 
-      <label>Department:</label>
-      <input type="text" id="department" disabled>
+      <label for="department">Department:</label>
+      <input type="text" id="department" disabled />
 
-      <label>Ward No:</label>
-      <input type="text" id="ward" disabled>
+      <label for="ward">Ward No:</label>
+      <input type="text" id="ward" disabled />
 
-      <label>Select Date:</label>
-      <select id="date"></select>
+      <label for="date">Select Date:</label>
+      <select id="date" required></select>
 
-      <label>Available Slots:</label>
-      <select id="slots"></select>
+      <label for="slots">Available Slots:</label>
+      <select id="slots" required></select>
 
       <button type="submit" class="btn submit-btn">Proceed to Payment</button>
     </form>
@@ -140,8 +191,7 @@
   </div>
 
   <script>
-    // Auto-fill profile info
-    window.onload = function() {
+    window.onload = function () {
       const currentUser = JSON.parse(localStorage.getItem("currentUser"));
       if (!currentUser) {
         alert("You are not logged in! Redirecting...");
@@ -155,57 +205,56 @@
       document.getElementById("gender").value = currentUser.gender || "";
       document.getElementById("address").value = currentUser.address || "";
 
-      // Auto calculate Age
       if (currentUser.dob) {
         const dob = new Date(currentUser.dob);
         const age = new Date().getFullYear() - dob.getFullYear();
         document.getElementById("age").value = age;
       }
 
-      // Fill next 15 days for appointment
       const dateSelect = document.getElementById("date");
       let today = new Date();
       for (let i = 0; i < 15; i++) {
         let nextDay = new Date(today);
         nextDay.setDate(today.getDate() + i);
         let option = document.createElement("option");
-        option.value = nextDay.toISOString().split('T')[0];
+        option.value = nextDay.toISOString().split("T")[0];
         option.textContent = nextDay.toDateString();
         dateSelect.appendChild(option);
       }
+      // Trigger slots population on page load for today's date
+      dateSelect.dispatchEvent(new Event("change"));
     };
 
-    // Problem-to-Department Mapping
     const departmentKeywords = {
-      "Cardiology": ["heart", "chest pain", "palpitation", "breath"],
-      "Neurology": ["headache", "seizure", "paralysis", "brain", "nerves"],
-      "Orthopedics": ["bone", "fracture", "joint", "back pain", "knee"],
-      "Dermatology": ["skin", "rash", "acne", "allergy"],
-      "ENT": ["ear", "nose", "throat", "hearing", "tonsil"],
-      "Gastroenterology": ["stomach", "liver", "digestion", "vomit", "abdomen"],
-      "Oncology": ["cancer", "tumor", "chemotherapy"],
-      "Pediatrics": ["child", "baby", "infant", "kids"]
+      Cardiology: ["heart", "chest pain", "palpitation", "breath"],
+      Neurology: ["headache", "seizure", "paralysis", "brain", "nerves"],
+      Orthopedics: ["bone", "fracture", "joint", "back pain", "knee"],
+      Dermatology: ["skin", "rash", "acne", "allergy"],
+      ENT: ["ear", "nose", "throat", "hearing", "tonsil"],
+      Gastroenterology: ["stomach", "liver", "digestion", "vomit", "abdomen"],
+      Oncology: ["cancer", "tumor", "chemotherapy"],
+      Pediatrics: ["child", "baby", "infant", "kids"],
     };
 
     const wardNumbers = {
-      "Cardiology": "201",
-      "Neurology": "301",
-      "Orthopedics": "401",
-      "Dermatology": "501",
-      "ENT": "601",
-      "Gastroenterology": "701",
-      "Oncology": "801",
-      "Pediatrics": "901"
+      Cardiology: "201",
+      Neurology: "301",
+      Orthopedics: "401",
+      Dermatology: "501",
+      ENT: "601",
+      Gastroenterology: "701",
+      Oncology: "801",
+      Pediatrics: "901",
     };
 
-    document.getElementById("problem").addEventListener("input", function() {
-      let problemText = this.value.toLowerCase();
+    document.getElementById("problem").addEventListener("input", function () {
+      const problemText = this.value.toLowerCase();
       let selectedDept = "General";
-      for (let dept in departmentKeywords) {
-        for (let word of departmentKeywords[dept]) {
+      outer: for (const dept in departmentKeywords) {
+        for (const word of departmentKeywords[dept]) {
           if (problemText.includes(word)) {
             selectedDept = dept;
-            break;
+            break outer;
           }
         }
       }
@@ -213,25 +262,49 @@
       document.getElementById("ward").value = wardNumbers[selectedDept] || "101";
     });
 
-    // Generate random slots for selected date
-    document.getElementById("date").addEventListener("change", function() {
+    document.getElementById("date").addEventListener("change", function () {
       const slots = document.getElementById("slots");
       slots.innerHTML = "";
-      let availableSlots = ["9:00 AM", "10:00 AM", "11:30 AM", "2:00 PM", "3:30 PM", "5:00 PM"];
-      availableSlots.forEach(slot => {
-        let option = document.createElement("option");
+      let availableSlots = [
+        "9:00 AM",
+        "10:00 AM",
+        "11:30 AM",
+        "2:00 PM",
+        "3:30 PM",
+        "5:00 PM",
+      ];
+      availableSlots.forEach((slot) => {
+        const option = document.createElement("option");
         option.value = slot;
         option.textContent = slot + " (Vacant)";
         slots.appendChild(option);
       });
     });
 
-    // Submit → Payment → OP Sheet
-    document.getElementById("appointmentForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      alert("Redirecting to payment page...");
-      window.location.href = "payment.html"; // After payment → OP sheet
-    });
+    document
+      .getElementById("appointmentForm")
+      .addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        // Validate problem field
+        if (!document.getElementById("problem").value.trim()) {
+          alert("Please describe your problem.");
+          return;
+        }
+        // Save appointment info before redirecting
+        const appointment = {
+          age: document.getElementById("age").value,
+          problem: document.getElementById("problem").value.trim(),
+          department: document.getElementById("department").value,
+          ward: document.getElementById("ward").value,
+          date: document.getElementById("date").value,
+          slot: document.getElementById("slots").value,
+        };
+        localStorage.setItem("appointment", JSON.stringify(appointment));
+
+        alert("Redirecting to payment page...");
+        window.location.href = "payment.html";
+      });
   </script>
 </body>
 </html>
