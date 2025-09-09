@@ -1,57 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Payment with mCoins</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f9fafb;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f0f4ff;
       margin: 0;
       padding: 0;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
+      flex-direction: column;
     }
 
     .payment-container {
       background: #fff;
-      padding: 30px;
+      padding: 36px 44px;
       border-radius: 16px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.15);
       max-width: 420px;
-      width: 95%;
-      animation: fade-in 0.8s ease-in-out;
+      width: 90%;
       text-align: center;
+      animation: fadeIn 0.8s ease forwards;
+      position: relative;
+      overflow: visible;
     }
 
     h1 {
       margin-bottom: 20px;
-      color: #111827;
+      color: #1e40af;
+      font-weight: 700;
+      font-size: 2rem;
     }
 
     p {
-      margin: 10px 0;
-      font-size: 16px;
-      color: #374151;
+      margin: 12px 0;
+      font-size: 1.1rem;
+      color: #334155;
     }
 
     .highlight {
-      font-weight: bold;
+      font-weight: 700;
       color: #2563eb;
     }
 
     .btn {
-      padding: 12px;
-      border-radius: 8px;
+      padding: 14px;
+      border-radius: 12px;
       border: none;
       cursor: pointer;
-      margin-top: 15px;
-      transition: 0.3s;
+      margin-top: 20px;
+      transition: background 0.3s ease;
       width: 100%;
-      font-size: 16px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      box-shadow: 0 3px 10px rgba(37, 99, 235, 0.4);
     }
 
     .pay-btn {
@@ -61,21 +68,42 @@
 
     .pay-btn:hover {
       background: #15803d;
+      box-shadow: 0 6px 16px rgba(22, 163, 74, 0.7);
     }
 
     .back-btn {
-      background: #f3f4f6;
-      color: #111827;
-      border: 1px solid #d1d5db;
+      background: #e0e7ff;
+      color: #1e40af;
+      border: 1px solid #c7d2fe;
+      box-shadow: none;
+      font-weight: 600;
     }
 
     .back-btn:hover {
-      background: #e5e7eb;
+      background: #c7d2fe;
     }
 
-    @keyframes fade-in {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Confetti container */
+    #confetti-canvas {
+      pointer-events: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 9999;
+      display: none;
     }
   </style>
 </head>
@@ -83,64 +111,145 @@
   <div class="payment-container">
     <h1>💰 Pay with mCoins</h1>
     <p>Patient: <span id="patientName" class="highlight"></span></p>
-    <p>Current Balance: <span id="coinBalance" class="wallet-box"></span> mCoins</p>
+    <p>Current Balance: <span id="walletBalance" class="highlight">0</span> mCoins</p>
     <p>Appointment Fee: <span id="fee" class="highlight">200</span> mCoins</p>
 
     <button id="payBtn" class="btn pay-btn">✅ Pay & Confirm</button>
     <button class="btn back-btn" onclick="window.location.href='appointment.html'">⬅ Back to Appointment</button>
   </div>
-<script>
-  const FEE = 200; // Cost per payment
 
-// Safely read wallet and handle missing/invalid user
-function getCurrentUser() {
-  const raw = localStorage.getItem("currentUser");
-  if (!raw) return null;
-  try {
-    return JSON.parse(raw);
-  } catch {
-    return null;
-  }
-}
+  <canvas id="confetti-canvas"></canvas>
 
-// Safely update users list after payment
-function updateUsersList(currentUser) {
-  let users = JSON.parse(localStorage.getItem("users")) || [];
-  users = users.map(u => u.email === currentUser.email ? currentUser : u);
-  localStorage.setItem("users", JSON.stringify(users));
-}
+  <script>
+    const FEE = 200;
+    let balance = 0;
+    let currentUser;
 
-// Perform payment and decrement coins
-function makePayment() {
-  let currentUser = getCurrentUser();
-  if (!currentUser) {
-    alert("You are not logged in! Redirecting...");
-    window.location.href = "index.html";
-    return;
-  }
-  if (typeof currentUser.coins !== "number" || currentUser.coins < FEE) {
-    alert("❌ Not enough coins! Please top-up.");
-    return;
-  }
+    // Confetti effect (reused)
+    const confettiCanvas = document.getElementById("confetti-canvas");
+    const ctx = confettiCanvas.getContext("2d");
+    let confettiElements = [];
+    let confettiAnimationFrame;
 
-  currentUser.coins -= FEE;
-  localStorage.setItem("currentUser", JSON.stringify(currentUser));
-  updateUsersList(currentUser);
+    function resizeCanvas() {
+      confettiCanvas.width = window.innerWidth;
+      confettiCanvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
 
-  document.getElementById("coinBalance").textContent = currentUser.coins;
-  alert("✅ Payment successful! " + FEE + " coins deducted.");
-}
+    class ConfettiParticle {
+      constructor() {
+        this.x = Math.random() * confettiCanvas.width;
+        this.y = Math.random() * confettiCanvas.height - confettiCanvas.height;
+        this.radius = Math.random() * 6 + 4;
+        this.color = `hsl(${Math.floor(Math.random() * 360)}, 70%, 60%)`;
+        this.speed = Math.random() * 3 + 2;
+        this.tilt = Math.random() * 10 - 10;
+        this.tiltSpeed = Math.random() * 0.1 + 0.05;
+        this.tiltAngle = 0;
+      }
 
-// Use this with your button
-document.getElementById("payBtn").addEventListener("click", makePayment);
+      update() {
+        this.y += this.speed;
+        this.tiltAngle += this.tiltSpeed;
+        this.tilt = Math.sin(this.tiltAngle) * 15;
 
-// Initial balance display
-window.onload = function() {
-  let currentUser = getCurrentUser();
-  if (currentUser && typeof currentUser.coins === "number") {
-    document.getElementById("coinBalance").textContent = currentUser.coins;
-  }
-};
-</script>
+        if (this.y > confettiCanvas.height) {
+          this.y = -10;
+          this.x = Math.random() * confettiCanvas.width;
+          this.speed = Math.random() * 3 + 2;
+        }
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.lineWidth = this.radius / 2;
+        ctx.strokeStyle = this.color;
+        ctx.moveTo(this.x + this.tilt + this.radius / 2, this.y);
+        ctx.lineTo(this.x + this.tilt, this.y + this.tilt + this.radius / 2);
+        ctx.stroke();
+      }
+    }
+
+    function createConfetti(num = 100) {
+      confettiElements = [];
+      for (let i = 0; i < num; i++) {
+        confettiElements.push(new ConfettiParticle());
+      }
+    }
+
+    function runConfetti() {
+      ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+      confettiElements.forEach((c) => {
+        c.update();
+        c.draw();
+      });
+      confettiAnimationFrame = requestAnimationFrame(runConfetti);
+    }
+
+    function startConfetti() {
+      confettiCanvas.style.display = "block";
+      createConfetti(150);
+      runConfetti();
+
+      setTimeout(() => {
+        confettiCanvas.style.display = "none";
+        cancelAnimationFrame(confettiAnimationFrame);
+      }, 5000);
+    }
+
+    // Load patient & wallet data
+    window.onload = function () {
+      currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
+      if (!currentUser) {
+        alert("You are not logged in! Redirecting...");
+        window.location.href = "index.html";
+        return;
+      }
+
+      balance = parseInt(currentUser.coins || 0);
+
+      document.getElementById("patientName").textContent = currentUser.name || "";
+      document.getElementById("walletBalance").textContent = balance;
+    };
+
+    // Payment logic
+    document.getElementById("payBtn").addEventListener("click", function () {
+      if (balance < FEE) {
+        alert("❌ Not enough mCoins! Please recharge your wallet.");
+        return;
+      }
+
+      balance -= FEE;
+      currentUser.coins = balance;
+      localStorage.setItem("currentUser", JSON.stringify(currentUser));
+
+      // Update users list
+      let users = JSON.parse(localStorage.getItem("users")) || [];
+      users = users.map((u) => (u.email === currentUser.email ? currentUser : u));
+      localStorage.setItem("users", JSON.stringify(users));
+
+      // Save appointment info
+      const appointment = {
+        problem: localStorage.getItem("problem"),
+        department: localStorage.getItem("department"),
+        ward: localStorage.getItem("ward"),
+        date: localStorage.getItem("date"),
+        slot: localStorage.getItem("slot"),
+        age: localStorage.getItem("age"),
+      };
+      localStorage.setItem("appointment", JSON.stringify(appointment));
+
+      document.getElementById("walletBalance").textContent = balance;
+
+      startConfetti();
+      setTimeout(() => {
+        alert("✅ Payment successful! Remaining balance: " + balance + " mCoins 🎉");
+        window.location.href = "op-sheet.html";
+      }, 600);
+    });
+  </script>
 </body>
 </html>
