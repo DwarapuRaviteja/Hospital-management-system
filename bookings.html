@@ -223,8 +223,12 @@
     <div class="op-sheet-modal-content">
       <span class="close-btn">&times;</span>
       <div class="op-sheet" id="opSheetContent"></div>
+      <button class="btn" id="downloadImageBtn">Download as Image</button>
     </div>
   </div>
+
+  <!-- html2canvas CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <script>
   const bookingsList = document.getElementById("bookingsList");
@@ -232,6 +236,7 @@
   const modal = document.getElementById("opSheetModal");
   const closeBtn = modal.querySelector(".close-btn");
   const opSheetContent = document.getElementById("opSheetContent");
+  const downloadImageBtn = document.getElementById("downloadImageBtn");
 
   let appointments = JSON.parse(localStorage.getItem("appointments")) || [];
 
@@ -253,7 +258,6 @@
         </div>
         <div class="actions">
           <button class="btn view-btn" data-index="${index}">View OP Sheet</button>
-          <button class="btn download-btn" data-index="${index}">Download</button>
         </div>
       `;
       bookingsList.appendChild(card);
@@ -286,32 +290,16 @@
       <div class="footer">Thank you for choosing R S Hospital. Wishing you good health!</div>
     `;
     modal.classList.add("active");
-  }
 
-  function downloadOpSheet(appt) {
-    let content = `
-🏥 R S Hospital - OP Sheet
------------------------------
-Name: ${appt.name}
-Gender: ${appt.gender}
-Age: ${appt.age}
-Phone: ${appt.phone}
-Email: ${appt.email}
-Address: ${appt.address}
-
-Problem: ${appt.problem}
-Department: ${appt.department}
-Ward: ${appt.ward}
-Date: ${appt.date}
-Slot: ${appt.slot}
-
-Thank you for choosing R S Hospital.
-    `;
-    let blob = new Blob([content], { type: "text/plain" });
-    let link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = `OP_Sheet_${appt.date}.txt`;
-    link.click();
+    // enable download as image for this sheet
+    downloadImageBtn.onclick = () => {
+      html2canvas(opSheetContent).then(canvas => {
+        const link = document.createElement("a");
+        link.download = `OP_Sheet_${appt.date}.png`;
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+      });
+    };
   }
 
   // Event delegation
@@ -319,10 +307,6 @@ Thank you for choosing R S Hospital.
     if (e.target.classList.contains("view-btn")) {
       const index = e.target.dataset.index;
       showOpSheet(appointments[index]);
-    }
-    if (e.target.classList.contains("download-btn")) {
-      const index = e.target.dataset.index;
-      downloadOpSheet(appointments[index]);
     }
   });
 
