@@ -3,220 +3,154 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Outpatient Sheet</title>
+  <title>OP Sheet - Appointment Summary</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: #f3f4f6;
       margin: 0;
       padding: 20px;
       display: flex;
       justify-content: center;
+      min-height: 100vh;
+      align-items: center;
     }
 
-    .op-sheet {
+    .op-sheet-container {
       background: #fff;
+      max-width: 700px;
+      width: 90%;
       padding: 30px;
-      border-radius: 12px;
+      border-radius: 16px;
       box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-      max-width: 900px;
-      width: 100%;
-      border: 2px solid #111827;
-      position: relative;
+      animation: fadeIn 1s ease forwards;
     }
 
-    .header {
+    h1 {
       text-align: center;
-      margin-bottom: 20px;
-      border-bottom: 2px solid #111827;
-      padding-bottom: 15px;
-      position: relative;
-    }
-
-    .header img {
-      width: 80px;
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      opacity: 0.8;
-    }
-
-    .header h1 {
-      margin: 0;
-      color: #1e3a8a;
-    }
-
-    .header p {
-      margin: 5px 0;
-      color: #374151;
-    }
-
-    /* Horizontal split container */
-    .details {
-      margin-top: 20px;
-      display: flex;
-      gap: 40px;
-      justify-content: space-between;
-      flex-wrap: wrap;
-    }
-
-    .details > div {
-      flex: 1 1 45%;
-      background: #f9fafb;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: inset 0 0 10px #e5e7eb;
-      min-width: 300px;
-    }
-
-    .details h2 {
       color: #111827;
+      margin-bottom: 25px;
+    }
+
+    .section {
+      margin-bottom: 20px;
+    }
+
+    .section h2 {
+      font-size: 20px;
+      border-bottom: 2px solid #2563eb;
+      padding-bottom: 5px;
       margin-bottom: 15px;
-      border-bottom: 1.5px solid #d1d5db;
-      padding-bottom: 8px;
+      color: #2563eb;
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    td {
-      padding: 8px;
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
       border-bottom: 1px solid #e5e7eb;
-      vertical-align: top;
     }
 
-    td:first-child {
+    .detail-row:last-child {
+      border-bottom: none;
+    }
+
+    .label {
       font-weight: 600;
       color: #374151;
-      width: 40%;
     }
 
-    td:last-child {
+    .value {
       color: #1f2937;
     }
 
-    .footer {
-      text-align: right;
-      margin-top: 25px;
-      font-style: italic;
-      color: #374151;
-    }
-
-    .btn {
-      margin-top: 20px;
-      padding: 10px 20px;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
+    .back-btn {
+      display: block;
+      width: 100%;
+      text-align: center;
+      padding: 12px;
       background: #2563eb;
       color: white;
-      transition: 0.3s;
-      display: block;
-      margin-left: auto;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 30px;
+      transition: background-color 0.3s ease;
+      text-decoration: none;
     }
 
-    .btn:hover {
-      background: #1e40af;
+    .back-btn:hover {
+      background: #1d4ed8;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
 <body>
-  <div class="op-sheet" id="opSheet">
-    <div class="header">
-      <img src="hospital_stamp.png" alt="Hospital Stamp" />
-      <h1>🏥 R S Hospital</h1>
-      <p>Outpatient Department - OP Sheet</p>
+  <div class="op-sheet-container">
+    <h1>📝 OP Sheet - Appointment Summary</h1>
+
+    <div class="section" id="patient-info">
+      <h2>Patient Information</h2>
+      <div class="detail-row"><span class="label">Full Name:</span> <span class="value" id="name"></span></div>
+      <div class="detail-row"><span class="label">Email:</span> <span class="value" id="email"></span></div>
+      <div class="detail-row"><span class="label">Phone:</span> <span class="value" id="phone"></span></div>
+      <div class="detail-row"><span class="label">Age:</span> <span class="value" id="age"></span></div>
+      <div class="detail-row"><span class="label">Gender:</span> <span class="value" id="gender"></span></div>
+      <div class="detail-row"><span class="label">Address:</span> <span class="value" id="address"></span></div>
     </div>
 
-    <div class="details">
-      <div class="patient-details">
-        <h2>Patient Details</h2>
-        <table>
-          <tr><td>OP Number</td><td id="opNumber"></td></tr>
-          <tr><td>Name</td><td id="name"></td></tr>
-          <tr><td>Age</td><td id="age"></td></tr>
-          <tr><td>Gender</td><td id="gender"></td></tr>
-          <tr><td>Phone</td><td id="phone"></td></tr>
-          <tr><td>Email</td><td id="email"></td></tr>
-          <tr><td>Address</td><td id="address"></td></tr>
-        </table>
-      </div>
-
-      <div class="appointment-details">
-        <h2>Appointment Details</h2>
-        <table>
-          <tr><td>Problem</td><td id="problem"></td></tr>
-          <tr><td>Department</td><td id="department"></td></tr>
-          <tr><td>Ward No</td><td id="ward"></td></tr>
-          <tr><td>Date</td><td id="date"></td></tr>
-          <tr><td>Slot</td><td id="slot"></td></tr>
-        </table>
-      </div>
+    <div class="section" id="appointment-info">
+      <h2>Appointment Details</h2>
+      <div class="detail-row"><span class="label">Problem Description:</span> <span class="value" id="problem"></span></div>
+      <div class="detail-row"><span class="label">Department:</span> <span class="value" id="department"></span></div>
+      <div class="detail-row"><span class="label">Ward Number:</span> <span class="value" id="ward"></span></div>
+      <div class="detail-row"><span class="label">Date:</span> <span class="value" id="date"></span></div>
+      <div class="detail-row"><span class="label">Slot:</span> <span class="value" id="slot"></span></div>
     </div>
 
-    <div class="footer">
-      <p>Authorized by: R S Hospital</p>
-    </div>
-
-    <button class="btn" onclick="window.print()">🖨 Print / Download</button>
+    <a href="homepage.html" class="back-btn">⬅ Back to Home</a>
   </div>
 
   <script>
-    // Generate OP number
-    function generateOpNumber() {
-      return "OP-" + Math.floor(100000 + Math.random() * 900000);
-    }
-
     window.onload = function() {
+      // Retrieve the appointment details from localStorage
+      const appointmentData = JSON.parse(localStorage.getItem("appointmentData"));
       const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-      const appointment = JSON.parse(localStorage.getItem("appointment"));
 
-      if (!currentUser || !appointment) {
-        alert("⚠ No appointment found! Redirecting...");
+      if (!appointmentData || !currentUser) {
+        alert("Appointment details not found. Redirecting to booking page...");
         window.location.href = "appointment.html";
         return;
       }
 
-      // Generate OP number once per sheet
-      const opNo = generateOpNumber();
+      // Fill patient info
+      document.getElementById("name").textContent = currentUser.name || "N/A";
+      document.getElementById("email").textContent = currentUser.email || "N/A";
+      document.getElementById("phone").textContent = currentUser.phone || "N/A";
 
-      // Fill patient details
-      document.getElementById("opNumber").textContent = opNo;
-      document.getElementById("name").textContent = currentUser.name || "";
-      document.getElementById("age").textContent = appointment.age || "";
-      document.getElementById("gender").textContent = currentUser.gender || "";
-      document.getElementById("phone").textContent = currentUser.phone || "";
-      document.getElementById("email").textContent = currentUser.email || "";
-      document.getElementById("address").textContent = currentUser.address || "";
+      // Calculate age again if dob present
+      if (currentUser.dob) {
+        const dob = new Date(currentUser.dob);
+        const age = new Date().getFullYear() - dob.getFullYear();
+        document.getElementById("age").textContent = age;
+      } else {
+        document.getElementById("age").textContent = "N/A";
+      }
 
-      // Fill appointment details
-      document.getElementById("problem").textContent = appointment.problem || "";
-      document.getElementById("department").textContent = appointment.department || "";
-      document.getElementById("ward").textContent = appointment.ward || "";
-      document.getElementById("date").textContent = appointment.date || "";
-      document.getElementById("slot").textContent = appointment.slot || "";
+      document.getElementById("gender").textContent = currentUser.gender || "N/A";
+      document.getElementById("address").textContent = currentUser.address || "N/A";
 
-      // Save booking to localStorage
-      let bookings = JSON.parse(localStorage.getItem("myBookings")) || [];
-      const bookingRecord = {
-        opNumber: opNo,
-        name: currentUser.name,
-        age: appointment.age,
-        gender: currentUser.gender,
-        phone: currentUser.phone,
-        email: currentUser.email,
-        address: currentUser.address,
-        problem: appointment.problem,
-        department: appointment.department,
-        ward: appointment.ward,
-        date: appointment.date,
-        slot: appointment.slot,
-        bookedAt: new Date().toISOString()
-      };
-      bookings.push(bookingRecord);
-      localStorage.setItem("myBookings", JSON.stringify(bookings));
+      // Fill appointment info
+      document.getElementById("problem").textContent = appointmentData.problem || "N/A";
+      document.getElementById("department").textContent = appointmentData.department || "General";
+      document.getElementById("ward").textContent = appointmentData.ward || "101";
+      document.getElementById("date").textContent = new Date(appointmentData.date).toDateString() || "N/A";
+      document.getElementById("slot").textContent = appointmentData.slot || "N/A";
     };
   </script>
 </body>
