@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <title>Admin Dashboard - R S Hospital</title>
-  <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     body {
@@ -15,81 +14,93 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
+      overflow-x: hidden;
     }
 
-    /* Header */
-    header {
-      width: 100%;
+    /* Hospital Name Heading */
+    .header {
+      text-align: center;
+      margin: 25px 0 10px 0;
+    }
+    .header h1 {
+      font-size: 2.8rem;
+      font-weight: 700;
+      font-family: 'Georgia', serif;
+      color: #2563eb;
+      margin: 0;
+    }
+
+    /* Menu Icon Button */
+    .menu-btn {
+      position: absolute;
+      top: 70px;
+      left: 20px;
       background: #2563eb;
       color: white;
-      padding: 15px 25px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: relative;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-    }
-    header h1 {
-      margin: 0;
-      font-size: 20px;
-    }
-    .menu-btn {
-      background: white;
-      color: #2563eb;
       border: none;
-      padding: 8px 14px;
+      padding: 10px 14px;
       border-radius: 6px;
       cursor: pointer;
-      font-weight: 600;
-      transition: background 0.3s;
+      font-size: 1.2rem;
+      z-index: 1100;
+      transition: background 0.3s, opacity 0.3s;
     }
     .menu-btn:hover {
-      background: #f0f0f0;
+      background: #1d4ed8;
+    }
+    .menu-btn.hidden {
+      opacity: 0;
+      pointer-events: none;
     }
 
-    /* Slide Menu */
-    .menu {
+    /* Sidebar (Menu Drawer) */
+    .sidebar {
       position: fixed;
       top: 0;
-      left: -260px;
+      left: -100%;
       width: 260px;
       height: 100%;
-      background: #f9fafb;
-      box-shadow: 2px 0 10px rgba(0,0,0,0.2);
-      padding: 20px;
-      transition: left 0.3s ease;
+      background: #2563eb;
+      color: white;
+      padding: 25px;
+      box-shadow: 2px 0 12px rgba(0,0,0,0.2);
+      transition: left 0.35s ease-in-out;
       z-index: 1000;
+      display: flex;
+      flex-direction: column;
     }
-    .menu.active {
-      left: 0;
-    }
-    .menu h2 {
+    .sidebar.active { left: 0; }
+    .sidebar h2 {
       margin-top: 0;
-      font-size: 1.3rem;
-      color: #2563eb;
+      font-size: 1.4rem;
       margin-bottom: 20px;
     }
-    .menu ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-    .menu ul li {
-      margin: 15px 0;
-    }
-    .menu ul li a {
-      text-decoration: none;
-      font-size: 1rem;
-      color: #1e3a8a;
-      font-weight: 600;
-      transition: color 0.3s;
+    .sidebar a {
       display: flex;
       align-items: center;
       gap: 10px;
+      text-decoration: none;
+      color: white;
+      font-size: 1rem;
+      font-weight: 600;
+      margin: 12px 0;
+      transition: color 0.3s;
     }
-    .menu ul li a:hover {
-      color: #2563eb;
+    .sidebar a:hover { color: #dbeafe; }
+
+    /* Close button inside sidebar */
+    .close-btn {
+      align-self: flex-end;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: white;
+      cursor: pointer;
+      margin-bottom: 20px;
+      transition: color 0.3s;
+    }
+    .close-btn:hover {
+      color: #dbeafe;
     }
 
     /* Overlay */
@@ -98,47 +109,32 @@
       inset: 0;
       background: rgba(0,0,0,0.3);
       display: none;
-      z-index: 999;
+      z-index: 900;
     }
-    .overlay.active {
-      display: block;
-    }
+    .overlay.active { display: block; }
 
-    /* Main body */
-    .main {
+    /* Body content */
+    .content {
       flex-grow: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      gap: 30px;
       text-align: center;
-      padding: 20px;
-    }
-    .main h1 {
-      font-size: 2.2rem;
-      margin-bottom: 30px;
-      font-weight: 700;
-    }
-    .button-group {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-      justify-content: center;
     }
     .btn {
       background: #3b82f6;
       color: white;
       border: none;
-      padding: 14px 24px;
-      border-radius: 8px;
-      font-size: 1.1rem;
+      padding: 16px 28px;
+      border-radius: 10px;
+      font-size: 1.2rem;
       font-weight: 600;
       cursor: pointer;
       transition: transform 0.2s, background 0.3s;
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+      min-width: 200px;
     }
     .btn:hover {
       background: #1d4ed8;
@@ -148,40 +144,50 @@
 </head>
 <body>
   <!-- Header -->
-  <header>
-    <h1>Admin Dashboard</h1>
-    <button class="menu-btn" onclick="toggleMenu()">☰ Menu</button>
-  </header>
-
-  <!-- Side Menu -->
-  <div class="menu" id="menu">
-    <h2>Menu</h2>
-    <ul>
-      <li><a href="users.html"><i class="fa-solid fa-users"></i> Users Information</a></li>
-      <li><a href="wallet.html"><i class="fa-solid fa-wallet"></i> Wallet Management</a></li>
-      <li><a href="schedule.html"><i class="fa-solid fa-calendar-days"></i> Schedule</a></li>
-      <li><a href="../login.html"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
-    </ul>
-  </div>
-  <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
-
-  <!-- Main Body -->
-  <div class="main">
+  <div class="header">
     <h1>🏥 R S Hospital</h1>
-    <div class="button-group">
-      <button class="btn" onclick="window.location.href='appointments.html'"><i class="fa-solid fa-calendar-check"></i> Appointments</button>
-      <button class="btn" onclick="window.location.href='reports.html'"><i class="fa-solid fa-file-medical"></i> Send Reports</button>
-    </div>
+  </div>
+
+  <!-- Menu Button (symbol only) -->
+  <button class="menu-btn" id="menuBtn"><i class="fa-solid fa-bars"></i></button>
+
+  <!-- Sidebar Menu -->
+  <div class="sidebar" id="sidebar">
+    <button class="close-btn" onclick="closeMenu()"><i class="fa-solid fa-xmark"></i></button>
+    <h2>Menu</h2>
+    <a href="users.html"><i class="fa-solid fa-users"></i> Users Information</a>
+    <a href="wallet.html"><i class="fa-solid fa-wallet"></i> Wallet Management</a>
+    <a href="schedule.html"><i class="fa-solid fa-calendar-days"></i> Schedule</a>
+    <a href="../login.html"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+  </div>
+
+  <!-- Overlay -->
+  <div class="overlay" id="overlay" onclick="closeMenu()"></div>
+
+  <!-- Content -->
+  <div class="content">
+    <button class="btn" onclick="location.href='appointments.html'"><i class="fa-solid fa-calendar-check"></i> Appointments</button>
+    <button class="btn" onclick="location.href='reports.html'"><i class="fa-solid fa-file-medical"></i> Send Reports</button>
   </div>
 
   <script>
-    const menu = document.getElementById("menu");
+    const sidebar = document.getElementById("sidebar");
     const overlay = document.getElementById("overlay");
+    const menuBtn = document.getElementById("menuBtn");
 
-    function toggleMenu() {
-      menu.classList.toggle("active");
-      overlay.classList.toggle("active");
+    function openMenu() {
+      sidebar.classList.add("active");
+      overlay.classList.add("active");
+      menuBtn.classList.add("hidden"); // hide menu button
     }
+
+    function closeMenu() {
+      sidebar.classList.remove("active");
+      overlay.classList.remove("active");
+      menuBtn.classList.remove("hidden"); // show menu button again
+    }
+
+    menuBtn.addEventListener("click", openMenu);
   </script>
 </body>
 </html>
