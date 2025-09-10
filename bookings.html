@@ -343,6 +343,19 @@ function showOpSheet(appt) {
         <tr><td>Date:</td><td>${appt.date}</td></tr>
         <tr><td>Slot:</td><td>${appt.slot}</td></tr>
       </table>
+if (appt.doctor) {
+  opSheetContent.innerHTML += `
+    <h2>Doctor Details</h2>
+    <table>
+      <tr><td>Doctor:</td><td>${appt.doctor.name}</td></tr>
+      <tr><td>Qualification:</td><td>${appt.doctor.qualification}</td></tr>
+      <tr><td>Specialization:</td><td>${appt.doctor.specialization}</td></tr>
+    </table>
+    <p style="margin-top:12px; font-weight:bold; color:#1e3a8a;">
+      ${appt.doctor.name} has approved to check you on ${appt.date}. Please be present by morning 9.
+    </p>
+  `;
+}
       <div class="footer">Thank you for choosing R S Hospital. Wishing you good health!</div>
     `;
     modal.classList.add("active");
