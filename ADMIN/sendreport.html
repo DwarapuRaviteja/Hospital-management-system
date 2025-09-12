@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Send Report - City Care Hospitals</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .send-container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 15px;
+      width: 400px;
+      text-align: center;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+    }
+
+    .send-container h2 {
+      margin-bottom: 20px;
+      color: #1d4ed8;
+    }
+
+    select, input[type="text"], input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <div class="title">Send Report</div>
+
+  <div class="send-container">
+    <h2>Upload & Send Report</h2>
+
+    <label for="userId">Select User (by ID or Appointment)</label>
+    <input type="text" id="userId" placeholder="Enter User ID">
+
+    <label for="recentAppointments">Or choose from recent</label>
+    <select id="recentAppointments">
+      <option value="">-- Select Appointment --</option>
+      <option value="USER001">USER001 - John Doe</option>
+      <option value="USER002">USER002 - Sarah Lee</option>
+      <option value="USER003">USER003 - Michael Chen</option>
+    </select>
+
+    <label for="reportFile">Upload Report (PDF/JPG/PNG)</label>
+    <input type="file" id="reportFile" accept=".pdf,.jpg,.jpeg,.png">
+
+    <button class="btn" onclick="sendReport()">Send Report</button>
+    <p class="error" id="errorMsg">⚠️ Please fill all fields</p>
+  </div>
+
+  <!-- Notification -->
+  <div id="notification" class="notification">✅ Report Sent Successfully!</div>
+
+  <script>
+    function sendReport() {
+      const userIdInput = document.getElementById("userId").value.trim();
+      const selectedAppointment = document.getElementById("recentAppointments").value;
+      const fileInput = document.getElementById("reportFile");
+      const errorMsg = document.getElementById("errorMsg");
+      const notification = document.getElementById("notification");
+
+      const userId = userIdInput || selectedAppointment;
+      if (!userId || fileInput.files.length === 0) {
+        errorMsg.style.display = "block";
+        return;
+      } else {
+        errorMsg.style.display = "none";
+      }
+
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+
+      reader.onload = function(e) {
+        const reportData = {
+          fileName: file.name,
+          fileUrl: e.target.result,
+          uploadedAt: new Date().toLocaleString()
+        };
+
+        localStorage.setItem("report_" + userId, JSON.stringify(reportData));
+
+        notification.classList.add("show");
+        setTimeout(() => {
+          notification.classList.remove("show");
+          window.location.href = "reports.html"; // redirect to reports page
+        }, 2000);
+      };
+
+      reader.readAsDataURL(file);
+    }
+  </script>
+</body>
+</html>
