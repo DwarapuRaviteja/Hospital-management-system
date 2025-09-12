@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Book Appointment</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap');
 
@@ -86,7 +87,7 @@
       border: 1.8px solid #d1d5db;
     }
 
-    /* Popup Modal for Schedule */
+    /* Popup Modal */
     .modal {
       display: none;
       position: fixed;
@@ -130,6 +131,10 @@
     .unavailable {
       background: #dc2626;
       color: white;
+    }
+
+    @keyframes fadeSlideIn {
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
@@ -175,7 +180,7 @@
     <button class="btn back-btn" onclick="window.location.href='homepage.html'">⬅ Back</button>
   </div>
 
-  <!-- Schedule Popup -->
+  <!-- Date Picker Modal -->
   <div id="dateModal" class="modal">
     <div class="modal-content">
       <h3>Select Appointment Date</h3>
@@ -207,7 +212,7 @@
       }
     };
 
-    // Department selection based on problem
+    // Department auto-detection
     const departmentKeywords = {
       Cardiology: ["heart","chest pain","palpitation","breath"],
       Neurology: ["headache","seizure","paralysis","brain","nerves"],
@@ -218,7 +223,6 @@
       Oncology: ["cancer","tumor","chemotherapy"],
       Pediatrics: ["child","baby","infant","kids"],
     };
-
     const wardNumbers = {
       Cardiology:"201", Neurology:"301", Orthopedics:"401",
       Dermatology:"501", ENT:"601", Gastroenterology:"701",
@@ -249,7 +253,7 @@
       document.getElementById("dateModal").style.display = "none";
     }
 
-    // Render schedule from admin data
+    // Render schedule
     function renderCalendar() {
       const calendarEl = document.getElementById("calendar");
       calendarEl.innerHTML = "";
@@ -260,8 +264,7 @@
         let day = new Date(today);
         day.setDate(today.getDate() + i);
         let dateKey = day.toISOString().split("T")[0];
-
-        let info = savedSchedule[dateKey] || { status: "available", reason: "" };
+        let info = savedSchedule[dateKey] || { status: "available" };
 
         let div = document.createElement("div");
         div.classList.add("day", info.status === "available" ? "available" : "unavailable");
