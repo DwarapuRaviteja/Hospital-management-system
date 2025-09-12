@@ -3,191 +3,120 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>City Care Hospitals - Admin Login</title>
+  <title>Hospital Intro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
       margin: 0;
-      padding: 0;
       height: 100vh;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
-      flex-direction: column;
-      background: linear-gradient(135deg, #1d4ed8, #0ea5e9);
+      background: linear-gradient(135deg, #0a0f2c, #1e3c72, #2a5298);
+      background-size: 200% 200%;
+      animation: bgMove 6s ease-in-out infinite;
       overflow: hidden;
-    }
-
-    /* Stylish hospital title with shine effect */
-    .title {
-      font-size: 36px;
-      font-weight: bold;
-      color: #fff;
-      text-align: center;
-      margin-bottom: 30px;
-      font-family: 'Trebuchet MS', sans-serif;
-      letter-spacing: 2px;
-      text-shadow: 2px 2px 6px rgba(0,0,0,0.4);
-      position: relative;
-      display: inline-block;
-      overflow: hidden;
-    }
-
-    .title::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(120deg, transparent, rgba(255,255,255,0.8), transparent);
-      animation: shine 3s infinite;
-    }
-
-    @keyframes shine {
-      0% { left: -100%; }
-      50% { left: 100%; }
-      100% { left: 100%; }
-    }
-
-    /* Login box */
-    .login-container {
-      background: #fff;
-      padding: 40px 30px;
-      border-radius: 15px;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
-      width: 330px;
-      text-align: center;
-      animation: fadeIn 1s ease-in-out;
-    }
-
-    .login-container h2 {
-      margin-bottom: 20px;
-      color: #1d4ed8;
-      font-size: 24px;
-      font-weight: bold;
-    }
-
-    .form-group {
-      margin-bottom: 15px;
-      text-align: left;
-    }
-
-    .form-group label {
-      display: block;
-      font-weight: bold;
-      margin-bottom: 5px;
-      color: #333;
-    }
-
-    .form-group input {
-      width: 100%;
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      outline: none;
-      transition: border 0.3s, box-shadow 0.3s;
-    }
-
-    .form-group input:focus {
-      border-color: #1d4ed8;
-      box-shadow: 0 0 8px rgba(29,78,216,0.4);
-    }
-
-    .btn {
-      background: #1d4ed8;
-      color: #fff;
-      padding: 12px;
-      border: none;
-      border-radius: 8px;
-      width: 100%;
+      transition: opacity 1s ease;
       cursor: pointer;
-      font-weight: bold;
-      font-size: 15px;
-      transition: 0.3s;
     }
 
-    .btn:hover {
-      background: #0a58ca;
-      transform: scale(1.03);
+    body.fade-out {
+      opacity: 0;
     }
 
-    .error {
-      color: red;
-      font-size: 14px;
-      margin-top: 10px;
-      display: none;
+    h1 {
+      font-family: "Playfair Display", serif;
+      font-size: 3.5rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      text-align: center;
+      background: linear-gradient(90deg, #fff, #00ccff, #fff);
+      background-size: 200% auto;
+      color: transparent;
+      -webkit-background-clip: text;
+      background-clip: text;
+      animation: glowGrow 2s ease-in-out forwards, shine 2s ease-in-out forwards 0.5s;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-20px); }
-      to { opacity: 1; transform: translateY(0); }
+    /* Glow + grow effect */
+    @keyframes glowGrow {
+      0% {
+        text-shadow: 0 0 5px #66ccff;
+        font-size: 3.5rem;
+        opacity: 0.6;
+      }
+      100% {
+        text-shadow: 0 0 25px #ffffff, 0 0 50px #00ccff;
+        font-size: calc(3.5rem + 10px);
+        opacity: 1;
+      }
     }
 
-    /* Notification panel */
-    .notification {
-      position: fixed;
-      top: -80px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #16a34a;
-      color: #fff;
-      padding: 15px 35px;
+    /* Shine inside text only */
+    @keyframes shine {
+      0% { background-position: 200% center; }
+      100% { background-position: 0% center; }
+    }
+
+    /* Background shifting */
+    @keyframes bgMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Loading bar container */
+    .loading-bar {
+      width: 250px;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.2);
       border-radius: 10px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-      font-weight: bold;
-      transition: top 0.6s ease-in-out;
-      z-index: 1000;
+      margin-top: 30px;
+      overflow: hidden;
+      display: none; /* hidden initially */
     }
 
-    .notification.show {
-      top: 20px;
+    /* Loading progress */
+    .loading-progress {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #00ccff, #ffffff);
+    }
+
+    .loading-bar.active .loading-progress {
+      animation: load 2s ease-in-out forwards;
+    }
+
+    @keyframes load {
+      from { width: 0%; }
+      to { width: 100%; }
     }
   </style>
 </head>
-<body>
-  <div class="title"> City Care HOSPITALS</div>
-
-  <div class="login-container">
-    <h2>Admin Login</h2>
-    <form id="adminLoginForm">
-      <div class="form-group">
-        <label for="adminId">Admin ID</label>
-        <input type="text" id="adminId" placeholder="Enter Admin ID" required>
-      </div>
-      <div class="form-group">
-        <label for="adminPassword">Password</label>
-        <input type="password" id="adminPassword" placeholder="Enter Password" required>
-      </div>
-      <button type="submit" class="btn">Login</button>
-      <p class="error" id="errorMsg">Invalid Admin ID or Password</p>
-    </form>
+<body onclick="startLoading()">
+  <h1>City Care Hospital</h1>
+  <div class="loading-bar" id="loadingBar">
+    <div class="loading-progress"></div>
   </div>
 
-  <!-- Notification Panel -->
-  <div id="notification" class="notification">✅ Login Successful! Redirecting...</div>
-
   <script>
-    document.getElementById("adminLoginForm").addEventListener("submit", function(e) {
-      e.preventDefault();
+    let clicked = false;
+    function startLoading() {
+      if (clicked) return; // prevent multiple clicks
+      clicked = true;
 
-      const adminId = document.getElementById("adminId").value;
-      const adminPassword = document.getElementById("adminPassword").value;
-      const errorMsg = document.getElementById("errorMsg");
-      const notification = document.getElementById("notification");
+      const bar = document.getElementById("loadingBar");
+      bar.style.display = "block";
+      bar.classList.add("active");
 
-      if (adminId === "ADMIN0001" && adminPassword === "@dmin0001") {
-        errorMsg.style.display = "none";
-        notification.classList.add("show");
-
+      setTimeout(() => {
+        document.body.classList.add("fade-out");
         setTimeout(() => {
-          notification.classList.remove("show");
-          window.location.href = "dashboard.html"; // Redirect to dashboard
-        }, 2000);
-      } else {
-        errorMsg.style.display = "block";
-      }
-    });
+          window.location.href = "login.html";
+        }, 1000); // fade timing
+      }, 2000); // after loading completes
+    }
   </script>
 </body>
 </html>
