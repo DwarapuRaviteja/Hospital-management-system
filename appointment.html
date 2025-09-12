@@ -8,7 +8,7 @@
     @import url('https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap');
 
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Segoe UI', sans-serif;
       background: linear-gradient(135deg, #e0e7ff, #f9fafb);
       margin: 0;
       padding: 0;
@@ -16,12 +16,11 @@
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      overflow-x: hidden;
     }
 
     .appointment-container {
       background: #fff;
-      padding: 32px 36px;
+      padding: 32px;
       border-radius: 20px;
       box-shadow: 0 10px 30px rgba(37, 99, 235, 0.15);
       max-width: 650px;
@@ -35,10 +34,6 @@
       text-align: center;
       margin-bottom: 25px;
       color: #1e3a8a;
-      font-weight: 700;
-      font-size: 2rem;
-      letter-spacing: 1.2px;
-      user-select: none;
     }
 
     form {
@@ -50,32 +45,20 @@
     label {
       font-weight: 600;
       color: #374151;
-      font-size: 14.5px;
-      user-select: none;
+      font-size: 14px;
     }
 
-    input, select, textarea {
+    input, textarea {
       padding: 12px 14px;
       border: 1.8px solid #d1d5db;
       border-radius: 12px;
       font-size: 15px;
       color: #111827;
-      transition: border-color 0.3s ease, box-shadow 0.3s ease;
-      resize: vertical;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    input:focus, select:focus, textarea:focus {
-      border-color: #2563eb;
-      outline: none;
-      box-shadow: 0 0 10px rgba(37, 99, 235, 0.4);
-      background: #f0f5ff;
     }
 
     input[disabled] {
       background-color: #f3f4f6;
       color: #6b7280;
-      cursor: not-allowed;
     }
 
     textarea {
@@ -89,62 +72,64 @@
       cursor: pointer;
       font-weight: 600;
       font-size: 1.1rem;
-      letter-spacing: 0.6px;
-      transition: all 0.35s ease;
-      box-shadow: 0 6px 12px rgba(22, 163, 74, 0.4);
-      user-select: none;
+      transition: all 0.3s ease;
     }
 
     .submit-btn {
       background: linear-gradient(45deg, #16a34a, #4ade80);
       color: white;
-      box-shadow: 0 8px 15px rgba(22, 163, 74, 0.6);
-      filter: drop-shadow(0 5px 5px rgba(22, 163, 74, 0.3));
-    }
-
-    .submit-btn:hover {
-      background: linear-gradient(45deg, #15803d, #22c55e);
-      box-shadow: 0 12px 20px rgba(22, 163, 74, 0.9);
-      transform: translateY(-3px);
     }
 
     .back-btn {
       background: #f3f4f6;
       color: #374151;
-      margin-top: 12px;
       border: 1.8px solid #d1d5db;
-      box-shadow: none;
-      filter: none;
     }
 
-    .back-btn:hover {
-      background: #e5e7eb;
-      border-color: #9ca3af;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    /* Popup Modal for Schedule */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
     }
 
-    /* Animation keyframes */
-    @keyframes fadeSlideIn {
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 14px;
+      max-width: 500px;
+      width: 90%;
     }
 
-    /* Responsive tweaks */
-    @media (max-width: 480px) {
-      .appointment-container {
-        padding: 25px 20px;
-      }
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+    }
 
-      h1 {
-        font-size: 1.6rem;
-      }
+    .day {
+      width: 80px;
+      height: 70px;
+      border-radius: 8px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      cursor: pointer;
+      font-weight: bold;
+    }
 
-      .btn {
-        font-size: 1rem;
-      }
+    .available {
+      background: #16a34a;
+      color: white;
+    }
+
+    .unavailable {
+      background: #dc2626;
+      color: white;
     }
   </style>
 </head>
@@ -152,53 +137,63 @@
   <div class="appointment-container">
     <h1>📅 Book Appointment</h1>
     <form id="appointmentForm">
-      <label for="name">Full Name:</label>
+      <label>Full Name:</label>
       <input type="text" id="name" disabled />
 
-      <label for="email">Email:</label>
+      <label>Email:</label>
       <input type="email" id="email" disabled />
 
-      <label for="phone">Phone:</label>
+      <label>Phone:</label>
       <input type="tel" id="phone" disabled />
 
-      <label for="age">Age:</label>
+      <label>Age:</label>
       <input type="text" id="age" disabled />
 
-      <label for="gender">Gender:</label>
+      <label>Gender:</label>
       <input type="text" id="gender" disabled />
 
-      <label for="address">Address:</label>
+      <label>Address:</label>
       <input type="text" id="address" disabled />
 
-      <label for="problem">Your Problem:</label>
+      <label>Your Problem:</label>
       <textarea id="problem" placeholder="Describe your problem..." required></textarea>
 
-      <label for="department">Department:</label>
+      <label>Department:</label>
       <input type="text" id="department" disabled />
 
-      <label for="ward">Ward No:</label>
+      <label>Ward No:</label>
       <input type="text" id="ward" disabled />
 
-      <label for="date">Select Date:</label>
-      <select id="date" required></select>
-
-      <label for="slots">Available Slots:</label>
-      <select id="slots" required></select>
+      <label>Appointment Date:</label>
+      <div style="display:flex; gap:10px; align-items:center;">
+        <input type="text" id="date" disabled required />
+        <button type="button" class="btn back-btn" onclick="openModal()">Select Date</button>
+      </div>
 
       <button type="submit" class="btn submit-btn">Proceed to Payment</button>
     </form>
-    <button class="btn back-btn" onclick="window.location.href='homepage.html'">⬅ Back to Home</button>
+    <button class="btn back-btn" onclick="window.location.href='homepage.html'">⬅ Back</button>
+  </div>
+
+  <!-- Schedule Popup -->
+  <div id="dateModal" class="modal">
+    <div class="modal-content">
+      <h3>Select Appointment Date</h3>
+      <div id="calendar" class="calendar"></div>
+      <br>
+      <button class="btn back-btn" onclick="closeModal()">Close</button>
+    </div>
   </div>
 
   <script>
+    // Load user info
     window.onload = function () {
       const currentUser = JSON.parse(localStorage.getItem("currentUser"));
       if (!currentUser) {
-        alert("You are not logged in! Redirecting...");
+        alert("Not logged in!");
         window.location.href = "index.html";
         return;
       }
-
       document.getElementById("name").value = currentUser.name || "";
       document.getElementById("email").value = currentUser.email || "";
       document.getElementById("phone").value = currentUser.phone || "";
@@ -210,41 +205,24 @@
         const age = new Date().getFullYear() - dob.getFullYear();
         document.getElementById("age").value = age;
       }
-
-      const dateSelect = document.getElementById("date");
-      let today = new Date();
-      for (let i = 0; i < 15; i++) {
-        let nextDay = new Date(today);
-        nextDay.setDate(today.getDate() + i);
-        let option = document.createElement("option");
-        option.value = nextDay.toISOString().split("T")[0];
-        option.textContent = nextDay.toDateString();
-        dateSelect.appendChild(option);
-      }
-      // Trigger slots population on page load for today's date
-      dateSelect.dispatchEvent(new Event("change"));
     };
 
+    // Department selection based on problem
     const departmentKeywords = {
-      Cardiology: ["heart", "chest pain", "palpitation", "breath"],
-      Neurology: ["headache", "seizure", "paralysis", "brain", "nerves"],
-      Orthopedics: ["bone", "fracture", "joint", "back pain", "knee"],
-      Dermatology: ["skin", "rash", "acne", "allergy"],
-      ENT: ["ear", "nose", "throat", "hearing", "tonsil"],
-      Gastroenterology: ["stomach", "liver", "digestion", "vomit", "abdomen"],
-      Oncology: ["cancer", "tumor", "chemotherapy"],
-      Pediatrics: ["child", "baby", "infant", "kids"],
+      Cardiology: ["heart","chest pain","palpitation","breath"],
+      Neurology: ["headache","seizure","paralysis","brain","nerves"],
+      Orthopedics: ["bone","fracture","joint","back pain","knee"],
+      Dermatology: ["skin","rash","acne","allergy"],
+      ENT: ["ear","nose","throat","hearing","tonsil"],
+      Gastroenterology: ["stomach","liver","digestion","vomit","abdomen"],
+      Oncology: ["cancer","tumor","chemotherapy"],
+      Pediatrics: ["child","baby","infant","kids"],
     };
 
     const wardNumbers = {
-      Cardiology: "201",
-      Neurology: "301",
-      Orthopedics: "401",
-      Dermatology: "501",
-      ENT: "601",
-      Gastroenterology: "701",
-      Oncology: "801",
-      Pediatrics: "901",
+      Cardiology:"201", Neurology:"301", Orthopedics:"401",
+      Dermatology:"501", ENT:"601", Gastroenterology:"701",
+      Oncology:"801", Pediatrics:"901"
     };
 
     document.getElementById("problem").addEventListener("input", function () {
@@ -262,47 +240,67 @@
       document.getElementById("ward").value = wardNumbers[selectedDept] || "101";
     });
 
-    document.getElementById("date").addEventListener("change", function () {
-      const slots = document.getElementById("slots");
-      slots.innerHTML = "";
-      let availableSlots = [
-        "9:00 AM",
-        "10:00 AM",
-        "11:30 AM",
-        "2:00 PM",
-        "3:30 PM",
-        "5:00 PM",
-      ];
-      availableSlots.forEach((slot) => {
-        const option = document.createElement("option");
-        option.value = slot;
-        option.textContent = slot + " (Vacant)";
-        slots.appendChild(option);
-      });
-    });
+    // Modal controls
+    function openModal() {
+      document.getElementById("dateModal").style.display = "flex";
+      renderCalendar();
+    }
+    function closeModal() {
+      document.getElementById("dateModal").style.display = "none";
+    }
 
+    // Render schedule from admin data
+    function renderCalendar() {
+      const calendarEl = document.getElementById("calendar");
+      calendarEl.innerHTML = "";
+      const savedSchedule = JSON.parse(localStorage.getItem("schedule")) || {};
+      let today = new Date();
+
+      for (let i = 0; i < 15; i++) {
+        let day = new Date(today);
+        day.setDate(today.getDate() + i);
+        let dateKey = day.toISOString().split("T")[0];
+
+        let info = savedSchedule[dateKey] || { status: "available", reason: "" };
+
+        let div = document.createElement("div");
+        div.classList.add("day", info.status === "available" ? "available" : "unavailable");
+        div.innerHTML = `
+          <div>${day.getDate()}</div>
+          <div style="font-size:12px">${day.toLocaleString("default", { month:"short" })}</div>
+        `;
+
+        if (info.status === "available") {
+          div.addEventListener("click", () => {
+            document.getElementById("date").value = dateKey;
+            closeModal();
+          });
+        }
+
+        calendarEl.appendChild(div);
+      }
+    }
+
+    // Submit
     document.getElementById("appointmentForm").addEventListener("submit", function(e) {
-  e.preventDefault();
+      e.preventDefault();
+      const problem = document.getElementById("problem").value;
+      const department = document.getElementById("department").value;
+      const ward = document.getElementById("ward").value;
+      const date = document.getElementById("date").value;
 
-  // Collect appointment info
-  const problem = document.getElementById("problem").value;
-  const department = document.getElementById("department").value;
-  const ward = document.getElementById("ward").value;
-  const date = document.getElementById("date").value;
-  const slot = document.getElementById("slots").value;
+      if (!date) {
+        alert("Please select an appointment date!");
+        return;
+      }
 
-  localStorage.setItem("appointmentData", JSON.stringify({
-    problem,
-    department,
-    ward,
-    date,
-    slot
-  }));
+      localStorage.setItem("appointmentData", JSON.stringify({
+        problem, department, ward, date
+      }));
 
-  alert("Redirecting to payment page...");
-  window.location.href = "payment.html"; // After payment → OP sheet
-});
-
+      alert("Redirecting to payment...");
+      window.location.href = "payment.html";
+    });
   </script>
 </body>
 </html>
