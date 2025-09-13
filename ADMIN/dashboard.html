@@ -2,195 +2,182 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard - City Care Hospital</title>
-  <link rel="stylesheet" href="style.css">
   <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: #ffffff;
-      color: #1e3a8a;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      overflow-x: hidden;
-    }
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 
-    /* Hospital Name Heading */
-    .header {
-      text-align: center;
-      margin: 25px 0 10px 0;
-    }
-    .header h1 {
-      font-size: 2.8rem;
-      font-weight: 700;
-      font-family: 'Georgia', serif;
-      color: #2563eb;
-      margin: 0;
-    }
+    body { background: #ffffff; color: #1e3a8a; overflow-x:hidden; height:100vh; display:flex; flex-direction:column; }
 
-    /* Menu Icon Button */
-    .menu-btn {
-      position: absolute;
-      top: 70px;
-      left: 20px;
-      background: #2563eb;
+    /* Navigation Bar */
+    nav {
+      background-color: #2563eb;
       color: white;
-      border: none;
-      padding: 10px 14px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 1.2rem;
-      z-index: 1100;
-      transition: background 0.3s, opacity 0.3s;
-    }
-    .menu-btn:hover {
-      background: #1d4ed8;
-    }
-    .menu-btn.hidden {
-      opacity: 0;
-      pointer-events: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 30px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      position: relative;
     }
 
-    /* Sidebar (Menu Drawer) */
-    .sidebar {
+    nav .logo { font-size: 22px; font-weight: bold; }
+    nav ul { list-style:none; display:flex; gap:25px; }
+    nav ul li { cursor:pointer; transition:0.3s; }
+    nav ul li:hover { text-decoration: underline; }
+    #menu-btn { font-size:28px; cursor:pointer; }
+
+    /* Side Menu */
+    .side-menu {
       position: fixed;
-      top: 0;
-      left: -100%;
-      width: 260px;
-      height: 100%;
-      background: #2563eb;
-      color: white;
-      padding: 25px;
-      box-shadow: 2px 0 12px rgba(0,0,0,0.2);
-      transition: left 0.35s ease-in-out;
-      z-index: 1000;
-      display: flex;
-      flex-direction: column;
+      top:0;
+      left:-260px;
+      width:260px;
+      height:100%;
+      background:#2563eb;
+      color:white;
+      padding-top:70px;
+      transition:0.4s;
+      z-index:999;
+      display:flex;
+      flex-direction:column;
     }
-    .sidebar.active { left: 0; }
-    .sidebar h2 {
-      margin-top: 0;
-      font-size: 1.4rem;
-      margin-bottom: 20px;
+    .side-menu ul { list-style:none; padding:0; }
+    .side-menu ul li {
+      padding:15px 20px;
+      cursor:pointer;
+      border-bottom:1px solid rgba(255,255,255,0.2);
+      font-weight:600;
+      display:flex;
+      align-items:center;
+      gap:10px;
     }
-    .sidebar a {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      text-decoration: none;
-      color: white;
-      font-size: 1rem;
-      font-weight: 600;
-      margin: 12px 0;
-      transition: color 0.3s;
-    }
-    .sidebar a:hover { color: #dbeafe; }
+    .side-menu ul li:hover { background:#3b82f6; }
 
-    /* Close button inside sidebar */
-    .close-btn {
-      align-self: flex-end;
-      background: none;
-      border: none;
-      font-size: 1.5rem;
-      color: white;
-      cursor: pointer;
-      margin-bottom: 20px;
-      transition: color 0.3s;
-    }
-    .close-btn:hover {
-      color: #dbeafe;
-    }
+    /* Scrolling text */
+    .scroll-text { background-color:#1d4ed8; color:white; padding:10px; overflow:hidden; white-space:nowrap; }
+    .scroll-text p { display:inline-block; animation: scroll-left 20s linear infinite; }
+    @keyframes scroll-left { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
 
-    /* Overlay */
-    .overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.3);
-      display: none;
-      z-index: 900;
+    /* Main Content */
+    .container { text-align:center; padding:50px 20px; }
+    .container h1 {
+      font-size:40px;
+      margin-bottom:20px;
+      color:#1e40af;
+      position:relative;
+      background:linear-gradient(90deg,#1e40af,#3b82f6,#1e40af);
+      background-size:200% auto;
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      animation: shine 3s linear infinite;
     }
-    .overlay.active { display: block; }
+    @keyframes shine { to { background-position:200% center; } }
+    .container p { font-size:18px; max-width:700px; margin:0 auto; color:#334155; }
 
-    /* Body content */
-    .content {
-      flex-grow: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 30px;
-      text-align: center;
+    /* Admin Buttons */
+    .admin-buttons {
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:20px;
+      margin:40px 0;
     }
     .btn {
-      background: #3b82f6;
-      color: white;
-      border: none;
-      padding: 16px 28px;
-      border-radius: 10px;
-      font-size: 1.2rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: transform 0.2s, background 0.3s;
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
-      min-width: 200px;
+      background:#3b82f6;
+      color:white;
+      border:none;
+      padding:16px 28px;
+      border-radius:10px;
+      font-size:1.2rem;
+      font-weight:600;
+      cursor:pointer;
+      transition:0.3s;
+      min-width:250px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
     }
-    .btn:hover {
-      background: #1d4ed8;
-      transform: scale(1.05);
+    .btn:hover { background:#1d4ed8; transform:scale(1.05); }
+
+    footer {
+      text-align:center;
+      padding:20px;
+      background-color:#1e3a8a;
+      color:white;
+      margin-top:auto;
     }
   </style>
 </head>
 <body>
-  <!-- Header -->
-  <div class="header">
-    <h1>🏥 City Care Hospital</h1>
+
+  <!-- Navigation Bar -->
+  <nav>
+    <div id="menu-btn">☰</div>
+    <div class="logo">🏥 City Care Hospital</div>
+    <ul>
+      <li onclick="navigateTo('users.html')">Users Info</li>
+      <li onclick="navigateTo('wallet.html')">Wallet</li>
+      <li onclick="navigateTo('schedule.html')">Schedule</li>
+      <li onclick="logout()">Logout</li>
+    </ul>
+  </nav>
+
+  <!-- Side Menu -->
+  <div id="side-menu" class="side-menu">
+    <ul>
+      <li onclick="navigateTo('appointments.html')">📅 Appointments</li>
+      <li onclick="navigateTo('sendreport.html')">📄 Send Reports</li>
+      <li onclick="navigateTo('schedule.html')">🗓️ Manage Dates</li>
+      <li onclick="logout()">🚪 Logout</li>
+    </ul>
   </div>
 
-  <!-- Menu Button (symbol only) -->
-  <button class="menu-btn" id="menuBtn"><i class="fa-solid fa-bars"></i></button>
-
-  <!-- Sidebar Menu -->
-  <div class="sidebar" id="sidebar">
-    <button class="close-btn" onclick="closeMenu()"><i class="fa-solid fa-xmark"></i></button>
-    <h2>Menu</h2>
-    <a href="users.html"><i class="fa-solid fa-users"></i> Users Information</a>
-    <a href="wallet.html"><i class="fa-solid fa-wallet"></i> Wallet Management</a>
-    <a href="schedule.html"><i class="fa-solid fa-calendar-days"></i> Schedule</a>
-    <a href="../login.html"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+  <!-- Scrolling Text -->
+  <div class="scroll-text">
+    <p>Welcome to City Care Hospital – Admin Dashboard. Track users, appointments, schedules, and send reports seamlessly.</p>
   </div>
 
-  <!-- Overlay -->
-  <div class="overlay" id="overlay" onclick="closeMenu()"></div>
+  <!-- Main Content -->
+  <div class="container">
+    <h1>Admin Dashboard</h1>
+    <p>Manage all aspects of City Care Hospital from this dashboard. Use the buttons below to access appointments, send reports, and manage schedules.</p>
 
-  <!-- Content -->
-  <div class="content">
-    <button class="btn" onclick="location.href='appointments.html'"><i class="fa-solid fa-calendar-check"></i> Appointments</button>
-    <button class="btn" onclick="location.href='sendreport.html'"><i class="fa-solid fa-file-medical"></i> Send Reports</button>
-<button class="btn" onclick="location.href='schedule.html'">
-  <i class="fa-solid fa-calendar-days"></i> Manage Dates for Appointment
-</button>
+    <div class="admin-buttons">
+      <button class="btn" onclick="navigateTo('appointments.html')">📅 Appointments</button>
+      <button class="btn" onclick="navigateTo('sendreport.html')">📄 Send Reports</button>
+      <button class="btn" onclick="navigateTo('schedule.html')">🗓️ Manage Dates</button>
+    </div>
   </div>
+
+  <footer>
+    &copy; 2025 City Care Hospital. All Rights Reserved.
+  </footer>
 
   <script>
-    const sidebar = document.getElementById("sidebar");
-    const overlay = document.getElementById("overlay");
-    const menuBtn = document.getElementById("menuBtn");
+    const menuBtn = document.getElementById("menu-btn");
+    const sideMenu = document.getElementById("side-menu");
 
-    function openMenu() {
-      sidebar.classList.add("active");
-      overlay.classList.add("active");
-      menuBtn.classList.add("hidden"); // hide menu button
+    menuBtn.addEventListener("click", () => {
+      sideMenu.style.left = "0px";
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!sideMenu.contains(e.target) && e.target !== menuBtn) {
+        sideMenu.style.left = "-260px";
+      }
+    });
+
+    function navigateTo(page) {
+      window.location.href = page;
     }
 
-    function closeMenu() {
-      sidebar.classList.remove("active");
-      overlay.classList.remove("active");
-      menuBtn.classList.remove("hidden"); // show menu button again
+    function logout() {
+      localStorage.removeItem('currentUser');
+      alert('You have been logged out.');
+      window.location.href = 'index.html';
     }
-
-    menuBtn.addEventListener("click", openMenu);
   </script>
 </body>
 </html>
