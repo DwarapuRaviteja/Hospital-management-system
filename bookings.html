@@ -284,6 +284,26 @@
       </table>
     `;
 
+if (appt.status === "approved" && appt.doctor) {
+  opSheetContent.innerHTML += `
+    <h2>Doctor Details</h2>
+    <table>
+      <tr><td>Doctor:</td><td>${appt.doctor.name}</td></tr>
+      <tr><td>Qualification:</td><td>${appt.doctor.qualification}</td></tr>
+      <tr><td>Specialization:</td><td>${appt.doctor.specialization}</td></tr>
+    </table>
+    <p style="margin-top:12px; font-weight:bold; color:green;">
+      ${appt.doctor.name} has approved to check you on ${appt.date}.  
+      Please be present by morning 9.
+    </p>
+  `;
+} else {
+  opSheetContent.innerHTML += `
+    <p style="margin-top:12px; font-weight:bold; color:orange;">
+      This appointment is still pending approval.
+    </p>
+  `;
+}
     // ✅ Add doctor details if approved
     if (appt.doctor) {
       opSheetContent.innerHTML += `
