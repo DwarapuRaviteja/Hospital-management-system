@@ -1,400 +1,375 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Appointments - City Care Hospital</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f0f7ff;
-      color: #333;
-    }
+<!DOCTYPE html>  <html lang="en">  
+<head>  
+  <meta charset="UTF-8" />  
+  <meta name="viewport" content="width=device-width, initial-scale=1" />  
+  <title>My Bookings - City Care Hospital</title>  
+  <style>  
+    body {  
+      font-family: 'Segoe UI', sans-serif;  
+      background: #eef2ff;  
+      margin: 0;  
+      padding: 40px 20px;  
+      min-height: 100vh;  
+      display: flex;  
+      justify-content: center;  
+      align-items: flex-start;  
+    }  .container {  
+  max-width: 900px;  
+  width: 100%;  
+  background: #fff;  
+  border-radius: 12px;  
+  box-shadow: 0 15px 40px rgba(37, 99, 235, 0.3);  
+  padding: 30px 40px;  
+}  
 
-    header {
-      background: linear-gradient(90deg, #007BFF, #0056b3);
-      color: white;
-      padding: 15px;
-      text-align: center;
-      font-size: 24px;
-      font-weight: bold;
-    }
+h1 {  
+  color: #1e3a8a;  
+  text-align: center;  
+  margin-bottom: 15px;  
+  font-weight: 700;  
+  font-size: 2.4rem;  
+}  
 
-    .tabs {
-      display: flex;
-      justify-content: center;
-      margin: 20px;
-    }
+.count {  
+  text-align: center;  
+  font-size: 1.2rem;  
+  margin-bottom: 25px;  
+  color: #374151;  
+}  
 
-    .tab {
-      padding: 10px 20px;
-      margin: 0 5px;
-      border-radius: 8px;
-      background: #007BFF;
-      color: white;
-      cursor: pointer;
-      transition: 0.3s;
-    }
+.booking-card {  
+  background: #f9fafb;  
+  border-radius: 14px;  
+  padding: 18px 25px;  
+  margin-bottom: 18px;  
+  display: flex;  
+  justify-content: space-between;  
+  align-items: center;  
+  box-shadow: inset 0 0 12px #e5e7eb;  
+}  
 
-    .tab.active {
-      background: #0056b3;
-    }
+.booking-info {  
+  max-width: 70%;  
+}  
 
-    .appointments-container {
-      display: none;
-      padding: 20px;
-      animation: fadeIn 0.6s ease-in-out;
-    }
+.booking-info h2 {  
+  margin: 0 0 6px 0;  
+  font-size: 1.2rem;  
+  color: #2563eb;  
+}  
 
-    .appointments-container.active {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 20px;
-    }
+.booking-info p {  
+  margin: 3px 0;  
+  font-size: 1rem;  
+  color: #4b5563;  
+}  
 
-    .card {
-      background: white;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      transition: transform 0.3s;
-      border-left: 6px solid transparent;
-    }
+.booking-info p span {  
+  font-weight: 600;  
+  color: #111827;  
+}  
 
-    .card:hover {
-      transform: scale(1.03);
-    }
+.actions {  
+  display: flex;  
+  flex-direction: column;  
+  gap: 8px;  
+}  
 
-    .pending {
-      border-left-color: orange;
-    }
+.btn {  
+  background: #2563eb;  
+  border: none;  
+  color: white;  
+  padding: 8px 14px;  
+  border-radius: 8px;  
+  font-weight: 600;  
+  font-size: 0.95rem;  
+  cursor: pointer;  
+  transition: background 0.3s ease;  
+}  
 
-    .approved {
-      border-left-color: green;
-    }
+.btn:hover {  
+  background: #1e40af;  
+}  
 
-    .btn {
-      margin-top: 10px;
-      padding: 8px 14px;
-      background: #007BFF;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
+.no-bookings {  
+  text-align: center;  
+  font-size: 1.2rem;  
+  color: #6b7280;  
+  margin-top: 70px;  
+}  
 
-    .btn:hover {
-      background: #0056b3;
-    }
+/* Modal */  
+#opSheetModal {  
+  position: fixed;  
+  inset: 0;  
+  background: rgba(0, 0, 0, 0.6);  
+  display: none;  
+  justify-content: center;  
+  align-items: center;  
+  z-index: 1100;  
+}  
 
-    /* Modal */
-    #opSheetModal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.6);
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
+#opSheetModal.active {  
+  display: flex;  
+}  
 
-    #opSheetModal.active {
-      display: flex;
-    }
+.op-sheet-modal-content {  
+  background: white;  
+  border-radius: 14px;  
+  max-width: 750px;  
+  width: 100%;  
+  max-height: 90vh;  
+  overflow-y: auto;  
+  padding: 30px 35px;  
+  position: relative;  
+}  
 
-    .op-sheet-modal-content {
-      background: white;
-      border-radius: 12px;
-      padding: 20px;
-      width: 90%;
-      max-width: 600px;
-      max-height: 90vh;
-      overflow-y: auto;
-      position: relative;
-      animation: slideDown 0.4s ease;
-    }
+.close-btn {  
+  position: absolute;  
+  top: 10px;  
+  right: 20px;  
+  font-size: 26px;  
+  font-weight: bold;  
+  cursor: pointer;  
+  color: #444;  
+}  
 
-    .close-btn {
-      position: absolute;
-      top: 10px;
-      right: 14px;
-      font-size: 22px;
-      cursor: pointer;
-      color: #555;
-    }
+.op-sheet {  
+  border: 2px solid #111827;  
+  border-radius: 12px;  
+  padding: 20px;  
+  background: #fff;  
+}  
 
-    .header {
-      text-align: center;
-      border-bottom: 2px solid #007BFF;
-      margin-bottom: 10px;
-      padding-bottom: 10px;
-    }
+.op-sheet .header {  
+  text-align: center;  
+  border-bottom: 2px solid #111827;  
+  padding-bottom: 10px;  
+  margin-bottom: 20px;  
+}  
 
-    .header h1 {
-      margin: 0;
-      color: #007BFF;
-    }
+.op-sheet .header h1 {  
+  margin: 0;  
+  font-size: 1.5rem;  
+  color: #1e3a8a;  
+}  
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-    }
+.op-sheet .header p {  
+  margin: 4px 0 0;  
+  font-style: italic;  
+  color: #555;  
+}  
 
-    td {
-      padding: 6px;
-      border: 1px solid #ddd;
-    }
+.op-sheet h2 {  
+  font-size: 1.2rem;  
+  border-bottom: 1px solid #ccc;  
+  padding-bottom: 5px;  
+  margin-top: 20px;  
+  margin-bottom: 10px;  
+}  
 
-    .footer {
-      text-align: center;
-      margin-top: 15px;
-      font-size: 14px;
-      color: #555;
-    }
+.op-sheet table {  
+  width: 100%;  
+  border-collapse: collapse;  
+  margin-bottom: 10px;  
+}  
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+.op-sheet td {  
+  padding: 6px 8px;  
+  border-bottom: 1px solid #eee;  
+}  
 
-    @keyframes slideDown {
-      from { transform: translateY(-20px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-  </style>
-</head>
-<body>
-  <header>City Care Hospital - Appointments</header>
+.op-sheet td:first-child {  
+  font-weight: bold;  
+  width: 35%;  
+}  
 
-  <div class="tabs">
-    <div class="tab active" data-target="pending">Pending Appointments</div>
-    <div class="tab" data-target="approved">Approved Appointments</div>
-  </div>
+.footer {  
+  text-align: right;  
+  font-style: italic;  
+  margin-top: 15px;  
+  color: #444;  
+}  
 
-  <div id="pending" class="appointments-container active"></div>
-  <div id="approved" class="appointments-container"></div>
+@media (max-width: 600px) {  
+  .booking-card {  
+    flex-direction: column;  
+    align-items: flex-start;  
+  }  
+  .booking-info {  
+    max-width: 100%;  
+    margin-bottom: 12px;  
+  }  
+  .actions {  
+    flex-direction: row;  
+    width: 100%;  
+    justify-content: space-between;  
+  }  
+}
 
-  <!-- Modal -->
-  <div id="opSheetModal">
-    <div class="op-sheet-modal-content">
-      <span class="close-btn">&times;</span>
-      <div class="op-sheet" id="opSheetContent"></div>
-      <div style="margin-top:12px; display:flex; gap:10px; justify-content:flex-end;">
-        <button class="btn" id="downloadImageBtn">Download as Image</button>
-        <button class="btn" id="downloadPdfBtn" style="display:none;">Download as PDF</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Libraries -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-  <script>
-    // Doctors Data
-    const doctors = {
-      "Orthopedics": [
-        "Dr. Krishna - MBBS, MS (Orthopedics) – Joint replacement & fracture management specialist.",
-        "Dr. Anjali - MBBS, D.Ortho – Expert in sports injuries and arthritis care."
-      ],
-      "Neurology": [
-        "Dr. Ramesh - MBBS, DM (Neurology) – Stroke and epilepsy specialist.",
-        "Dr. Meera - MBBS, MD (Neuro) – Dementia and Parkinson's disease specialist."
-      ],
-      "Cardiology": [
-        "Dr. Rajesh - MBBS, DM (Cardiology) – Expert in angioplasty and bypass surgery.",
-        "Dr. Kavita - MBBS, MD – Specialist in arrhythmia and hypertension."
-      ],
-      "ENT": [
-        "Dr. Sameer - MBBS, MS (ENT) – Specialist in sinus and ear surgeries.",
-        "Dr. Priya - MBBS, MS – Expert in hearing disorders and allergy care."
-      ],
-      "Dermatology": [
-        "Dr. Neha - MBBS, MD (Dermatology) – Specialist in acne and skin rejuvenation.",
-        "Dr. Arjun - MBBS, MD – Expert in psoriasis and cosmetic dermatology."
-      ],
-      "Gynecology": [
-        "Dr. Lakshmi - MBBS, MD (Gynecology) – Infertility and maternity care specialist.",
-        "Dr. Divya - MBBS, DGO – Menstrual disorder and preventive women's health expert."
-      ],
-      "Oncology": [
-        "Dr. Sanjay - MBBS, DM (Oncology) – Chemotherapy & radiation specialist.",
-        "Dr. Bhaskar - MBBS, MD – Immunotherapy & palliative care specialist."
-      ],
-      "Nephrology": [
-        "Dr. Mohan - MBBS, DM (Nephrology) – Kidney transplant and dialysis specialist.",
-        "Dr. Sneha - MBBS, MD – Expert in chronic kidney disease management."
-      ],
-      "General": [
-        "Dr. Rishi - MBBS, MD (Internal Medicine) – Specialist in fever, infections, and general health check-ups.",
-        "Dr. Sadhvik - MBBS, DNB (General Medicine) – Expert in hypertension, diabetes, and common ailments."
-      ]
-    };
-
-    // Sample appointments
-    const appointments = [
-      {
-        id: 1,
-        name: "John Doe",
-        gender: "Male",
-        age: 32,
-        phone: "9876543210",
-        email: "john@example.com",
-        address: "Hyderabad",
-        problem: "Knee pain",
-        department: "Orthopedics",
-        ward: "Ward A",
-        date: "2025-09-15",
-        slot: "10:00 AM - 11:00 AM",
-        status: "pending"
-      },
-      {
-        id: 2,
-        name: "Priya Sharma",
-        gender: "Female",
-        age: 28,
-        phone: "9123456780",
-        email: "priya@example.com",
-        address: "Vijayawada",
-        problem: "High BP & chest pain",
-        department: "Cardiology",
-        ward: "Ward C",
-        date: "2025-09-16",
-        slot: "11:00 AM - 12:00 PM",
-        status: "approved",
-        doctor: {
-          name: "Dr. Rajesh",
-          qualification: "MBBS, DM (Cardiology)",
-          specialization: "Expert in angioplasty and bypass surgery"
-        }
-      }
-    ];
-
-    const pendingContainer = document.getElementById("pending");
-    const approvedContainer = document.getElementById("approved");
-    const modal = document.getElementById("opSheetModal");
-    const opSheetContent = document.getElementById("opSheetContent");
-    const closeBtn = document.querySelector(".close-btn");
-    const downloadImageBtn = document.getElementById("downloadImageBtn");
-    const downloadPdfBtn = document.getElementById("downloadPdfBtn");
-
-    function renderAppointments() {
-      pendingContainer.innerHTML = "";
-      approvedContainer.innerHTML = "";
-
-      appointments.forEach(appt => {
-        const card = document.createElement("div");
-        card.className = `card ${appt.status}`;
-        card.innerHTML = `
-          <h3>${appt.name}</h3>
-          <p><strong>Problem:</strong> ${appt.problem}</p>
-          <p><strong>Department:</strong> ${appt.department}</p>
-          <p><strong>Date:</strong> ${appt.date}</p>
-          <p><strong>Slot:</strong> ${appt.slot}</p>
-          <button class="btn" onclick="showOpSheet(${appt.id})">View OP Sheet</button>
-        `;
-        if (appt.status === "pending") {
-          pendingContainer.appendChild(card);
-        } else {
-          approvedContainer.appendChild(card);
-        }
-      });
-    }
-
-    function showOpSheet(id) {
-      const appt = appointments.find(a => a.id === id);
-      opSheetContent.innerHTML = `
-        <div class="header">
-          <h1>🏥 City Care Hospital</h1>
-          <p>Outpatient Department - OP Sheet</p>
-        </div>
-        <h2>Patient Details</h2>
-        <table>
-          <tr><td>Name:</td><td>${appt.name}</td></tr>
-          <tr><td>Gender:</td><td>${appt.gender}</td></tr>
-          <tr><td>Age:</td><td>${appt.age}</td></tr>
-          <tr><td>Phone:</td><td>${appt.phone}</td></tr>
-          <tr><td>Email:</td><td>${appt.email}</td></tr>
-          <tr><td>Address:</td><td>${appt.address}</td></tr>
-        </table>
-        <h2>Appointment Details</h2>
-        <table>
-          <tr><td>Problem:</td><td>${appt.problem}</td></tr>
-          <tr><td>Department:</td><td>${appt.department}</td></tr>
-          <tr><td>Ward:</td><td>${appt.ward}</td></tr>
-          <tr><td>Date:</td><td>${appt.date}</td></tr>
-          <tr><td>Slot:</td><td>${appt.slot}</td></tr>
-        </table>
-      `;
-
-      if (appt.doctor) {
-        opSheetContent.innerHTML += `
-          <h2>Doctor Details</h2>
-          <table>
-            <tr><td>Doctor:</td><td>${appt.doctor.name}</td></tr>
-            <tr><td>Qualification:</td><td>${appt.doctor.qualification}</td></tr>
-            <tr><td>Specialization:</td><td>${appt.doctor.specialization}</td></tr>
-          </table>
-          <p style="margin-top:12px; font-weight:bold; color:green;">
-            ${appt.doctor.name} has approved to check you on ${appt.date}. Please be present by morning 9.
-          </p>
-        `;
-        downloadPdfBtn.style.display = "inline-block";
-      } else {
-        opSheetContent.innerHTML += `
-          <p style="margin-top:12px; font-weight:bold; color:orange;">
-            Waiting for doctor approval.
-          </p>
-        `;
-        downloadPdfBtn.style.display = "none";
-      }
-
-      opSheetContent.innerHTML += `<div class="footer">Thank you for choosing City Care Hospital. Wishing you good health!</div>`;
-      modal.classList.add("active");
-
-      // Image download
-      downloadImageBtn.onclick = () => {
-        html2canvas(opSheetContent).then(canvas => {
-          const link = document.createElement("a");
-          link.download = `OP_Sheet_${appt.date}.png`;
-          link.href = canvas.toDataURL("image/png");
-          link.click();
-        });
-      };
-
-      // PDF download
-      downloadPdfBtn.onclick = () => {
-        html2canvas(opSheetContent).then(canvas => {
-          const { jsPDF } = window.jspdf;
-          const pdf = new jsPDF("p", "mm", "a4");
-          const imgData = canvas.toDataURL("image/png");
-
-          const pageWidth = pdf.internal.pageSize.getWidth();
-          const imgWidth = pageWidth - 20;
-          const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-          pdf.addImage(imgData, "PNG", 10, 10, imgWidth, imgHeight);
-          pdf.save(`OP_Sheet_${appt.date}.pdf`);
-        });
-      };
-    }
-
-    closeBtn.onclick = () => modal.classList.remove("active");
-
-    document.querySelectorAll(".tab").forEach(tab => {
-      tab.addEventListener("click", () => {
-        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-        document.querySelectorAll(".appointments-container").forEach(c => c.classList.remove("active"));
-        tab.classList.add("active");
-        document.getElementById(tab.dataset.target).classList.add("active");
-      });
-    });
-
-    renderAppointments();
-  </script>
-</body>
-</html>
+  </style>  
+</head>  
+<body>  
+  <div class="container">  
+    <h1>My Appointments</h1>  
+    <p class="count" id="bookingCount"></p>  
+    <div id="bookingsList"></div>  
+  </div>    <!-- Modal -->    <div id="opSheetModal">  
+    <div class="op-sheet-modal-content">  
+      <span class="close-btn">&times;</span>  
+      <div class="op-sheet" id="opSheetContent"></div>  
+      <button class="btn" id="downloadImageBtn">Download as Image</button>  
+    </div>  
+  </div>    <!-- html2canvas CDN -->    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>  <script>  
+  const bookingsList = document.getElementById("bookingsList");  
+  const bookingCount = document.getElementById("bookingCount");  
+  const modal = document.getElementById("opSheetModal");  
+  const closeBtn = modal.querySelector(".close-btn");  
+  const opSheetContent = document.getElementById("opSheetContent");  
+  const downloadImageBtn = document.getElementById("downloadImageBtn");  
+  
+  let appointments = JSON.parse(localStorage.getItem("appointments")) || [];  
+  
+  bookingCount.textContent = `You have ${appointments.length} appointment${appointments.length !== 1 ? 's' : ''}.`;  
+  
+  if (appointments.length === 0) {  
+    bookingsList.innerHTML = '<p class="no-bookings">No appointments booked yet.</p>';  
+  } else {  
+    appointments.forEach((appt, index) => {  
+      const card = document.createElement("div");  
+      card.className = "booking-card";  
+      card.innerHTML = `  
+        <div class="booking-info">  
+          <h2>Appointment #${index + 1}</h2>  
+          <p><span>Name:</span> ${appt.name}</p>  
+          <p><span>Date:</span> ${appt.date}</p>  
+          <p><span>Department:</span> ${appt.department}</p>  
+          <p><span>Slot:</span> ${appt.slot}</p>  
+        </div>  
+        <div class="actions">  
+          <button class="btn view-btn" data-index="${index}">View OP Sheet</button>  
+        </div>  
+      `;  
+      bookingsList.appendChild(card);  
+    });  
+  }  
+function showOpSheet(appt) {  
+  opSheetContent.innerHTML = `  
+    <div class="header">  
+      <h1>🏥 City Care Hospital</h1>  
+      <p>Outpatient Department - OP Sheet</p>  
+    </div>  
+    <h2>Patient Details</h2>  
+    <table>  
+      <tr><td>Name:</td><td>${appt.name}</td></tr>  
+      <tr><td>Gender:</td><td>${appt.gender}</td></tr>  
+      <tr><td>Age:</td><td>${appt.age}</td></tr>  
+      <tr><td>Phone:</td><td>${appt.phone}</td></tr>  
+      <tr><td>Email:</td><td>${appt.email}</td></tr>  
+      <tr><td>Address:</td><td>${appt.address}</td></tr>  
+    </table>  
+    <h2>Appointment Details</h2>  
+    <table>  
+      <tr><td>Problem:</td><td>${appt.problem}</td></tr>  
+      <tr><td>Department:</td><td>${appt.department}</td></tr>  
+      <tr><td>Ward:</td><td>${appt.ward}</td></tr>  
+      <tr><td>Date:</td><td>${appt.date}</td></tr>  
+      <tr><td>Slot:</td><td>${appt.slot}</td></tr>  
+    </table>  
+  `;  
+  
+  // 🔹 Show Doctor Details if available  
+  if (appt.doctor) {  
+    opSheetContent.innerHTML += `  
+      <h2>Doctor Details</h2>  
+      <table>  
+        <tr><td>Doctor:</td><td>${appt.doctor.name}</td></tr>  
+        <tr><td>Qualification:</td><td>${appt.doctor.qualification}</td></tr>  
+        <tr><td>Specialization:</td><td>${appt.doctor.specialization}</td></tr>  
+      </table>  
+      <p style="margin-top:12px; font-weight:bold; color:#1e3a8a;">  
+        ${appt.doctor.name} has approved to check you on ${appt.date}.    
+        Please be present by morning 9.  
+      </p>  
+    `;  
+  }  
+  
+  opSheetContent.innerHTML += `  
+    <div class="footer">Thank you for choosing City Care Hospital. Wishing you good health!</div>  
+  `;  
+  
+  modal.classList.add("active");  
+  
+  // enable download as image for this sheet  
+  downloadImageBtn.onclick = () => {  
+    html2canvas(opSheetContent).then(canvas => {  
+      const link = document.createElement("a");  
+      link.download = `OP_Sheet_${appt.date}.png`;  
+      link.href = canvas.toDataURL("image/png");  
+      link.click();  
+    });  
+  };  
+}  
+  function showOpSheet(appt) {  
+    opSheetContent.innerHTML = `  
+      <div class="header">  
+        <h1>🏥 city Hospital</h1>  
+        <p>Outpatient Department - OP Sheet</p>  
+      </div>  
+      <h2>Patient Details</h2>  
+      <table>  
+        <tr><td>Name:</td><td>${appt.name}</td></tr>  
+        <tr><td>Gender:</td><td>${appt.gender}</td></tr>  
+        <tr><td>Age:</td><td>${appt.age}</td></tr>  
+        <tr><td>Phone:</td><td>${appt.phone}</td></tr>  
+        <tr><td>Email:</td><td>${appt.email}</td></tr>  
+        <tr><td>Address:</td><td>${appt.address}</td></tr>  
+      </table>  
+      <h2>Appointment Details</h2>  
+      <table>  
+        <tr><td>Problem:</td><td>${appt.problem}</td></tr>  
+        <tr><td>Department:</td><td>${appt.department}</td></tr>  
+        <tr><td>Ward:</td><td>${appt.ward}</td></tr>  
+        <tr><td>Date:</td><td>${appt.date}</td></tr>  
+        <tr><td>Slot:</td><td>${appt.slot}</td></tr>  
+      </table> <div class="footer">Thank you for choosing City Hospital. Wishing you good health!</div>  
+    `;  
+    modal.classList.add("active");  
+if (appt.doctor) {  
+  opSheetContent.innerHTML += `  
+    <h2>Doctor Details</h2>  
+    <table>  
+      <tr><td>Doctor:</td><td>${appt.doctor.name}</td></tr>  
+      <tr><td>Qualification:</td><td>${appt.doctor.qualification}</td></tr>  
+      <tr><td>Specialization:</td><td>${appt.doctor.specialization}</td></tr>  
+    </table>  
+    <p style="margin-top:12px; font-weight:bold; color:#1e3a8a;">  
+      ${appt.doctor.name} has approved to check you on ${appt.date}. Please be present by morning 9.  
+    </p>  
+  `;  
+}  
+       
+  
+    // enable download as image for this sheet  
+    downloadImageBtn.onclick = () => {  
+      html2canvas(opSheetContent).then(canvas => {  
+        const link = document.createElement("a");  
+        link.download = `OP_Sheet_${appt.date}.png`;  
+        link.href = canvas.toDataURL("image/png");  
+        link.click();  
+      });  
+    };  
+  }  
+  
+  // Event delegation  
+  bookingsList.addEventListener("click", e => {  
+    if (e.target.classList.contains("view-btn")) {  
+      const index = e.target.dataset.index;  
+      showOpSheet(appointments[index]);  
+    }  
+  });  
+  
+  closeBtn.addEventListener("click", () => modal.classList.remove("active"));  
+  modal.addEventListener("click", e => { if (e.target === modal) modal.classList.remove("active"); });  
+</script>  </body>  
+</html>  
