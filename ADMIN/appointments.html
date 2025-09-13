@@ -2,121 +2,200 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Appointments - Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Appointments - City Care Hospital</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #dbeafe, #f0f9ff);
+      font-family: Arial, sans-serif;
       margin: 0;
-      padding: 30px;
-      color: #1e3a8a;
+      padding: 0;
+      background: #f0f7ff;
+      color: #333;
     }
-    .container {
-      max-width: 1000px;
-      margin: auto;
-      background: #fff;
-      padding: 25px;
-      border-radius: 16px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-      animation: fadeIn 0.6s ease;
-    }
-    h1 { text-align: center; margin-bottom: 20px; color: #1e40af; }
 
-    /* Tabs */
+    header {
+      background: linear-gradient(90deg, #007BFF, #0056b3);
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
     .tabs {
       display: flex;
       justify-content: center;
-      margin-bottom: 25px;
+      margin: 20px;
     }
-    .tab-btn {
-      flex: 1;
-      padding: 12px;
-      border: none;
+
+    .tab {
+      padding: 10px 20px;
+      margin: 0 5px;
+      border-radius: 8px;
+      background: #007BFF;
+      color: white;
       cursor: pointer;
-      font-size: 16px;
-      font-weight: bold;
-      border-radius: 8px 8px 0 0;
-      background: #e0e7ff;
-      color: #1e3a8a;
-      transition: all 0.3s;
-    }
-    .tab-btn.active {
-      background: #2563eb;
-      color: #fff;
+      transition: 0.3s;
     }
 
-    /* Sections */
-    .section { display: none; }
-    .section.active { display: block; animation: fadeIn 0.5s ease; }
+    .tab.active {
+      background: #0056b3;
+    }
 
-    /* Cards */
-    .appointment, .doctor-card {
-      border: 1px solid #ddd;
+    .appointments-container {
+      display: none;
+      padding: 20px;
+      animation: fadeIn 0.6s ease-in-out;
+    }
+
+    .appointments-container.active {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
       border-radius: 12px;
-      padding: 15px;
-      margin-bottom: 15px;
-      background: #f9fafb;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      transition: transform 0.2s;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s;
+      border-left: 6px solid transparent;
     }
-    .appointment:hover, .doctor-card:hover { transform: scale(1.02); }
-    .appointment h3 { margin: 0 0 8px; color: #2563eb; }
 
-    /* Buttons */
-    .approve-btn, .assign-btn, .back-btn {
-      background: #2563eb;
-      border: none;
-      color: #fff;
+    .card:hover {
+      transform: scale(1.03);
+    }
+
+    .pending {
+      border-left-color: orange;
+    }
+
+    .approved {
+      border-left-color: green;
+    }
+
+    .btn {
+      margin-top: 10px;
       padding: 8px 14px;
+      background: #007BFF;
+      color: white;
+      border: none;
       border-radius: 6px;
       cursor: pointer;
       transition: 0.3s;
-      margin-top: 8px;
     }
-    .approve-btn:hover, .assign-btn:hover { background: #1e40af; }
-    .back-btn {
-      background: #6b7280;
+
+    .btn:hover {
+      background: #0056b3;
+    }
+
+    /* Modal */
+    #opSheetModal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    #opSheetModal.active {
+      display: flex;
+    }
+
+    .op-sheet-modal-content {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      width: 90%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      animation: slideDown 0.4s ease;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      font-size: 22px;
+      cursor: pointer;
+      color: #555;
+    }
+
+    .header {
+      text-align: center;
+      border-bottom: 2px solid #007BFF;
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+    }
+
+    .header h1 {
+      margin: 0;
+      color: #007BFF;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    td {
+      padding: 6px;
+      border: 1px solid #ddd;
+    }
+
+    .footer {
+      text-align: center;
       margin-top: 15px;
+      font-size: 14px;
+      color: #555;
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(15px); }
+      from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideDown {
+      from { transform: translateY(-20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Appointments Management</h1>
+  <header>City Care Hospital - Appointments</header>
 
-    <!-- Tabs -->
-    <div class="tabs">
-      <button class="tab-btn active" onclick="switchTab('pending')">Pending</button>
-      <button class="tab-btn" onclick="switchTab('approved')">Approved</button>
-    </div>
+  <div class="tabs">
+    <div class="tab active" data-target="pending">Pending Appointments</div>
+    <div class="tab" data-target="approved">Approved Appointments</div>
+  </div>
 
-    <!-- Pending Section -->
-    <div id="pending" class="section active">
-      <h2>Pending Appointments</h2>
-      <div id="appointmentsList"></div>
-      <div id="doctorsList" class="hidden"></div>
-      <button class="back-btn" onclick="goBack()">⬅ Back</button>
-    </div>
+  <div id="pending" class="appointments-container active"></div>
+  <div id="approved" class="appointments-container"></div>
 
-    <!-- Approved Section -->
-    <div id="approved" class="section">
-      <h2>Approved Appointments</h2>
-      <div id="approvedList"></div>
+  <!-- Modal -->
+  <div id="opSheetModal">
+    <div class="op-sheet-modal-content">
+      <span class="close-btn">&times;</span>
+      <div class="op-sheet" id="opSheetContent"></div>
+      <div style="margin-top:12px; display:flex; gap:10px; justify-content:flex-end;">
+        <button class="btn" id="downloadImageBtn">Download as Image</button>
+        <button class="btn" id="downloadPdfBtn" style="display:none;">Download as PDF</button>
+      </div>
     </div>
   </div>
 
-  <script>
-    let appointments = JSON.parse(localStorage.getItem("appointments")) || [];
-    const apptList = document.getElementById("appointmentsList");
-    const docList = document.getElementById("doctorsList");
-    const approvedList = document.getElementById("approvedList");
+  <!-- Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-    // Doctor data with full info
+  <script>
+    // Doctors Data
     const doctors = {
       "Orthopedics": [
         "Dr. Krishna - MBBS, MS (Orthopedics) – Joint replacement & fracture management specialist.",
@@ -150,133 +229,172 @@
         "Dr. Mohan - MBBS, DM (Nephrology) – Kidney transplant and dialysis specialist.",
         "Dr. Sneha - MBBS, MD – Expert in chronic kidney disease management."
       ],
-"General": [
-  "Dr. Rishi - MBBS, MD (Internal Medicine) – Specialist in fever, infections, and general health check-ups.",
-  "Dr. Sadhvik - MBBS, DNB (General Medicine) – Expert in hypertension, diabetes, and common ailments."
-]
-
+      "General": [
+        "Dr. Rishi - MBBS, MD (Internal Medicine) – Specialist in fever, infections, and general health check-ups.",
+        "Dr. Sadhvik - MBBS, DNB (General Medicine) – Expert in hypertension, diabetes, and common ailments."
+      ]
     };
 
-    // Switch tab
-    function switchTab(tabId) {
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-      document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
-
-      document.querySelector(`[onclick="switchTab('${tabId}')"]`).classList.add('active');
-      document.getElementById(tabId).classList.add('active');
-
-      if (tabId === "pending") showAppointments();
-      if (tabId === "approved") showApproved();
-    }
-function approveAppointment(index, doctor) {
-  let appointments = JSON.parse(localStorage.getItem("appointments")) || [];
-
-  // attach doctor info to this appointment
-  appointments[index].status = "approved";
-  appointments[index].doctor = {
-    name: doctor.name,
-    qualification: doctor.qualification,
-    specialization: doctor.specialization
-  };
-
-  localStorage.setItem("appointments", JSON.stringify(appointments));
-  alert("Appointment approved!");
-}
-
-    // Show pending
-    function showAppointments() {
-      apptList.innerHTML = "";
-      docList.innerHTML = "";
-      docList.classList.add("hidden");
-      apptList.classList.remove("hidden");
-
-      let found = false;
-      appointments.forEach((appt, index) => {
-        if (!appt.doctor) {
-          found = true;
-          const div = document.createElement("div");
-          div.className = "appointment";
-          div.innerHTML = `
-            <h3>${appt.name} - ${appt.department}</h3>
-            <p><b>Date:</b> ${appt.date} | <b>Slot:</b> ${appt.slot}</p>
-            <button class="approve-btn" onclick="selectDept(${index}, '${appt.department}')">Approve</button>
-          `;
-          apptList.appendChild(div);
+    // Sample appointments
+    const appointments = [
+      {
+        id: 1,
+        name: "John Doe",
+        gender: "Male",
+        age: 32,
+        phone: "9876543210",
+        email: "john@example.com",
+        address: "Hyderabad",
+        problem: "Knee pain",
+        department: "Orthopedics",
+        ward: "Ward A",
+        date: "2025-09-15",
+        slot: "10:00 AM - 11:00 AM",
+        status: "pending"
+      },
+      {
+        id: 2,
+        name: "Priya Sharma",
+        gender: "Female",
+        age: 28,
+        phone: "9123456780",
+        email: "priya@example.com",
+        address: "Vijayawada",
+        problem: "High BP & chest pain",
+        department: "Cardiology",
+        ward: "Ward C",
+        date: "2025-09-16",
+        slot: "11:00 AM - 12:00 PM",
+        status: "approved",
+        doctor: {
+          name: "Dr. Rajesh",
+          qualification: "MBBS, DM (Cardiology)",
+          specialization: "Expert in angioplasty and bypass surgery"
         }
-      });
-      if (!found) apptList.innerHTML = "<p>No pending appointments.</p>";
-    }
-
-    // Approve → show doctors
-    function selectDept(index, dept) {
-      localStorage.setItem("pendingIndex", index);
-      showDoctors(dept);
-    }
-
-    function showDoctors(dept) {
-      apptList.classList.add("hidden");
-      docList.classList.remove("hidden");
-      docList.innerHTML = "";
-
-      if (!doctors[dept]) {
-        docList.innerHTML = "<p>No doctors available for this department.</p>";
-        return;
       }
+    ];
 
-      doctors[dept].forEach(d => {
-        const div = document.createElement("div");
-        div.className = "doctor-card";
-        const docName = d.split(" - ")[0];
-        div.innerHTML = `
-          <strong>${d}</strong><br>
-          <button class="assign-btn" onclick="assignDoctor('${docName}')">Assign</button>
-        `;
-        docList.appendChild(div);
-      });
-    }
+    const pendingContainer = document.getElementById("pending");
+    const approvedContainer = document.getElementById("approved");
+    const modal = document.getElementById("opSheetModal");
+    const opSheetContent = document.getElementById("opSheetContent");
+    const closeBtn = document.querySelector(".close-btn");
+    const downloadImageBtn = document.getElementById("downloadImageBtn");
+    const downloadPdfBtn = document.getElementById("downloadPdfBtn");
 
-    function assignDoctor(doctorName) {
-      let index = localStorage.getItem("pendingIndex");
-      if (appointments[index]) {
-        appointments[index].doctor = doctorName;
-        localStorage.setItem("appointments", JSON.stringify(appointments));
-        localStorage.removeItem("pendingIndex");
-        alert("Doctor assigned successfully!");
-        showAppointments();
-      }
-    }
+    function renderAppointments() {
+      pendingContainer.innerHTML = "";
+      approvedContainer.innerHTML = "";
 
-    // Approved list
-    function showApproved() {
-      approvedList.innerHTML = "";
-      let found = false;
       appointments.forEach(appt => {
-        if (appt.doctor) {
-          found = true;
-          const div = document.createElement("div");
-          div.className = "appointment";
-          div.innerHTML = `
-            <h3>${appt.name} - ${appt.department}</h3>
-            <p><b>Date:</b> ${appt.date} | <b>Slot:</b> ${appt.slot}</p>
-            <p><b>Assigned Doctor:</b> ${appt.doctor}</p>
-          `;
-          approvedList.appendChild(div);
+        const card = document.createElement("div");
+        card.className = `card ${appt.status}`;
+        card.innerHTML = `
+          <h3>${appt.name}</h3>
+          <p><strong>Problem:</strong> ${appt.problem}</p>
+          <p><strong>Department:</strong> ${appt.department}</p>
+          <p><strong>Date:</strong> ${appt.date}</p>
+          <p><strong>Slot:</strong> ${appt.slot}</p>
+          <button class="btn" onclick="showOpSheet(${appt.id})">View OP Sheet</button>
+        `;
+        if (appt.status === "pending") {
+          pendingContainer.appendChild(card);
+        } else {
+          approvedContainer.appendChild(card);
         }
       });
-      if (!found) approvedList.innerHTML = "<p>No approved appointments yet.</p>";
     }
 
-    // Back button
-    function goBack() {
-      if (!apptList.classList.contains("hidden")) {
-        window.location.href = "dashboard.html";
+    function showOpSheet(id) {
+      const appt = appointments.find(a => a.id === id);
+      opSheetContent.innerHTML = `
+        <div class="header">
+          <h1>🏥 City Care Hospital</h1>
+          <p>Outpatient Department - OP Sheet</p>
+        </div>
+        <h2>Patient Details</h2>
+        <table>
+          <tr><td>Name:</td><td>${appt.name}</td></tr>
+          <tr><td>Gender:</td><td>${appt.gender}</td></tr>
+          <tr><td>Age:</td><td>${appt.age}</td></tr>
+          <tr><td>Phone:</td><td>${appt.phone}</td></tr>
+          <tr><td>Email:</td><td>${appt.email}</td></tr>
+          <tr><td>Address:</td><td>${appt.address}</td></tr>
+        </table>
+        <h2>Appointment Details</h2>
+        <table>
+          <tr><td>Problem:</td><td>${appt.problem}</td></tr>
+          <tr><td>Department:</td><td>${appt.department}</td></tr>
+          <tr><td>Ward:</td><td>${appt.ward}</td></tr>
+          <tr><td>Date:</td><td>${appt.date}</td></tr>
+          <tr><td>Slot:</td><td>${appt.slot}</td></tr>
+        </table>
+      `;
+
+      if (appt.doctor) {
+        opSheetContent.innerHTML += `
+          <h2>Doctor Details</h2>
+          <table>
+            <tr><td>Doctor:</td><td>${appt.doctor.name}</td></tr>
+            <tr><td>Qualification:</td><td>${appt.doctor.qualification}</td></tr>
+            <tr><td>Specialization:</td><td>${appt.doctor.specialization}</td></tr>
+          </table>
+          <p style="margin-top:12px; font-weight:bold; color:green;">
+            ${appt.doctor.name} has approved to check you on ${appt.date}. Please be present by morning 9.
+          </p>
+        `;
+        downloadPdfBtn.style.display = "inline-block";
       } else {
-        showAppointments();
+        opSheetContent.innerHTML += `
+          <p style="margin-top:12px; font-weight:bold; color:orange;">
+            Waiting for doctor approval.
+          </p>
+        `;
+        downloadPdfBtn.style.display = "none";
       }
+
+      opSheetContent.innerHTML += `<div class="footer">Thank you for choosing City Care Hospital. Wishing you good health!</div>`;
+      modal.classList.add("active");
+
+      // Image download
+      downloadImageBtn.onclick = () => {
+        html2canvas(opSheetContent).then(canvas => {
+          const link = document.createElement("a");
+          link.download = `OP_Sheet_${appt.date}.png`;
+          link.href = canvas.toDataURL("image/png");
+          link.click();
+        });
+      };
+
+      // PDF download
+      downloadPdfBtn.onclick = () => {
+        html2canvas(opSheetContent).then(canvas => {
+          const { jsPDF } = window.jspdf;
+          const pdf = new jsPDF("p", "mm", "a4");
+          const imgData = canvas.toDataURL("image/png");
+
+          const pageWidth = pdf.internal.pageSize.getWidth();
+          const imgWidth = pageWidth - 20;
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+          pdf.addImage(imgData, "PNG", 10, 10, imgWidth, imgHeight);
+          pdf.save(`OP_Sheet_${appt.date}.pdf`);
+        });
+      };
     }
 
-    // Initial load
-    showAppointments();
+    closeBtn.onclick = () => modal.classList.remove("active");
+
+    document.querySelectorAll(".tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+        document.querySelectorAll(".appointments-container").forEach(c => c.classList.remove("active"));
+        tab.classList.add("active");
+        document.getElementById(tab.dataset.target).classList.add("active");
+      });
+    });
+
+    renderAppointments();
   </script>
 </body>
 </html>
