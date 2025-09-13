@@ -168,6 +168,20 @@
       if (tabId === "pending") showAppointments();
       if (tabId === "approved") showApproved();
     }
+function approveAppointment(index, doctor) {
+  let appointments = JSON.parse(localStorage.getItem("appointments")) || [];
+
+  // attach doctor info to this appointment
+  appointments[index].status = "approved";
+  appointments[index].doctor = {
+    name: doctor.name,
+    qualification: doctor.qualification,
+    specialization: doctor.specialization
+  };
+
+  localStorage.setItem("appointments", JSON.stringify(appointments));
+  alert("Appointment approved!");
+}
 
     // Show pending
     function showAppointments() {
