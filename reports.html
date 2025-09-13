@@ -3,68 +3,52 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>User Reports - City Care Hospitals</title>
-  <link rel="stylesheet" href="style.css">
+  <title>My Reports - City Care Hospital</title>
   <style>
-    .report-container {
-      background: #fff;
-      padding: 30px;
-      border-radius: 15px;
-      width: 500px;
-      text-align: center;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.25);
-      margin: 40px auto;
-    }
-
-    .report-container h2 {
-      margin-bottom: 20px;
-      color: #1d4ed8;
-    }
-
-    .report-card {
-      margin-top: 15px;
-      padding: 15px;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      text-align: left;
-    }
-
-    .report-card a {
-      color: #1d4ed8;
-      text-decoration: none;
-      font-weight: bold;
-    }
+    body { font-family: 'Segoe UI', sans-serif; background: #eef2ff; margin:0; padding:40px; display:flex; justify-content:center; }
+    .container { max-width: 800px; width:100%; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 10px 25px rgba(37,99,235,0.3); }
+    h1 { text-align:center; color:#1e3a8a; margin-bottom:20px; }
+    .report-card { background:#f9fafb; border-radius:10px; padding:18px 20px; margin-bottom:15px; border:1px solid #ccc; }
+    .report-card h2 { margin:0 0 8px; font-size:1.2rem; color:#2563eb; }
+    .report-card p { margin:4px 0; font-size:0.95rem; }
+    .files-list li { margin-top:6px; }
+    .download-btn { background:#2563eb; color:white; padding:6px 12px; border-radius:6px; text-decoration:none; font-size:0.9rem; }
+    .download-btn:hover { background:#1e40af; }
+    .no-reports { text-align:center; color:#6b7280; font-size:1.1rem; margin-top:30px; }
   </style>
 </head>
 <body>
-  <div class="title">My Reports</div>
-
-  <div class="report-container">
-    <h2>Available Reports</h2>
+  <div class="container">
+    <h1>My Reports</h1>
     <div id="reportsList"></div>
   </div>
 
   <script>
-    // Get logged-in user ID (set in profile.html after login)
-    const loggedInUser = localStorage.getItem("loggedInUser");
+    // Current logged in user
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    const reportsData = JSON.parse(localStorage.getItem("reports")) || {};
     const reportsList = document.getElementById("reportsList");
 
-    if (!loggedInUser) {
-      reportsList.innerHTML = "<p>⚠️ Please log in from your Profile page first.</p>";
+    if (!currentUser || !currentUser.email) {
+      reportsList.innerHTML = `<p class="no-reports">⚠️ Please log in to view your reports.</p>`;
     } else {
-      // Fetch reports linked with this user
-      const reports = JSON.parse(localStorage.getItem("reports_" + loggedInUser)) || [];
-
-      if (reports.length > 0) {
-        reportsList.innerHTML = reports.map((report, index) => `
-          <div class="report-card">
-            <p><strong>Report ${index + 1}:</strong> ${report.fileName}</p>
-            <p><strong>Uploaded:</strong> ${report.uploadedAt}</p>
-            <a href="${report.fileUrl}" target="_blank">📂 View / Download</a>
-          </div>
-        `).join("");
+      const userReports = reportsData[currentUser.email] || [];
+      if (!userReports.length) {
+        reportsList.innerHTML = `<p class="no-reports">No reports available yet.</p>`;
       } else {
-        reportsList.innerHTML = "<p>No reports available yet.</p>";
+        userReports.forEach((report, i) => {
+          const div = document.createElement("div");
+          div.className = "report-card";
+          div.innerHTML = `
+            <h2>Report #${i+1}</h2>
+            <p><b>Doctor:</b> ${report.appointment?.doctor?.name || "N/A"}</p>
+            <p><b>Date:</b> ${report.appointment.date}</p>
+            <p><b>Ward:</b> ${report.appointment.ward}</p>
+            <p><b>File:</b> ${report.filename}</p>
+            <a href="${report.filedata}" download="${report.filename}" class="download-btn">⬇️ Download</a>
+          `;
+          reportsList.appendChild(div);
+        });
       }
     }
   </script>
