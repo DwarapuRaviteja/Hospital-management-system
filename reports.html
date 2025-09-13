@@ -10,9 +10,10 @@
       background: #fff;
       padding: 30px;
       border-radius: 15px;
-      width: 400px;
+      width: 500px;
       text-align: center;
       box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+      margin: 40px auto;
     }
 
     .report-container h2 {
@@ -44,23 +45,27 @@
   </div>
 
   <script>
-    // Example: Simulate logged-in user
-    const loggedInUser = "USER001"; // In real system, get from login session
-
-    const reportData = localStorage.getItem("report_" + loggedInUser);
+    // Get logged-in user ID (set in profile.html after login)
+    const loggedInUser = localStorage.getItem("loggedInUser");
     const reportsList = document.getElementById("reportsList");
 
-    if (reportData) {
-      const report = JSON.parse(reportData);
-      reportsList.innerHTML = `
-        <div class="report-card">
-          <p><strong>Report:</strong> ${report.fileName}</p>
-          <p><strong>Uploaded:</strong> ${report.uploadedAt}</p>
-          <a href="${report.fileUrl}" target="_blank">📂 View / Download</a>
-        </div>
-      `;
+    if (!loggedInUser) {
+      reportsList.innerHTML = "<p>⚠️ Please log in from your Profile page first.</p>";
     } else {
-      reportsList.innerHTML = "<p>No reports available yet.</p>";
+      // Fetch reports linked with this user
+      const reports = JSON.parse(localStorage.getItem("reports_" + loggedInUser)) || [];
+
+      if (reports.length > 0) {
+        reportsList.innerHTML = reports.map((report, index) => `
+          <div class="report-card">
+            <p><strong>Report ${index + 1}:</strong> ${report.fileName}</p>
+            <p><strong>Uploaded:</strong> ${report.uploadedAt}</p>
+            <a href="${report.fileUrl}" target="_blank">📂 View / Download</a>
+          </div>
+        `).join("");
+      } else {
+        reportsList.innerHTML = "<p>No reports available yet.</p>";
+      }
     }
   </script>
 </body>
