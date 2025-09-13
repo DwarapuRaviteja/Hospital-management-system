@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>My Bookings - R S Hospital</title>
+  <title>My Bookings - City Care Hospital</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -49,6 +49,11 @@
       justify-content: space-between;
       align-items: center;
       box-shadow: inset 0 0 12px #e5e7eb;
+      border: 3px solid orange; /* default: pending */
+    }
+
+    .booking-card.approved {
+      border-color: green; /* approved */
     }
 
     .booking-info {
@@ -193,22 +198,6 @@
       margin-top: 15px;
       color: #444;
     }
-
-    @media (max-width: 600px) {
-      .booking-card {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      .booking-info {
-        max-width: 100%;
-        margin-bottom: 12px;
-      }
-      .actions {
-        flex-direction: row;
-        width: 100%;
-        justify-content: space-between;
-      }
-    }
   </style>
 </head>
 <body>
@@ -248,6 +237,12 @@
     appointments.forEach((appt, index) => {
       const card = document.createElement("div");
       card.className = "booking-card";
+
+      // ✅ Change border color based on doctor approval
+      if (appt.doctor) {
+        card.classList.add("approved");
+      }
+
       card.innerHTML = `
         <div class="booking-info">
           <h2>Appointment #${index + 1}</h2>
@@ -263,67 +258,11 @@
       bookingsList.appendChild(card);
     });
   }
-function showOpSheet(appt) {
-  opSheetContent.innerHTML = `
-    <div class="header">
-      <h1>🏥 City Hospital</h1>
-      <p>Outpatient Department - OP Sheet</p>
-    </div>
-    <h2>Patient Details</h2>
-    <table>
-      <tr><td>Name:</td><td>${appt.name}</td></tr>
-      <tr><td>Gender:</td><td>${appt.gender}</td></tr>
-      <tr><td>Age:</td><td>${appt.age}</td></tr>
-      <tr><td>Phone:</td><td>${appt.phone}</td></tr>
-      <tr><td>Email:</td><td>${appt.email}</td></tr>
-      <tr><td>Address:</td><td>${appt.address}</td></tr>
-    </table>
-    <h2>Appointment Details</h2>
-    <table>
-      <tr><td>Problem:</td><td>${appt.problem}</td></tr>
-      <tr><td>Department:</td><td>${appt.department}</td></tr>
-      <tr><td>Ward:</td><td>${appt.ward}</td></tr>
-      <tr><td>Date:</td><td>${appt.date}</td></tr>
-      <tr><td>Slot:</td><td>${appt.slot}</td></tr>
-    </table>
-  `;
 
-  // 🔹 Show Doctor Details if available
-  if (appt.doctor) {
-    opSheetContent.innerHTML += `
-      <h2>Doctor Details</h2>
-      <table>
-        <tr><td>Doctor:</td><td>${appt.doctor.name}</td></tr>
-        <tr><td>Qualification:</td><td>${appt.doctor.qualification}</td></tr>
-        <tr><td>Specialization:</td><td>${appt.doctor.specialization}</td></tr>
-      </table>
-      <p style="margin-top:12px; font-weight:bold; color:#1e3a8a;">
-        ${appt.doctor.name} has approved to check you on ${appt.date}.  
-        Please be present by morning 9.
-      </p>
-    `;
-  }
-
-  opSheetContent.innerHTML += `
-    <div class="footer">Thank you for choosing R S Hospital. Wishing you good health!</div>
-  `;
-
-  modal.classList.add("active");
-
-  // enable download as image for this sheet
-  downloadImageBtn.onclick = () => {
-    html2canvas(opSheetContent).then(canvas => {
-      const link = document.createElement("a");
-      link.download = `OP_Sheet_${appt.date}.png`;
-      link.href = canvas.toDataURL("image/png");
-      link.click();
-    });
-  };
-}
   function showOpSheet(appt) {
     opSheetContent.innerHTML = `
       <div class="header">
-        <h1>🏥 city Hospital</h1>
+        <h1>🏥 City Care Hospital</h1>
         <p>Outpatient Department - OP Sheet</p>
       </div>
       <h2>Patient Details</h2>
@@ -342,23 +281,35 @@ function showOpSheet(appt) {
         <tr><td>Ward:</td><td>${appt.ward}</td></tr>
         <tr><td>Date:</td><td>${appt.date}</td></tr>
         <tr><td>Slot:</td><td>${appt.slot}</td></tr>
-      </table> <div class="footer">Thank you for choosing City Hospital. Wishing you good health!</div>
+      </table>
     `;
+
+    // ✅ Add doctor details if approved
+    if (appt.doctor) {
+      opSheetContent.innerHTML += `
+        <h2>Doctor Details</h2>
+        <table>
+          <tr><td>Doctor:</td><td>${appt.doctor.name}</td></tr>
+          <tr><td>Qualification:</td><td>${appt.doctor.qualification}</td></tr>
+          <tr><td>Specialization:</td><td>${appt.doctor.specialization}</td></tr>
+        </table>
+        <p style="margin-top:12px; font-weight:bold; color:green;">
+          ${appt.doctor.name} has approved to check you on ${appt.date}. Please be present by 9 AM.
+        </p>
+      `;
+    } else {
+      opSheetContent.innerHTML += `
+        <p style="margin-top:12px; font-weight:bold; color:orange;">
+          Waiting for doctor approval. Your appointment is still pending.
+        </p>
+      `;
+    }
+
+    opSheetContent.innerHTML += `
+      <div class="footer">Thank you for choosing City Care Hospital. Wishing you good health!</div>
+    `;
+
     modal.classList.add("active");
-if (appt.doctor) {
-  opSheetContent.innerHTML += `
-    <h2>Doctor Details</h2>
-    <table>
-      <tr><td>Doctor:</td><td>${appt.doctor.name}</td></tr>
-      <tr><td>Qualification:</td><td>${appt.doctor.qualification}</td></tr>
-      <tr><td>Specialization:</td><td>${appt.doctor.specialization}</td></tr>
-    </table>
-    <p style="margin-top:12px; font-weight:bold; color:#1e3a8a;">
-      ${appt.doctor.name} has approved to check you on ${appt.date}. Please be present by morning 9.
-    </p>
-  `;
-}
-     
 
     // enable download as image for this sheet
     downloadImageBtn.onclick = () => {
