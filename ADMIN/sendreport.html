@@ -3,128 +3,82 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Send Report - City Care Hospitals</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Send Report - Admin</title>
   <style>
-    .send-container {
-      background: #fff;
-      padding: 30px;
-      border-radius: 15px;
-      width: 400px;
-      text-align: center;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+    body { font-family: Arial, sans-serif; background: #eef2ff; padding: 30px; }
+    .container {
+      max-width: 700px; margin: auto; background: white; padding: 20px; border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
     }
-
-    .send-container h2 {
-      margin-bottom: 20px;
-      color: #1d4ed8;
+    h1 { text-align: center; color: #1e3a8a; }
+    label { font-weight: bold; display: block; margin-top: 15px; }
+    select, input[type="file"], button {
+      margin-top: 8px; padding: 10px; width: 100%; border-radius: 6px; border: 1px solid #ccc;
     }
-
-    select, input[type="text"], input[type="file"] {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 8px;
-      border: 1px solid #ccc;
+    button {
+      background: #2563eb; color: white; font-weight: bold; cursor: pointer; margin-top: 20px;
     }
+    button:hover { background: #1e40af; }
   </style>
 </head>
 <body>
-  <div class="title">Send Report</div>
+  <div class="container">
+    <h1>Upload Reports</h1>
+    <label for="email">Select Approved Appointment (User Email):</label>
+    <select id="email"></select>
 
-  <div class="send-container">
-    <h2>Upload & Send Report</h2>
+    <label for="fileInput">Upload Report File (PDF, JPG, PNG, DOCX...):</label>
+    <input type="file" id="fileInput" multiple />
 
-    <label for="userId">Enter User ID (if known)</label>
-    <input type="text" id="userId" placeholder="Enter User ID">
-
-    <label for="recentAppointments">Or select from Approved Appointments</label>
-    <select id="recentAppointments">
-      <option value="">-- Select Approved Appointment --</option>
-    </select>
-
-    <label for="reportFile">Upload Report (PDF/JPG/PNG)</label>
-    <input type="file" id="reportFile" accept=".pdf,.jpg,.jpeg,.png">
-
-    <button class="btn" onclick="sendReport()">Send Report</button>
-    <p class="error" id="errorMsg">⚠️ Please fill all fields</p>
+    <button onclick="saveReport()">Save Report</button>
   </div>
 
-  <!-- Notification -->
-  <div id="notification" class="notification">✅ Report Uploaded Successfully!</div>
-
   <script>
-    // Example Approved Appointments (Normally this comes from backend / admin approval)
-    if (!localStorage.getItem("approvedAppointments")) {
-      const approvedAppointments = [
-        { userId: "USER001", name: "John Doe" },
-        { userId: "USER002", name: "Sarah Lee" },
-        { userId: "USER003", name: "Michael Chen" }
-      ];
-      localStorage.setItem("approvedAppointments", JSON.stringify(approvedAppointments));
-    }
+    const emailSelect = document.getElementById("email");
+    const appointments = JSON.parse(localStorage.getItem("appointments")) || [];
 
-    // Load Approved Appointments into dropdown
-    function loadAppointments() {
-      const appointments = JSON.parse(localStorage.getItem("approvedAppointments")) || [];
-      const dropdown = document.getElementById("recentAppointments");
+    // Only approved appointments
+    const approved = appointments.filter(a => a.status === "approved" && a.email);
+    approved.forEach(appt => {
+      let opt = document.createElement("option");
+      opt.value = appt.email;
+      opt.textContent = `${appt.name} (${appt.email}) - ${appt.date}`;
+      opt.dataset.appt = JSON.stringify(appt);
+      emailSelect.appendChild(opt);
+    });
 
-      appointments.forEach(app => {
-        const option = document.createElement("option");
-        option.value = app.userId;
-        option.textContent = `${app.userId} - ${app.name}`;
-        dropdown.appendChild(option);
+    function saveReport() {
+      if (!emailSelect.value) {
+        alert("Select a user first!");
+        return;
+      }
+      const files = document.getElementById("fileInput").files;
+      if (!files.length) {
+        alert("Select at least one file");
+        return;
+      }
+
+      const selectedAppt = JSON.parse(emailSelect.options[emailSelect.selectedIndex].dataset.appt);
+      const reportsData = JSON.parse(localStorage.getItem("reports")) || {};
+      if (!reportsData[selectedAppt.email]) reportsData[selectedAppt.email] = [];
+
+      // Convert each file to base64
+      [...files].forEach(file => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          reportsData[selectedAppt.email].push({
+            appointment: selectedAppt,
+            filename: file.name,
+            filedata: e.target.result
+          });
+          localStorage.setItem("reports", JSON.stringify(reportsData));
+        };
+        reader.readAsDataURL(file);
       });
+
+      alert("✅ Report uploaded successfully!");
+      document.getElementById("fileInput").value = "";
     }
-    loadAppointments();
-
-    // Send Report Function (Multi-report support)
-    // Send Report Function (Multi-report support, no redirect)
-function sendReport() {
-  const userIdInput = document.getElementById("userId").value.trim();
-  const selectedAppointment = document.getElementById("recentAppointments").value;
-  const fileInput = document.getElementById("reportFile");
-  const errorMsg = document.getElementById("errorMsg");
-  const notification = document.getElementById("notification");
-
-  const userId = userIdInput || selectedAppointment;
-  if (!userId || fileInput.files.length === 0) {
-    errorMsg.style.display = "block";
-    return;
-  } else {
-    errorMsg.style.display = "none";
-  }
-
-  const file = fileInput.files[0];
-  const reader = new FileReader();
-
-  reader.onload = function(e) {
-    const reportData = {
-      fileName: file.name,
-      fileUrl: e.target.result,
-      uploadedAt: new Date().toLocaleString()
-    };
-
-    // Fetch existing reports for this user
-    let reports = JSON.parse(localStorage.getItem("reports_" + userId)) || [];
-    reports.push(reportData);
-
-    // Save back to localStorage
-    localStorage.setItem("reports_" + userId, JSON.stringify(reports));
-
-    // Show success message only
-    notification.classList.add("show");
-    setTimeout(() => {
-      notification.classList.remove("show");
-      // Clear form
-      document.getElementById("userId").value = "";
-      document.getElementById("recentAppointments").value = "";
-      fileInput.value = "";
-    }, 2000);
-  };
-
-  reader.readAsDataURL(file);
-}
   </script>
 </body>
 </html>
