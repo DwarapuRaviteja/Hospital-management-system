@@ -1,120 +1,187 @@
-<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<meta name='viewport' content='width=device-width, initial-scale=1'/>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>City Hospital Portal</title>
+  <title>City Care Hospital Portal</title>
   <style>
+    /* Body & Background */
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Segoe UI', sans-serif;
       margin: 0;
       padding: 0;
       height: 100vh;
       display: flex;
       justify-content: center;
-      align-items: flex-start;
-      background: #e0f2fe;
+      align-items: center;
+      flex-direction: column;
+      background: linear-gradient(135deg, #1d4ed8, #0ea5e9);
+      overflow: hidden;
     }
+
+    /* Header / Title */
     .header {
-      width: 100%;
-      text-align: center;
-      padding: 20px 0;
-      font-size: 32px;
-      font-family: Georgia, serif;
+      font-size: 36px;
       font-weight: bold;
-      color: #0d47a1;
-      letter-spacing: 1px;
-      background: transparent;
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: 100;
+      color: #fff;
+      text-align: center;
+      margin-bottom: 20px;
+      letter-spacing: 2px;
+      text-shadow: 2px 2px 6px rgba(0,0,0,0.4);
+      position: relative;
+      display: inline-block;
+      overflow: hidden;
     }
+
+    .header::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -120%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(120deg, transparent, rgba(255,255,255,0.8), transparent);
+      animation: shine 3s infinite;
+    }
+
+    @keyframes shine {
+      0% { left: -120%; }
+      50% { left: 120%; }
+      100% { left: 120%; }
+    }
+
+    /* Form Container */
     .container {
       background: #fff;
-      padding: 25px;
-      border-radius: 12px;
+      padding: 40px 30px;
+      border-radius: 15px;
       width: 370px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.25);
       text-align: center;
-      overflow-y: auto;
-      max-height: 80vh;
-      margin-top: 90px;
+      animation: fadeIn 1s ease-in-out;
     }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     h2 {
-      margin-bottom: 15px;
-      color: #333;
+      color: #1d4ed8;
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 20px;
     }
+
     label {
       display: block;
       text-align: left;
       margin: 6px 0 3px;
-      font-weight: 600;
-      color: #0d47a1;
+      font-weight: bold;
+      color: #333;
     }
+
     input, select, textarea {
       width: 100%;
-      padding: 10px;
-      margin-bottom: 6px;
+      padding: 12px;
+      margin-bottom: 12px;
+      border-radius: 8px;
       border: 1px solid #ccc;
-      border-radius: 6px;
       font-size: 14px;
+      outline: none;
+      transition: border 0.3s, box-shadow 0.3s;
     }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: #1d4ed8;
+      box-shadow: 0 0 8px rgba(29,78,216,0.4);
+    }
+
     .password-box {
       position: relative;
     }
+
     .toggle-password {
       position: absolute;
       top: 30%;
       right: 10px;
       cursor: pointer;
       font-size: 14px;
-      color: #007bff;
+      color: #1d4ed8;
       user-select: none;
     }
+
     .error {
       color: red;
-      font-size: 13px;
+      font-size: 14px;
       text-align: left;
-      margin: -3px 0 6px;
+      margin-top: -6px;
+      margin-bottom: 10px;
+      display: none;
     }
-    .error::before {
-      content: "⚠️ ";
-    }
+
     button {
       width: 100%;
-      background: #007bff;
-      color: white;
+      background: #1d4ed8;
+      color: #fff;
       padding: 12px;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       font-size: 16px;
+      font-weight: bold;
       cursor: pointer;
-      margin-top: 10px;
+      transition: 0.3s;
     }
+
     button:hover {
-      background: #0056b3;
+      background: #0a58ca;
+      transform: scale(1.03);
     }
+
     .toggle-link {
-      margin-top: 15px;
+      margin-top: 12px;
       font-size: 14px;
     }
+
     .toggle-link a {
-      color: #007bff;
+      color: #1d4ed8;
       text-decoration: none;
       font-weight: bold;
       cursor: pointer;
     }
+
     .toggle-link a:hover {
       text-decoration: underline;
     }
+
     .hidden {
       display: none;
+    }
+
+    /* Notification panel */
+    .notification {
+      position: fixed;
+      top: -80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #16a34a;
+      color: #fff;
+      padding: 15px 35px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      font-weight: bold;
+      transition: top 0.6s ease-in-out;
+      z-index: 1000;
+    }
+
+    .notification.show {
+      top: 20px;
     }
   </style>
 </head>
 <body>
-  <div class="header">City Hospital</div>
+  <div class="header">CITY CARE HOSPITAL</div>
   <div class="container">
     <!-- Login Form -->
     <div id="loginForm">
@@ -126,7 +193,7 @@
         <input type="password" id="loginPassword">
         <span class="toggle-password" onclick="togglePassword('loginPassword', this)">👁</span>
       </div>
-      <div id="loginError" class="error hidden"></div>
+      <div id="loginError" class="error"></div>
       <button onclick="login()">Login</button>
       <p class="toggle-link">Don't have an account? <a onclick="toggleForm()">Register here</a></p>
     </div>
@@ -137,7 +204,7 @@
       <input type="text" id="regName">
       <label>Email ID</label>
       <input type="email" id="regEmail">
-      <div id="emailError" class="error hidden"></div>
+      <div id="emailError" class="error"></div>
       <label>Mobile Number</label>
       <input type="text" id="regPhone">
       <label>Gender</label>
@@ -154,7 +221,7 @@
         <input type="password" id="regPassword">
         <span class="toggle-password" onclick="togglePassword('regPassword', this)">👁</span>
       </div>
-      <div id="passwordError" class="error hidden"></div>
+      <div id="passwordError" class="error"></div>
       <label>Confirm Password</label>
       <div class="password-box">
         <input type="password" id="regConfirmPassword">
@@ -167,7 +234,6 @@
     </div>
   </div>
   <script>
-    // Demo credentials, replace or extend for your scenario
     const validUsers = [
       { email: "user@example.com", password: "pass123" },
       { email: "admin@example.com", password: "admin123" }
@@ -177,7 +243,7 @@
       document.getElementById("loginForm").classList.toggle("hidden");
       document.getElementById("registerForm").classList.toggle("hidden");
       const err = document.getElementById("loginError");
-      if (err) err.classList.add("hidden");
+      if (err) err.style.display = "none";
     }
 
     function togglePassword(fieldId, el) {
@@ -192,88 +258,71 @@
     }
 
     function login() {
-  let email = document.getElementById("loginEmail").value.trim();
-  let password = document.getElementById("loginPassword").value.trim();
-  let error = document.getElementById("loginError");
-  error.classList.add("hidden");
+      let email = document.getElementById("loginEmail").value.trim();
+      let password = document.getElementById("loginPassword").value.trim();
+      let error = document.getElementById("loginError");
+      error.style.display = "none";
 
-  if (email === "" || password === "") {
-    error.textContent = "Please fill all fields!";
-    error.classList.remove("hidden");
-    return;
-  }
+      if (!email || !password) {
+        error.textContent = "Please fill all fields!";
+        error.style.display = "block";
+        return;
+      }
 
-  // Get registered users from localStorage
-  let storedUsers = JSON.parse(localStorage.getItem("users")) || [];
-  // Combine demo + stored users
-  let allUsers = validUsers.concat(storedUsers);
+      let storedUsers = JSON.parse(localStorage.getItem("users")) || [];
+      let allUsers = validUsers.concat(storedUsers);
+      const match = allUsers.find(u => u.email === email && u.password === password);
 
-  const match = allUsers.find(u => u.email === email && u.password === password);
-  if (!match) {
-    error.textContent = "Invalid email or password!";
-    error.classList.remove("hidden");
-    return;
-  }
+      if (!match) {
+        error.textContent = "Invalid email or password!";
+        error.style.display = "block";
+        return;
+      }
 
-  // Save logged-in user as currentUser
-  localStorage.setItem("currentUser", JSON.stringify(match));
+      localStorage.setItem("currentUser", JSON.stringify(match));
+      window.location.href = "homepage.html";
+    }
 
-  // Redirect to homepage
-  window.location.href = "homepage.html";
-}
+    function register() {
+      let email = document.getElementById("regEmail").value.trim();
+      let password = document.getElementById("regPassword").value;
+      let confirmPassword = document.getElementById("regConfirmPassword").value;
 
-function register() {
-  let email = document.getElementById("regEmail").value.trim();
-  let password = document.getElementById("regPassword").value;
-  let confirmPassword = document.getElementById("regConfirmPassword").value;
+      let emailError = document.getElementById("emailError");
+      let passwordError = document.getElementById("passwordError");
+      emailError.style.display = "none";
+      passwordError.style.display = "none";
 
-  let emailError = document.getElementById("emailError");
-  let passwordError = document.getElementById("passwordError");
+      let emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
+      if (!email.match(emailPattern)) {
+        emailError.textContent = "Invalid email format!";
+        emailError.style.display = "block";
+        return;
+      }
+      if (password.length < 6) {
+        passwordError.textContent = "Password must be at least 6 characters!";
+        passwordError.style.display = "block";
+        return;
+      }
+      if (password !== confirmPassword) {
+        passwordError.textContent = "Passwords do not match!";
+        passwordError.style.display = "block";
+        return;
+      }
 
-  emailError.classList.add("hidden");
-  passwordError.classList.add("hidden");
+      let name = document.getElementById("regName").value.trim();
+      let phone = document.getElementById("regPhone").value.trim();
+      let gender = document.getElementById("regGender").value;
+      let dob = document.getElementById("regDob").value;
+      let address = document.getElementById("regAddress").value.trim();
 
-  let emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
-  if (!email.match(emailPattern)) {
-    emailError.textContent = "Invalid email format!";
-    emailError.classList.remove("hidden");
-    return;
-  }
-  if (password.length < 6) {
-    passwordError.textContent = "Password must be at least 6 characters!";
-    passwordError.classList.remove("hidden");
-    return;
-  }
-  if (password !== confirmPassword) {
-    passwordError.textContent = "Passwords do not match!";
-    passwordError.classList.remove("hidden");
-    return;
-  }
+      let users = JSON.parse(localStorage.getItem("users")) || [];
+      users.push({ name, email, phone, gender, dob, address, password });
+      localStorage.setItem("users", JSON.stringify(users));
 
-  // Save to localStorage
-  // Collect all fields
-let name = document.getElementById("regName").value.trim();
-let phone = document.getElementById("regPhone").value.trim();
-let gender = document.getElementById("regGender").value;
-let dob = document.getElementById("regDob").value;
-let address = document.getElementById("regAddress").value.trim();
-
-// Save full user object
-let users = JSON.parse(localStorage.getItem("users")) || [];
-users.push({
-  name,
-  email,
-  phone,
-  gender,
-  dob,
-  address,
-  password
-});
-localStorage.setItem("users", JSON.stringify(users));
-
-  alert("Registration successful! Please login.");
-  toggleForm();  // switch to login form
-}
+      alert("Registration successful! Please login.");
+      toggleForm();
+    }
   </script>
 </body>
 </html>
