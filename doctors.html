@@ -1,227 +1,304 @@
-<!-- Doctors Overlay -->
-<div id="doctors-overlay" class="overlay">
-  <div class="doctors-modal">
-    <header>
-      Our Doctors
-    </header>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Department-wise Doctors - R S Hospital</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: linear-gradient(to right, #dbeafe, #f0f9ff);
+      color: #1e3a8a;
+    }
 
-    <div class="accordion">
-      <!-- Orthopedic -->
-      <div class="accordion-item">
-        <div class="accordion-header" onclick="toggleAccordion(this)">
-          Orthopedic Department <span class="icon">▶</span>
+    header {
+      background: linear-gradient(90deg, #2563eb, #1e40af);
+      color: white;
+      padding: 20px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      position: relative;
+    }
+
+    .back-btn {
+      position: absolute;
+      left: 20px;
+      top: 20px;
+      background: white;
+      color: #2563eb;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .accordion {
+      width: 100%;
+      max-width: 900px;
+      margin: 30px auto;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      counter-reset: dept-counter;
+    }
+
+    .accordion-item {
+      border-bottom: 1px solid #e0e0e0;
+      counter-increment: dept-counter;
+    }
+
+    .accordion-header {
+      background: #ffffff;
+      padding: 18px;
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .accordion-header::before {
+      content: counter(dept-counter);
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #2563eb;
+      color: #fff;
+      font-size: 14px;
+      font-weight: bold;
+      margin-right: 12px;
+      flex-shrink: 0;
+    }
+
+    .accordion-header:hover {
+      background: #f1faff;
+      color: #2563eb;
+    }
+
+    .icon {
+      font-weight: bold;
+      font-size: 18px;
+      transition: transform 0.3s, color 0.3s;
+      color: #2563eb;
+    }
+
+    .accordion-content {
+      display: none;
+      padding: 18px;
+      background: #f0f0f0;
+      animation: fadeScale 0.5s ease;
+    }
+
+    .accordion-item.active .accordion-content {
+      display: block;
+    }
+
+    @keyframes fadeScale {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .doctor-card {
+      background: white;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .doctor-card strong {
+      display: block;
+      font-size: 16px;
+      color: #1e40af;
+    }
+
+    footer {
+      background: #2563eb;
+      color: white;
+      text-align: center;
+      padding: 10px;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <button class="back-btn" onclick="window.location.href='homepage.html'">← Back</button>
+    R S Hospital - Doctors
+  </header>
+
+  <div class="accordion">
+
+    <!-- Orthopedic -->
+    <div class="accordion-item">
+      <div class="accordion-header" onclick="toggleAccordion(this)">
+        Orthopedic Department <span class="icon">▶</span>
+      </div>
+      <div class="accordion-content">
+        <div class="doctor-card">
+          <strong>Dr. Krishna</strong>
+          MBBS, MS (Orthopedics) – Joint replacement & fracture management specialist.
         </div>
-        <div class="accordion-content">
-          <div class="doctor-card">
-            <button class="assign-btn"
-              onclick="assignDoctor('Dr. Krishna', 'MBBS, MS (Orthopedics)', 'Joint replacement & fracture management specialist.')">
-              Assign Doctor
-            </button>
-            <strong>Dr. Krishna</strong>
-            MBBS, MS (Orthopedics) – Joint replacement & fracture management specialist.
-          </div>
-          <div class="doctor-card">
-            <strong>Dr. Anjali</strong>
-            MBBS, D.Ortho – Expert in sports injuries and arthritis care.
-          </div>
+        <div class="doctor-card">
+          <strong>Dr. Anjali</strong>
+          MBBS, D.Ortho – Expert in sports injuries and arthritis care.
         </div>
       </div>
-
-      <!-- Neurology -->
-      <div class="accordion-item">
-        <div class="accordion-header" onclick="toggleAccordion(this)">
-          Neurology Department <span class="icon">▶</span>
-        </div>
-        <div class="accordion-content">
-          <div class="doctor-card">
-            <strong>Dr. Ramesh</strong>
-            MBBS, DM (Neurology) – Stroke and epilepsy specialist.
-          </div>
-          <div class="doctor-card">
-            <strong>Dr. Meera</strong>
-            MBBS, MD (Neuro) – Dementia and Parkinson's disease specialist.
-          </div>
-        </div>
-      </div>
-
-      <!-- Add other departments here (same as your code) -->
     </div>
 
-    <footer>
-      © 2025 City Care Hospital. All Rights Reserved.
-    </footer>
+    <!-- Neurology -->
+    <div class="accordion-item">
+      <div class="accordion-header" onclick="toggleAccordion(this)">
+        Neurology Department <span class="icon">▶</span>
+      </div>
+      <div class="accordion-content">
+        <div class="doctor-card">
+          <strong>Dr. Ramesh</strong>
+          MBBS, DM (Neurology) – Stroke and epilepsy specialist.
+        </div>
+        <div class="doctor-card">
+          <strong>Dr. Meera</strong>
+          MBBS, MD (Neuro) – Dementia and Parkinson's disease specialist.
+        </div>
+      </div>
+    </div>
+
+    <!-- Cardiology -->
+    <div class="accordion-item">
+      <div class="accordion-header" onclick="toggleAccordion(this)">
+        Cardiology Department <span class="icon">▶</span>
+      </div>
+      <div class="accordion-content">
+        <div class="doctor-card">
+          <strong>Dr. Rajesh</strong>
+          MBBS, DM (Cardiology) – Expert in angioplasty and bypass surgery.
+        </div>
+        <div class="doctor-card">
+          <strong>Dr. Kavita</strong>
+          MBBS, MD – Specialist in arrhythmia and hypertension.
+        </div>
+      </div>
+    </div>
+
+    <!-- ENT -->
+    <div class="accordion-item">
+      <div class="accordion-header" onclick="toggleAccordion(this)">
+        ENT Department <span class="icon">▶</span>
+      </div>
+      <div class="accordion-content">
+        <div class="doctor-card">
+          <strong>Dr. Sameer</strong>
+          MBBS, MS (ENT) – Specialist in sinus and ear surgeries.
+        </div>
+        <div class="doctor-card">
+          <strong>Dr. Priya</strong>
+          MBBS, MS – Expert in hearing disorders and allergy care.
+        </div>
+      </div>
+    </div>
+
+    <!-- Dermatology -->
+    <div class="accordion-item">
+      <div class="accordion-header" onclick="toggleAccordion(this)">
+        Dermatology Department <span class="icon">▶</span>
+      </div>
+      <div class="accordion-content">
+        <div class="doctor-card">
+          <strong>Dr. Neha</strong>
+          MBBS, MD (Dermatology) – Specialist in acne and skin rejuvenation.
+        </div>
+        <div class="doctor-card">
+          <strong>Dr. Arjun</strong>
+          MBBS, MD – Expert in psoriasis and cosmetic dermatology.
+        </div>
+      </div>
+    </div>
+
+    <!-- Gynecology -->
+    <div class="accordion-item">
+      <div class="accordion-header" onclick="toggleAccordion(this)">
+        Gynecology & Obstetrics <span class="icon">▶</span>
+      </div>
+      <div class="accordion-content">
+        <div class="doctor-card">
+          <strong>Dr. Lakshmi</strong>
+          MBBS, MD (Gynecology) – Infertility and maternity care specialist.
+        </div>
+        <div class="doctor-card">
+          <strong>Dr. Divya</strong>
+          MBBS, DGO – Menstrual disorder and preventive women's health expert.
+        </div>
+      </div>
+    </div>
+
+    <!-- Oncology -->
+    <div class="accordion-item">
+      <div class="accordion-header" onclick="toggleAccordion(this)">
+        Oncology Department <span class="icon">▶</span>
+      </div>
+      <div class="accordion-content">
+        <div class="doctor-card">
+          <strong>Dr. Sanjay</strong>
+          MBBS, DM (Oncology) – Chemotherapy & radiation specialist.
+        </div>
+        <div class="doctor-card">
+          <strong>Dr. Alka</strong>
+          MBBS, MD – Immunotherapy & palliative care specialist.
+        </div>
+      </div>
+    </div>
+
+    <!-- Nephrology -->
+    <div class="accordion-item">
+      <div class="accordion-header" onclick="toggleAccordion(this)">
+        Nephrology Department <span class="icon">▶</span>
+      </div>
+      <div class="accordion-content">
+        <div class="doctor-card">
+          <strong>Dr. Mohan</strong>
+          MBBS, DM (Nephrology) – Kidney transplant and dialysis specialist.
+        </div>
+        <div class="doctor-card">
+          <strong>Dr. Sneha</strong>
+          MBBS, MD – Expert in chronic kidney disease management.
+        </div>
+      </div>
+    </div>
+
   </div>
-</div>
 
-<style>
-/* Overlay background */
-.overlay {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.6);
-  backdrop-filter: blur(5px);
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-}
+  <footer>
+    © 2025 R S Hospital. All Rights Reserved.
+  </footer>
 
-/* Doctors modal container */
-.doctors-modal {
-  background: #fff;
-  width: 90%;
-  max-width: 900px;
-  max-height: 90vh;
-  overflow-y: auto;
-  border-radius: 12px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-  animation: fadeIn 0.4s ease;
-}
+  <script>
+    function toggleAccordion(header) {
+      const item = header.parentElement;
+      const allItems = document.querySelectorAll(".accordion-item");
 
-.doctors-modal header {
-  background: linear-gradient(90deg, #2563eb, #1e40af);
-  color: white;
-  padding: 16px;
-  text-align: center;
-  font-size: 22px;
-  font-weight: bold;
-  position: sticky;
-  top: 0;
-  z-index: 1;
-}
+      allItems.forEach(i => {
+        if (i !== item) i.classList.remove("active");
+      });
 
-.accordion {
-  margin: 20px;
-  border-radius: 10px;
-  overflow: hidden;
-  background: #fff;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  counter-reset: dept-counter;
-}
+      item.classList.toggle("active");
+    }
+  </script>
 
-.accordion-item {
-  border-bottom: 1px solid #e0e0e0;
-  counter-increment: dept-counter;
-}
-
-.accordion-header {
-  padding: 15px;
-  cursor: pointer;
-  font-size: 18px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  transition: background 0.3s, color 0.3s;
-}
-
-.accordion-header::before {
-  content: counter(dept-counter);
-  width: 28px; height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: #2563eb;
-  color: #fff;
-  margin-right: 10px;
-  font-size: 14px;
-}
-
-.accordion-header:hover {
-  background: #f1faff;
-  color: #2563eb;
-}
-
-.icon {
-  font-weight: bold;
-  transition: transform 0.3s;
-  color: #2563eb;
-}
-
-.accordion-content {
-  display: none;
-  padding: 15px;
-  background: #f9fafb;
-}
-
-.accordion-item.active .accordion-content {
-  display: block;
-}
-
-.doctor-card {
-  background: white;
-  padding: 12px;
-  margin: 8px 0;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-
-.doctor-card strong {
-  display: block;
-  font-size: 16px;
-  color: #1e40af;
-  margin-top: 6px;
-}
-
-.assign-btn {
-  background: #2563eb;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-  margin-bottom: 8px;
-}
-
-.assign-btn:hover {
-  background: #1e40af;
-}
-
-footer {
-  background: #2563eb;
-  color: white;
-  text-align: center;
-  padding: 10px;
-  font-size: 14px;
-}
-</style>
-
-<script>
-// Open doctors overlay
-document.getElementById("doctors-btn").addEventListener("click", () => {
-  document.getElementById("doctors-overlay").style.display = "flex";
-});
-
-// Close when clicking outside modal
-document.getElementById("doctors-overlay").addEventListener("click", (e) => {
-  if (e.target.id === "doctors-overlay") {
-    document.getElementById("doctors-overlay").style.display = "none";
-  }
-});
-
-// Accordion toggle
-function toggleAccordion(header) {
-  const item = header.parentElement;
-  const allItems = document.querySelectorAll(".accordion-item");
-  allItems.forEach(i => {
-    if (i !== item) i.classList.remove("active");
-  });
-  item.classList.toggle("active");
-}
-
-// Assign doctor to last appointment
-function assignDoctor(name, qualification, specialization) {
-  let appointments = JSON.parse(localStorage.getItem("appointments")) || [];
-  if (appointments.length === 0) {
-    alert("No appointment found to assign a doctor.");
-    return;
-  }
-  let latest = appointments[appointments.length - 1];
-  latest.doctor = { name, qualification, specialization };
-  localStorage.setItem("appointments", JSON.stringify(appointments));
-  window.location.href = "bookings.html";
-}
-</script>
+</body>
+</html>
