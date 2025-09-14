@@ -13,6 +13,26 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
+ .glow-btn {
+      display: inline-block;
+      padding: 15px 30px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #fff;
+      background: #007bff;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 0 10px #007bff, 0 0 20px #00bfff, 0 0 30px #1e90ff;
+      transition: 0.3s ease-in-out;
+    }
+
+    .glow-btn:hover {
+      box-shadow: 0 0 20px #00bfff, 0 0 40px #1e90ff, 0 0 60px #4682b4;
+      background: #0056b3;
+    }
+
     body {
       background: #ffffff;
       color: #1e3a8a;
@@ -269,6 +289,7 @@
       <li onclick="navigateTo('about_us.html')">About Us</li>
       <li onclick="navigateTo('department.html')">Departments</li>
       <li onclick="navigateTo('contact_us.html')">Contact Us</li>
+
     </ul>
   </nav>
 
@@ -295,6 +316,11 @@
       Experience the best medical care with our experienced team of doctors, advanced technology, and patient-friendly services. Our departments cover everything from pediatrics to cardiology.
     </p>
   </div>
+  <a href="https://www.practo.com/search/hospitals?results_type=hospital&q=%5B%7B%22word%22%3A%22hospital%22%2C%22autocompleted%22%3Atrue%2C%22category%22%3A%22type%22%7D%5D&city=Kakinada" 
+     target="_blank" 
+     class="glow-btn">
+    Explore Different Hospitals
+  </a>
 
   <!-- Appointment & Process Section -->
   <div class="process">
@@ -338,6 +364,7 @@
 
   <!-- Doctors Button -->
   <button id="doctors-btn" class="doctors-btn" onclick="navigateTo('doctors.html')">👨‍⚕️ Our Doctors</button>
+
 
   <footer>
     &copy; 2025 City Care Hospital. All Rights Reserved.
