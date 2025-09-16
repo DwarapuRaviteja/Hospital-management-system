@@ -15,7 +15,15 @@
       align-items: center;
       min-height: 100vh;
       flex-direction: column;
-      transition: background-color 0.5s ease;
+    }
+
+    /* Wrapper to show blinking background around the container */
+    .background-effect-wrapper {
+      padding: 20px;
+      border-radius: 20px;
+      background-color: transparent;
+      transition: background-color 0.3s ease;
+      display: inline-block; /* shrink-wrap to container */
     }
 
     .payment-container {
@@ -30,6 +38,7 @@
       position: relative;
       overflow: visible;
       z-index: 10;
+      transition: background-color 0.5s ease;
     }
 
     h1 {
@@ -85,16 +94,36 @@
       background: #c7d2fe;
     }
 
-    .continue-btn {
+    /* New button that appears after success */
+    #goToOpSheetBtn {
+      display: none;
       background: #2563eb;
       color: white;
-      display: none; /* Hidden initially */
+      margin-top: 30px;
+      width: auto;
+      padding: 12px 30px;
+      font-size: 1.2rem;
+      border-radius: 14px;
+      box-shadow: 0 5px 15px rgba(37, 99, 235, 0.6);
+      cursor: pointer;
+      border: none;
+      font-weight: 700;
+      transition: background-color 0.3s ease;
     }
 
-    /* Blinking animation */
-    @keyframes blink {
-      0%, 50%, 100% {opacity: 1;}
-      25%, 75% {opacity: 0;}
+    #goToOpSheetBtn:hover {
+      background-color: #1d4ed8;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     /* Confetti container */
@@ -108,19 +137,22 @@
       z-index: 9999;
       display: none;
     }
-
   </style>
 </head>
 <body>
-  <div class="payment-container" id="paymentContainer">
-    <h1>💰 Pay with mCoins</h1>
-    <p>Patient: <span id="patientName" class="highlight"></span></p>
-    <p>Current Balance: <span id="walletBalance" class="highlight">0</span> mCoins</p>
-    <p>Appointment Fee: <span id="fee" class="highlight">200</span> mCoins</p>
+  <div class="background-effect-wrapper">
+    <div class="payment-container" id="paymentContainer">
+      <h1>💰 Pay with mCoins</h1>
+      <p>Patient: <span id="patientName" class="highlight"></span></p>
+      <p>Current Balance: <span id="walletBalance" class="highlight">0</span> mCoins</p>
+      <p>Appointment Fee: <span id="fee" class="highlight">200</span> mCoins</p>
 
-    <button id="payBtn" class="btn pay-btn">✅ Pay & Confirm</button>
-    <button class="btn back-btn" onclick="window.location.href='appointment.html'">⬅ Back to Appointment</button>
-    <button id="continueBtn" class="btn continue-btn">Go to OP Sheet ➡️</button>
+      <button id="payBtn" class="btn pay-btn">✅ Pay & Confirm</button>
+      <button class="btn back-btn" onclick="window.location.href='appointment.html'">⬅ Back to Appointment</button>
+
+      <!-- Button shown after successful payment -->
+      <button id="goToOpSheetBtn">Go to Operation Sheet</button>
+    </div>
   </div>
 
   <canvas id="confetti-canvas"></canvas>
@@ -130,11 +162,13 @@
     let balance = 0;
     let currentUser;
 
+    const wrapper = document.querySelector('.background-effect-wrapper');
     const paymentContainer = document.getElementById('paymentContainer');
     const payBtn = document.getElementById('payBtn');
-    const continueBtn = document.getElementById('continueBtn');
+    const goToOpSheetBtn = document.getElementById('goToOpSheetBtn');
+    const walletBalanceSpan = document.getElementById('walletBalance');
 
-    // Confetti effect (reused)
+    // Confetti effect (same as before)
     const confettiCanvas = document.getElementById("confetti-canvas");
     const ctx = confettiCanvas.getContext("2d");
     let confettiElements = [];
@@ -208,6 +242,26 @@
       }, 5000);
     }
 
+    // Blinking background effect on wrapper
+    function applyBlinkEffect(color) {
+      let blinkInterval;
+      let visible = true;
+
+      wrapper.style.transition = "none"; // disable smooth transition for blinking
+
+      blinkInterval = setInterval(() => {
+        wrapper.style.backgroundColor = visible ? color : 'transparent';
+        visible = !visible;
+      }, 500);
+
+      return blinkInterval;
+    }
+
+    function resetBackground() {
+      wrapper.style.backgroundColor = 'transparent';
+      wrapper.style.transition = "background-color 0.5s ease";
+    }
+
     // Load patient & wallet data
     window.onload = function () {
       currentUser = JSON.parse(localStorage.getItem("currentUser"));
@@ -221,46 +275,26 @@
       balance = parseInt(currentUser.coins || 0);
 
       document.getElementById("patientName").textContent = currentUser.name || "";
-      document.getElementById("walletBalance").textContent = balance;
+      walletBalanceSpan.textContent = balance;
     };
-
-    // Blink helper function
-    function applyBlinkEffect(color) {
-      let blinkInterval;
-      let visible = true;
-
-      paymentContainer.style.backgroundColor = color;
-      paymentContainer.style.transition = "none"; // disable smooth transition for blinking
-
-      blinkInterval = setInterval(() => {
-        paymentContainer.style.backgroundColor = visible ? color : '#f0f4ff';
-        visible = !visible;
-      }, 500);
-
-      return blinkInterval;
-    }
-
-    // Reset background and remove blinking
-    function resetBackground() {
-      paymentContainer.style.backgroundColor = '#fff';
-      paymentContainer.style.transition = "background-color 0.5s ease";
-    }
 
     // Payment logic
     payBtn.addEventListener("click", function () {
       if (balance < FEE) {
-        // Payment failed - red blinking background for 3 seconds
-        let blinkId = applyBlinkEffect('#dc2626'); // red-600
+        // Blink red for failure
+        const failureBlink = applyBlinkEffect('rgba(255, 0, 0, 0.7)');
 
         setTimeout(() => {
-          clearInterval(blinkId);
+          clearInterval(failureBlink);
           resetBackground();
-        }, 3000);
+        }, 3000); // 3 seconds blinking red
 
         return;
       }
 
-      // Payment success
+      // Disable pay button during process
+      payBtn.disabled = true;
+
       balance -= FEE;
       currentUser.coins = balance;
       localStorage.setItem("currentUser", JSON.stringify(currentUser));
@@ -281,26 +315,23 @@
       };
       localStorage.setItem("appointment", JSON.stringify(appointment));
 
-      document.getElementById("walletBalance").textContent = balance;
+      walletBalanceSpan.textContent = balance;
 
-      // Show confetti and green blinking background for 5 seconds
+      // Start confetti and green blinking background for 5 seconds
       startConfetti();
-      let blinkId = applyBlinkEffect('#22c55e'); // green-500
-
-      // Disable pay button during success effect
-      payBtn.disabled = true;
+      const successBlink = applyBlinkEffect('rgba(22, 163, 74, 0.7)'); // green with some transparency
 
       setTimeout(() => {
-        clearInterval(blinkId);
+        clearInterval(successBlink);
         resetBackground();
 
-        // Show "Go to OP Sheet" button
-        continueBtn.style.display = 'block';
+        // Show button to navigate to op-sheet.html
+        goToOpSheetBtn.style.display = 'inline-block';
+
       }, 5000);
     });
 
-    // Continue button click
-    continueBtn.addEventListener("click", () => {
+    goToOpSheetBtn.addEventListener("click", () => {
       window.location.href = "op-sheet.html";
     });
   </script>
