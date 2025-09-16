@@ -1,375 +1,359 @@
-<!DOCTYPE html>  <html lang="en">  
-<head>  
-  <meta charset="UTF-8" />  
-  <meta name="viewport" content="width=device-width, initial-scale=1" />  
-  <title>My Bookings - City Care Hospital</title>  
-  <style>  
-    body {  
-      font-family: 'Segoe UI', sans-serif;  
-      background: #eef2ff;  
-      margin: 0;  
-      padding: 40px 20px;  
-      min-height: 100vh;  
-      display: flex;  
-      justify-content: center;  
-      align-items: flex-start;  
-    }  .container {  
-  max-width: 900px;  
-  width: 100%;  
-  background: #fff;  
-  border-radius: 12px;  
-  box-shadow: 0 15px 40px rgba(37, 99, 235, 0.3);  
-  padding: 30px 40px;  
-}  
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin - Manage Appointments</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      padding: 20px;
+      background: #eef2ff;
+      max-width: 1000px;
+      margin: auto;
+    }
+    h1 {
+      color: #1e3a8a;
+      text-align: center;
+    }
+    .flex-container {
+      display: flex;
+      gap: 30px;
+      justify-content: space-between;
+      margin-top: 30px;
+    }
+    .box {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      padding: 20px;
+      width: 48%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .appointment-card {
+      border: 2px solid #ccc;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+      cursor: pointer;
+      transition: border-color 0.3s ease;
+    }
+    .appointment-card:hover {
+      border-color: #2563eb;
+      background: #f0f4ff;
+    }
+    .appointment-card.approved {
+      border-color: green;
+      background: #e6ffe6;
+      cursor: default;
+    }
+    .appointment-header {
+      font-weight: 600;
+      color: #2563eb;
+      margin-bottom: 8px;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: 600;
+      color: #374151;
+    }
+    select, button {
+      margin-top: 6px;
+      padding: 8px;
+      width: 100%;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+    button {
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    button:disabled {
+      background-color: #999;
+      cursor: not-allowed;
+    }
+    .doctor-list {
+      margin-top: 10px;
+      max-height: 150px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 5px;
+    }
+    .doctor-item {
+      padding: 6px;
+      cursor: pointer;
+      border-radius: 4px;
+      margin-bottom: 4px;
+      transition: background-color 0.2s;
+    }
+    .doctor-item:hover {
+      background-color: #e0e7ff;
+    }
+    .doctor-item.selected {
+      background-color: #2563eb;
+      color: white;
+    }
+    .no-appointments {
+      text-align: center;
+      color: #6b7280;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <h1>Manage Appointments</h1>
+  <div class="flex-container">
+    <div class="box" id="pendingAppointmentsBox">
+      <h2>Pending Appointments</h2>
+      <div id="pendingAppointmentsList"></div>
+      <p class="no-appointments" id="noPending" style="display:none;">No pending appointments.</p>
+    </div>
+    <div class="box" id="approvedAppointmentsBox">
+      <h2>Approved Appointments</h2>
+      <div id="approvedAppointmentsList"></div>
+      <p class="no-appointments" id="noApproved" style="display:none;">No approved appointments.</p>
+    </div>
+  </div>
 
-h1 {  
-  color: #1e3a8a;  
-  text-align: center;  
-  margin-bottom: 15px;  
-  font-weight: 700;  
-  font-size: 2.4rem;  
-}  
+  <hr style="margin: 40px 0;" />
 
-.count {  
-  text-align: center;  
-  font-size: 1.2rem;  
-  margin-bottom: 25px;  
-  color: #374151;  
-}  
+  <div class="box" id="approvalPanel" style="display:none;">
+    <h2>Approve Appointment</h2>
+    <div id="selectedAppointmentDetails"></div>
 
-.booking-card {  
-  background: #f9fafb;  
-  border-radius: 14px;  
-  padding: 18px 25px;  
-  margin-bottom: 18px;  
-  display: flex;  
-  justify-content: space-between;  
-  align-items: center;  
-  box-shadow: inset 0 0 12px #e5e7eb;  
-}  
+    <label for="departmentSelect">Select Department:</label>
+    <select id="departmentSelect" disabled>
+      <option value="">Select department</option>
+    </select>
 
-.booking-info {  
-  max-width: 70%;  
-}  
+    <label for="wardSelect">Select Ward:</label>
+    <select id="wardSelect" disabled>
+      <option value="">Select ward</option>
+    </select>
 
-.booking-info h2 {  
-  margin: 0 0 6px 0;  
-  font-size: 1.2rem;  
-  color: #2563eb;  
-}  
+    <label>Available Doctors:</label>
+    <div id="doctorList" class="doctor-list">
+      <p style="color:#888;">Select department and ward to see doctors.</p>
+    </div>
 
-.booking-info p {  
-  margin: 3px 0;  
-  font-size: 1rem;  
-  color: #4b5563;  
-}  
+    <button id="approveBtn" disabled>Approve Appointment</button>
+  </div>
 
-.booking-info p span {  
-  font-weight: 600;  
-  color: #111827;  
-}  
+  <script src="doctors.js"></script>
+  <script>
+    // Load appointments from localStorage
+    let appointments = JSON.parse(localStorage.getItem("appointments")) || [];
 
-.actions {  
-  display: flex;  
-  flex-direction: column;  
-  gap: 8px;  
-}  
+    // DOM Elements
+    const pendingList = document.getElementById('pendingAppointmentsList');
+    const approvedList = document.getElementById('approvedAppointmentsList');
+    const noPending = document.getElementById('noPending');
+    const noApproved = document.getElementById('noApproved');
+    const approvalPanel = document.getElementById('approvalPanel');
+    const selectedDetails = document.getElementById('selectedAppointmentDetails');
+    const departmentSelect = document.getElementById('departmentSelect');
+    const wardSelect = document.getElementById('wardSelect');
+    const doctorList = document.getElementById('doctorList');
+    const approveBtn = document.getElementById('approveBtn');
 
-.btn {  
-  background: #2563eb;  
-  border: none;  
-  color: white;  
-  padding: 8px 14px;  
-  border-radius: 8px;  
-  font-weight: 600;  
-  font-size: 0.95rem;  
-  cursor: pointer;  
-  transition: background 0.3s ease;  
-}  
+    let selectedAppointmentIndex = null;
+    let selectedDoctor = null;
 
-.btn:hover {  
-  background: #1e40af;  
-}  
+    // Utility: get unique departments and wards from appointments
+    function getDepartmentsAndWards() {
+      const departments = new Set();
+      const wards = new Set();
+      appointments.forEach(a => {
+        if(a.department) departments.add(a.department);
+        if(a.ward) wards.add(a.ward);
+      });
+      return {
+        departments: Array.from(departments).sort(),
+        wards: Array.from(wards).sort()
+      };
+    }
 
-.no-bookings {  
-  text-align: center;  
-  font-size: 1.2rem;  
-  color: #6b7280;  
-  margin-top: 70px;  
-}  
+    // Render pending and approved appointments
+    function renderAppointments() {
+      pendingList.innerHTML = '';
+      approvedList.innerHTML = '';
+      const pending = appointments.filter(a => !a.doctor);
+      const approved = appointments.filter(a => a.doctor);
 
-/* Modal */  
-#opSheetModal {  
-  position: fixed;  
-  inset: 0;  
-  background: rgba(0, 0, 0, 0.6);  
-  display: none;  
-  justify-content: center;  
-  align-items: center;  
-  z-index: 1100;  
-}  
+      if (pending.length === 0) {
+        noPending.style.display = 'block';
+      } else {
+        noPending.style.display = 'none';
+        pending.forEach((appt, i) => {
+          const div = document.createElement('div');
+          div.className = 'appointment-card';
+          div.dataset.index = appointments.indexOf(appt);
+          div.innerHTML = `
+            <div class="appointment-header">#${appointments.indexOf(appt) + 1} - ${appt.name}</div>
+            <div><strong>Date:</strong> ${appt.date}</div>
+            <div><strong>Department:</strong> ${appt.department}</div>
+            <div><strong>Ward:</strong> ${appt.ward}</div>
+          `;
+          pendingList.appendChild(div);
+        });
+      }
 
-#opSheetModal.active {  
-  display: flex;  
-}  
+      if (approved.length === 0) {
+        noApproved.style.display = 'block';
+      } else {
+        noApproved.style.display = 'none';
+        approved.forEach((appt) => {
+          const div = document.createElement('div');
+          div.className = 'appointment-card approved';
+          div.innerHTML = `
+            <div class="appointment-header">#${appointments.indexOf(appt) + 1} - ${appt.name}</div>
+            <div><strong>Date:</strong> ${appt.date}</div>
+            <div><strong>Department:</strong> ${appt.department}</div>
+            <div><strong>Ward:</strong> ${appt.ward}</div>
+            <div><strong>Doctor:</strong> ${appt.doctor.name}</div>
+          `;
+          approvedList.appendChild(div);
+        });
+      }
+    }
 
-.op-sheet-modal-content {  
-  background: white;  
-  border-radius: 14px;  
-  max-width: 750px;  
-  width: 100%;  
-  max-height: 90vh;  
-  overflow-y: auto;  
-  padding: 30px 35px;  
-  position: relative;  
-}  
+    // Fill department select options
+    function populateDepartmentSelect() {
+      const {departments} = getDepartmentsAndWards();
+      departmentSelect.innerHTML = '<option value="">Select department</option>';
+      departments.forEach(dep => {
+        const opt = document.createElement('option');
+        opt.value = dep;
+        opt.textContent = dep;
+        departmentSelect.appendChild(opt);
+      });
+      departmentSelect.disabled = false;
+    }
 
-.close-btn {  
-  position: absolute;  
-  top: 10px;  
-  right: 20px;  
-  font-size: 26px;  
-  font-weight: bold;  
-  cursor: pointer;  
-  color: #444;  
-}  
+    // Fill ward select options filtered by department
+    function populateWardSelect(department) {
+      const wards = new Set();
+      appointments.forEach(a => {
+        if(a.department === department && a.ward) wards.add(a.ward);
+      });
+      wardSelect.innerHTML = '<option value="">Select ward</option>';
+      Array.from(wards).sort().forEach(w => {
+        const opt = document.createElement('option');
+        opt.value = w;
+        opt.textContent = w;
+        wardSelect.appendChild(opt);
+      });
+      wardSelect.disabled = false;
+    }
 
-.op-sheet {  
-  border: 2px solid #111827;  
-  border-radius: 12px;  
-  padding: 20px;  
-  background: #fff;  
-}  
+    // Show doctors matching selected department and ward
+    function showDoctors(department, ward) {
+      doctorList.innerHTML = '';
+      selectedDoctor = null;
+      approveBtn.disabled = true;
 
-.op-sheet .header {  
-  text-align: center;  
-  border-bottom: 2px solid #111827;  
-  padding-bottom: 10px;  
-  margin-bottom: 20px;  
-}  
+      const filteredDoctors = doctors.filter(doc => doc.department === department && doc.ward === ward);
 
-.op-sheet .header h1 {  
-  margin: 0;  
-  font-size: 1.5rem;  
-  color: #1e3a8a;  
-}  
+      if (filteredDoctors.length === 0) {
+        doctorList.innerHTML = '<p style="color:#888;">No doctors found for this department and ward.</p>';
+        return;
+      }
 
-.op-sheet .header p {  
-  margin: 4px 0 0;  
-  font-style: italic;  
-  color: #555;  
-}  
+      filteredDoctors.forEach((doc, idx) => {
+        const div = document.createElement('div');
+        div.className = 'doctor-item';
+        div.textContent = `${doc.name} (${doc.qualification}) - ${doc.specialization}`;
+        div.dataset.index = idx;
+        div.addEventListener('click', () => {
+          // Deselect all
+          doctorList.querySelectorAll('.doctor-item').forEach(d => d.classList.remove('selected'));
+          div.classList.add('selected');
+          selectedDoctor = doc;
+          approveBtn.disabled = false;
+        });
+        doctorList.appendChild(div);
+      });
+    }
 
-.op-sheet h2 {  
-  font-size: 1.2rem;  
-  border-bottom: 1px solid #ccc;  
-  padding-bottom: 5px;  
-  margin-top: 20px;  
-  margin-bottom: 10px;  
-}  
+    // When an appointment card is clicked in pending list
+    pendingList.addEventListener('click', e => {
+      let card = e.target.closest('.appointment-card');
+      if (!card) return;
+      selectedAppointmentIndex = parseInt(card.dataset.index);
+      const appt = appointments[selectedAppointmentIndex];
+      approvalPanel.style.display = 'block';
+      selectedDetails.innerHTML = `
+        <p><strong>Name:</strong> ${appt.name}</p>
+        <p><strong>Date:</strong> ${appt.date}</p>
+        <p><strong>Problem:</strong> ${appt.problem || 'N/A'}</p>
+      `;
 
-.op-sheet table {  
-  width: 100%;  
-  border-collapse: collapse;  
-  margin-bottom: 10px;  
-}  
+      // Populate department and ward selects based on this appointment
+      populateDepartmentSelect();
+      departmentSelect.value = appt.department || '';
+      populateWardSelect(departmentSelect.value);
+      wardSelect.value = appt.ward || '';
 
-.op-sheet td {  
-  padding: 6px 8px;  
-  border-bottom: 1px solid #eee;  
-}  
+      // Show doctors for current selections
+      if(departmentSelect.value && wardSelect.value){
+        showDoctors(departmentSelect.value, wardSelect.value);
+      } else {
+        doctorList.innerHTML = '<p style="color:#888;">Select department and ward to see doctors.</p>';
+      }
+      approveBtn.disabled = true;
+      selectedDoctor = null;
+    });
 
-.op-sheet td:first-child {  
-  font-weight: bold;  
-  width: 35%;  
-}  
+    // Update wards when department changes
+    departmentSelect.addEventListener('change', () => {
+      populateWardSelect(departmentSelect.value);
+      wardSelect.value = '';
+      doctorList.innerHTML = '<p style="color:#888;">Select ward to see doctors.</p>';
+      approveBtn.disabled = true;
+      selectedDoctor = null;
+    });
 
-.footer {  
-  text-align: right;  
-  font-style: italic;  
-  margin-top: 15px;  
-  color: #444;  
-}  
+    // Update doctors when ward changes
+    wardSelect.addEventListener('change', () => {
+      if(departmentSelect.value && wardSelect.value){
+        showDoctors(departmentSelect.value, wardSelect.value);
+      } else {
+        doctorList.innerHTML = '<p style="color:#888;">Select department and ward to see doctors.</p>';
+      }
+      approveBtn.disabled = true;
+      selectedDoctor = null;
+    });
 
-@media (max-width: 600px) {  
-  .booking-card {  
-    flex-direction: column;  
-    align-items: flex-start;  
-  }  
-  .booking-info {  
-    max-width: 100%;  
-    margin-bottom: 12px;  
-  }  
-  .actions {  
-    flex-direction: row;  
-    width: 100%;  
-    justify-content: space-between;  
-  }  
-}
+    // Approve button click: assign doctor and update appointment
+    approveBtn.addEventListener('click', () => {
+      if(selectedAppointmentIndex === null || !selectedDoctor) return;
 
-  </style>  
-</head>  
-<body>  
-  <div class="container">  
-    <h1>My Appointments</h1>  
-    <p class="count" id="bookingCount"></p>  
-    <div id="bookingsList"></div>  
-  </div>    <!-- Modal -->    <div id="opSheetModal">  
-    <div class="op-sheet-modal-content">  
-      <span class="close-btn">&times;</span>  
-      <div class="op-sheet" id="opSheetContent"></div>  
-      <button class="btn" id="downloadImageBtn">Download as Image</button>  
-    </div>  
-  </div>    <!-- html2canvas CDN -->    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>  <script>  
-  const bookingsList = document.getElementById("bookingsList");  
-  const bookingCount = document.getElementById("bookingCount");  
-  const modal = document.getElementById("opSheetModal");  
-  const closeBtn = modal.querySelector(".close-btn");  
-  const opSheetContent = document.getElementById("opSheetContent");  
-  const downloadImageBtn = document.getElementById("downloadImageBtn");  
-  
-  let appointments = JSON.parse(localStorage.getItem("appointments")) || [];  
-  
-  bookingCount.textContent = `You have ${appointments.length} appointment${appointments.length !== 1 ? 's' : ''}.`;  
-  
-  if (appointments.length === 0) {  
-    bookingsList.innerHTML = '<p class="no-bookings">No appointments booked yet.</p>';  
-  } else {  
-    appointments.forEach((appt, index) => {  
-      const card = document.createElement("div");  
-      card.className = "booking-card";  
-      card.innerHTML = `  
-        <div class="booking-info">  
-          <h2>Appointment #${index + 1}</h2>  
-          <p><span>Name:</span> ${appt.name}</p>  
-          <p><span>Date:</span> ${appt.date}</p>  
-          <p><span>Department:</span> ${appt.department}</p>  
-          <p><span>Slot:</span> ${appt.slot}</p>  
-        </div>  
-        <div class="actions">  
-          <button class="btn view-btn" data-index="${index}">View OP Sheet</button>  
-        </div>  
-      `;  
-      bookingsList.appendChild(card);  
-    });  
-  }  
-function showOpSheet(appt) {  
-  opSheetContent.innerHTML = `  
-    <div class="header">  
-      <h1>🏥 City Care Hospital</h1>  
-      <p>Outpatient Department - OP Sheet</p>  
-    </div>  
-    <h2>Patient Details</h2>  
-    <table>  
-      <tr><td>Name:</td><td>${appt.name}</td></tr>  
-      <tr><td>Gender:</td><td>${appt.gender}</td></tr>  
-      <tr><td>Age:</td><td>${appt.age}</td></tr>  
-      <tr><td>Phone:</td><td>${appt.phone}</td></tr>  
-      <tr><td>Email:</td><td>${appt.email}</td></tr>  
-      <tr><td>Address:</td><td>${appt.address}</td></tr>  
-    </table>  
-    <h2>Appointment Details</h2>  
-    <table>  
-      <tr><td>Problem:</td><td>${appt.problem}</td></tr>  
-      <tr><td>Department:</td><td>${appt.department}</td></tr>  
-      <tr><td>Ward:</td><td>${appt.ward}</td></tr>  
-      <tr><td>Date:</td><td>${appt.date}</td></tr>  
-      <tr><td>Slot:</td><td>${appt.slot}</td></tr>  
-    </table>  
-  `;  
-  
-  // 🔹 Show Doctor Details if available  
-  if (appt.doctor) {  
-    opSheetContent.innerHTML += `  
-      <h2>Doctor Details</h2>  
-      <table>  
-        <tr><td>Doctor:</td><td>${appt.doctor.name}</td></tr>  
-        <tr><td>Qualification:</td><td>${appt.doctor.qualification}</td></tr>  
-        <tr><td>Specialization:</td><td>${appt.doctor.specialization}</td></tr>  
-      </table>  
-      <p style="margin-top:12px; font-weight:bold; color:#1e3a8a;">  
-        ${appt.doctor.name} has approved to check you on ${appt.date}.    
-        Please be present by morning 9.  
-      </p>  
-    `;  
-  }  
-  
-  opSheetContent.innerHTML += `  
-    <div class="footer">Thank you for choosing City Care Hospital. Wishing you good health!</div>  
-  `;  
-  
-  modal.classList.add("active");  
-  
-  // enable download as image for this sheet  
-  downloadImageBtn.onclick = () => {  
-    html2canvas(opSheetContent).then(canvas => {  
-      const link = document.createElement("a");  
-      link.download = `OP_Sheet_${appt.date}.png`;  
-      link.href = canvas.toDataURL("image/png");  
-      link.click();  
-    });  
-  };  
-}  
-  function showOpSheet(appt) {  
-    opSheetContent.innerHTML = `  
-      <div class="header">  
-        <h1>🏥 city Hospital</h1>  
-        <p>Outpatient Department - OP Sheet</p>  
-      </div>  
-      <h2>Patient Details</h2>  
-      <table>  
-        <tr><td>Name:</td><td>${appt.name}</td></tr>  
-        <tr><td>Gender:</td><td>${appt.gender}</td></tr>  
-        <tr><td>Age:</td><td>${appt.age}</td></tr>  
-        <tr><td>Phone:</td><td>${appt.phone}</td></tr>  
-        <tr><td>Email:</td><td>${appt.email}</td></tr>  
-        <tr><td>Address:</td><td>${appt.address}</td></tr>  
-      </table>  
-      <h2>Appointment Details</h2>  
-      <table>  
-        <tr><td>Problem:</td><td>${appt.problem}</td></tr>  
-        <tr><td>Department:</td><td>${appt.department}</td></tr>  
-        <tr><td>Ward:</td><td>${appt.ward}</td></tr>  
-        <tr><td>Date:</td><td>${appt.date}</td></tr>  
-        <tr><td>Slot:</td><td>${appt.slot}</td></tr>  
-      </table> <div class="footer">Thank you for choosing City Hospital. Wishing you good health!</div>  
-    `;  
-    modal.classList.add("active");  
-if (appt.doctor) {  
-  opSheetContent.innerHTML += `  
-    <h2>Doctor Details</h2>  
-    <table>  
-      <tr><td>Doctor:</td><td>${appt.doctor.name}</td></tr>  
-      <tr><td>Qualification:</td><td>${appt.doctor.qualification}</td></tr>  
-      <tr><td>Specialization:</td><td>${appt.doctor.specialization}</td></tr>  
-    </table>  
-    <p style="margin-top:12px; font-weight:bold; color:#1e3a8a;">  
-      ${appt.doctor.name} has approved to check you on ${appt.date}. Please be present by morning 9.  
-    </p>  
-  `;  
-}  
-       
-  
-    // enable download as image for this sheet  
-    downloadImageBtn.onclick = () => {  
-      html2canvas(opSheetContent).then(canvas => {  
-        const link = document.createElement("a");  
-        link.download = `OP_Sheet_${appt.date}.png`;  
-        link.href = canvas.toDataURL("image/png");  
-        link.click();  
-      });  
-    };  
-  }  
-  
-  // Event delegation  
-  bookingsList.addEventListener("click", e => {  
-    if (e.target.classList.contains("view-btn")) {  
-      const index = e.target.dataset.index;  
-      showOpSheet(appointments[index]);  
-    }  
-  });  
-  
-  closeBtn.addEventListener("click", () => modal.classList.remove("active"));  
-  modal.addEventListener("click", e => { if (e.target === modal) modal.classList.remove("active"); });  
-</script>  </body>  
-</html>  
+      // Update appointment
+      appointments[selectedAppointmentIndex].doctor = selectedDoctor;
+      appointments[selectedAppointmentIndex].department = departmentSelect.value;
+      appointments[selectedAppointmentIndex].ward = wardSelect.value;
+
+      // Save back to localStorage
+      localStorage.setItem('appointments', JSON.stringify(appointments));
+
+      // Refresh UI
+      approvalPanel.style.display = 'none';
+      selectedAppointmentIndex = null;
+      selectedDoctor = null;
+      renderAppointments();
+
+      alert('Appointment approved with doctor assigned!');
+    });
+
+    // Initial render
+    renderAppointments();
+  </script>
+</body>
+</html>
