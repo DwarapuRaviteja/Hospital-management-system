@@ -15,19 +15,11 @@
       align-items: center;
       min-height: 100vh;
       flex-direction: column;
-    }
-
-    /* Outer wrapper that will get blinking background */
-    .background-effect-wrapper {
-      padding: 20px;
-      border-radius: 20px;
-      background-color: transparent;
       transition: background-color 0.3s ease;
-      display: inline-block; /* shrink-wrap container */
     }
 
     .payment-container {
-      background: #fff; /* container bg remains white */
+      background: #fff;
       padding: 36px 44px;
       border-radius: 16px;
       box-shadow: 0 8px 24px rgba(37, 99, 235, 0.15);
@@ -36,7 +28,6 @@
       text-align: center;
       animation: fadeIn 0.8s ease forwards;
       position: relative;
-      overflow: visible;
       z-index: 10;
     }
 
@@ -75,7 +66,6 @@
       background: #16a34a;
       color: white;
     }
-
     .pay-btn:hover {
       background: #15803d;
       box-shadow: 0 6px 16px rgba(22, 163, 74, 0.7);
@@ -88,41 +78,26 @@
       box-shadow: none;
       font-weight: 600;
     }
-
     .back-btn:hover {
       background: #c7d2fe;
     }
 
-    /* New button shown after success */
-    #goToOpSheetBtn {
+    /* Buy coins button (shown only on failure) */
+    #buyCoinsBtn {
       display: none;
-      background: #2563eb;
-      color: white;
-      margin-top: 30px;
-      width: auto;
-      padding: 12px 30px;
-      font-size: 1.2rem;
-      border-radius: 14px;
-      box-shadow: 0 5px 15px rgba(37, 99, 235, 0.6);
-      cursor: pointer;
-      border: none;
+      background: #f59e0b;
+      color: #fff;
       font-weight: 700;
-      transition: background-color 0.3s ease;
+      margin-top: 20px;
+      box-shadow: 0 5px 12px rgba(245, 158, 11, 0.6);
     }
-
-    #goToOpSheetBtn:hover {
-      background-color: #1d4ed8;
+    #buyCoinsBtn:hover {
+      background: #d97706;
     }
 
     @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     /* Confetti canvas */
@@ -139,19 +114,15 @@
   </style>
 </head>
 <body>
-  <div class="background-effect-wrapper" id="backgroundWrapper">
-    <div class="payment-container" id="paymentContainer">
-      <h1>💰 Pay with mCoins</h1>
-      <p>Patient: <span id="patientName" class="highlight"></span></p>
-      <p>Current Balance: <span id="walletBalance" class="highlight">0</span> mCoins</p>
-      <p>Appointment Fee: <span id="fee" class="highlight">200</span> mCoins</p>
+  <div class="payment-container">
+    <h1>💰 Pay with mCoins</h1>
+    <p>Patient: <span id="patientName" class="highlight"></span></p>
+    <p>Current Balance: <span id="walletBalance" class="highlight">0</span> mCoins</p>
+    <p>Appointment Fee: <span id="fee" class="highlight">200</span> mCoins</p>
 
-      <button id="payBtn" class="btn pay-btn">✅ Pay & Confirm</button>
-      <button class="btn back-btn" onclick="window.location.href='appointment.html'">⬅ Back to Appointment</button>
-
-      <!-- Button shown after success -->
-      <button id="goToOpSheetBtn">Go to Operation Sheet</button>
-    </div>
+    <button id="payBtn" class="btn pay-btn">✅ Pay & Confirm</button>
+    <button class="btn back-btn" onclick="window.location.href='appointment.html'">⬅ Back to Appointment</button>
+    <button id="buyCoinsBtn" class="btn">💳 Buy Coins</button>
   </div>
 
   <canvas id="confetti-canvas"></canvas>
@@ -161,10 +132,9 @@
     let balance = 0;
     let currentUser;
 
-    const wrapper = document.getElementById('backgroundWrapper');
     const payBtn = document.getElementById('payBtn');
-    const goToOpSheetBtn = document.getElementById('goToOpSheetBtn');
     const walletBalanceSpan = document.getElementById('walletBalance');
+    const buyCoinsBtn = document.getElementById('buyCoinsBtn');
 
     // Confetti setup
     const confettiCanvas = document.getElementById("confetti-canvas");
@@ -190,19 +160,16 @@
         this.tiltSpeed = Math.random() * 0.1 + 0.05;
         this.tiltAngle = 0;
       }
-
       update() {
         this.y += this.speed;
         this.tiltAngle += this.tiltSpeed;
         this.tilt = Math.sin(this.tiltAngle) * 15;
-
         if (this.y > confettiCanvas.height) {
           this.y = -10;
           this.x = Math.random() * confettiCanvas.width;
           this.speed = Math.random() * 3 + 2;
         }
       }
-
       draw() {
         ctx.beginPath();
         ctx.lineWidth = this.radius / 2;
@@ -222,10 +189,7 @@
 
     function runConfetti() {
       ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
-      confettiElements.forEach((c) => {
-        c.update();
-        c.draw();
-      });
+      confettiElements.forEach((c) => { c.update(); c.draw(); });
       confettiAnimationFrame = requestAnimationFrame(runConfetti);
     }
 
@@ -233,71 +197,57 @@
       confettiCanvas.style.display = "block";
       createConfetti(150);
       runConfetti();
-
       setTimeout(() => {
         confettiCanvas.style.display = "none";
         cancelAnimationFrame(confettiAnimationFrame);
       }, 5000);
     }
 
-    // Blink background on wrapper
-    function applyBlinkEffect(color) {
+    // Blink background
+    function blinkBackground(color, duration, callback) {
       let visible = true;
-      wrapper.style.transition = 'none'; // disable transition for blinking
-
       const blinkInterval = setInterval(() => {
-        wrapper.style.backgroundColor = visible ? color : 'transparent';
+        document.body.style.backgroundColor = visible ? color : 'transparent';
         visible = !visible;
       }, 500);
 
-      return blinkInterval;
+      setTimeout(() => {
+        clearInterval(blinkInterval);
+        document.body.style.backgroundColor = '#f0f4ff';
+        if (callback) callback();
+      }, duration);
     }
 
-    function resetBackground() {
-      wrapper.style.backgroundColor = 'transparent';
-      wrapper.style.transition = 'background-color 0.3s ease';
-    }
-
-    // Load current user and balance
+    // Load user
     window.onload = function () {
       currentUser = JSON.parse(localStorage.getItem("currentUser"));
-
       if (!currentUser) {
         alert("You are not logged in! Redirecting...");
         window.location.href = "index.html";
         return;
       }
-
       balance = parseInt(currentUser.coins || 0);
       document.getElementById("patientName").textContent = currentUser.name || "";
       walletBalanceSpan.textContent = balance;
     };
 
-    // Payment button handler
+    // Payment
     payBtn.addEventListener("click", () => {
       if (balance < FEE) {
-        // Not enough balance: blink red background 3 seconds
-        const failureBlink = applyBlinkEffect('rgba(255, 0, 0, 0.7)');
-        setTimeout(() => {
-          clearInterval(failureBlink);
-          resetBackground();
-        }, 3000);
+        blinkBackground('rgba(255, 0, 0, 0.7)', 3000);
+        buyCoinsBtn.style.display = "block"; // show buy button
         return;
       }
 
-      // Disable pay button to prevent multiple clicks
       payBtn.disabled = true;
-
       balance -= FEE;
       currentUser.coins = balance;
       localStorage.setItem("currentUser", JSON.stringify(currentUser));
 
-      // Update users list in localStorage
       let users = JSON.parse(localStorage.getItem("users")) || [];
       users = users.map(u => u.email === currentUser.email ? currentUser : u);
       localStorage.setItem("users", JSON.stringify(users));
 
-      // Save appointment info (if needed)
       const appointment = {
         problem: localStorage.getItem("problem"),
         department: localStorage.getItem("department"),
@@ -310,22 +260,15 @@
 
       walletBalanceSpan.textContent = balance;
 
-      // Start confetti and green blinking for 5 seconds
       startConfetti();
-      const successBlink = applyBlinkEffect('rgba(22, 163, 74, 0.7)');
-
-      setTimeout(() => {
-        clearInterval(successBlink);
-        resetBackground();
-
-        // Show button to proceed
-        goToOpSheetBtn.style.display = 'inline-block';
-      }, 5000);
+      blinkBackground('rgba(22, 163, 74, 0.7)', 5000, () => {
+        window.location.href = "op-sheet.html";
+      });
     });
 
-    // Navigate to op-sheet.html on click
-    goToOpSheetBtn.addEventListener("click", () => {
-      window.location.href = "op-sheet.html";
+    // Buy coins button redirect
+    buyCoinsBtn.addEventListener("click", () => {
+      window.location.href = "wallet.html";
     });
   </script>
 </body>
