@@ -14,7 +14,8 @@
     }
 
  .glow-btn {
-      display: inline-block;
+      display: block;
+    margin: 0 auto;
   
       padding: 15px 30px;
       font-size: 18px;
@@ -225,6 +226,13 @@
       box-shadow: 0 4px 10px rgba(0,0,0,0.2);
       transition: 0.3s;
     }
+    
+    .button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px; /* optional */
+}
+
 
     .appointment-btn:hover {
       background-color: #1e40af;
@@ -320,8 +328,12 @@
   </div>
 
 
-<button id="glow-btn" class="glow-btn" onclick="navigateTo('explore.html')" target="_blank" 
-     >Explore Different Hospitals</button>
+<div class="button-container">
+    <button id="glow-btn" class="glow-btn" onclick="navigateTo('explore.html')" target="_blank">
+        Explore Different Hospitals
+    </button>
+</div>
+
   
 
   <!-- Appointment & Process Section -->
