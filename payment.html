@@ -15,6 +15,7 @@
       align-items: center;
       min-height: 100vh;
       flex-direction: column;
+      transition: background-color 0.5s ease;
     }
 
     .payment-container {
@@ -28,6 +29,7 @@
       animation: fadeIn 0.8s ease forwards;
       position: relative;
       overflow: visible;
+      z-index: 10;
     }
 
     h1 {
@@ -83,15 +85,16 @@
       background: #c7d2fe;
     }
 
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    .continue-btn {
+      background: #2563eb;
+      color: white;
+      display: none; /* Hidden initially */
+    }
+
+    /* Blinking animation */
+    @keyframes blink {
+      0%, 50%, 100% {opacity: 1;}
+      25%, 75% {opacity: 0;}
     }
 
     /* Confetti container */
@@ -105,10 +108,11 @@
       z-index: 9999;
       display: none;
     }
+
   </style>
 </head>
 <body>
-  <div class="payment-container">
+  <div class="payment-container" id="paymentContainer">
     <h1>💰 Pay with mCoins</h1>
     <p>Patient: <span id="patientName" class="highlight"></span></p>
     <p>Current Balance: <span id="walletBalance" class="highlight">0</span> mCoins</p>
@@ -116,6 +120,7 @@
 
     <button id="payBtn" class="btn pay-btn">✅ Pay & Confirm</button>
     <button class="btn back-btn" onclick="window.location.href='appointment.html'">⬅ Back to Appointment</button>
+    <button id="continueBtn" class="btn continue-btn">Go to OP Sheet ➡️</button>
   </div>
 
   <canvas id="confetti-canvas"></canvas>
@@ -124,6 +129,10 @@
     const FEE = 200;
     let balance = 0;
     let currentUser;
+
+    const paymentContainer = document.getElementById('paymentContainer');
+    const payBtn = document.getElementById('payBtn');
+    const continueBtn = document.getElementById('continueBtn');
 
     // Confetti effect (reused)
     const confettiCanvas = document.getElementById("confetti-canvas");
@@ -215,13 +224,43 @@
       document.getElementById("walletBalance").textContent = balance;
     };
 
+    // Blink helper function
+    function applyBlinkEffect(color) {
+      let blinkInterval;
+      let visible = true;
+
+      paymentContainer.style.backgroundColor = color;
+      paymentContainer.style.transition = "none"; // disable smooth transition for blinking
+
+      blinkInterval = setInterval(() => {
+        paymentContainer.style.backgroundColor = visible ? color : '#f0f4ff';
+        visible = !visible;
+      }, 500);
+
+      return blinkInterval;
+    }
+
+    // Reset background and remove blinking
+    function resetBackground() {
+      paymentContainer.style.backgroundColor = '#fff';
+      paymentContainer.style.transition = "background-color 0.5s ease";
+    }
+
     // Payment logic
-    document.getElementById("payBtn").addEventListener("click", function () {
+    payBtn.addEventListener("click", function () {
       if (balance < FEE) {
-        alert("❌ Not enough mCoins! Please recharge your wallet.");
+        // Payment failed - red blinking background for 3 seconds
+        let blinkId = applyBlinkEffect('#dc2626'); // red-600
+
+        setTimeout(() => {
+          clearInterval(blinkId);
+          resetBackground();
+        }, 3000);
+
         return;
       }
 
+      // Payment success
       balance -= FEE;
       currentUser.coins = balance;
       localStorage.setItem("currentUser", JSON.stringify(currentUser));
@@ -244,11 +283,25 @@
 
       document.getElementById("walletBalance").textContent = balance;
 
+      // Show confetti and green blinking background for 5 seconds
       startConfetti();
+      let blinkId = applyBlinkEffect('#22c55e'); // green-500
+
+      // Disable pay button during success effect
+      payBtn.disabled = true;
+
       setTimeout(() => {
-        alert("✅ Payment successful! Remaining balance: " + balance + " mCoins 🎉");
-        window.location.href = "op-sheet.html";
-      }, 600);
+        clearInterval(blinkId);
+        resetBackground();
+
+        // Show "Go to OP Sheet" button
+        continueBtn.style.display = 'block';
+      }, 5000);
+    });
+
+    // Continue button click
+    continueBtn.addEventListener("click", () => {
+      window.location.href = "op-sheet.html";
     });
   </script>
 </body>
