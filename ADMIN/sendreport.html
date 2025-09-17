@@ -3,31 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Send Report - Admin</title>
+  <title>Send Report</title>
   <style>
     body { font-family: Arial, sans-serif; background: #eef2ff; padding: 30px; }
-    .container {
-      max-width: 700px; margin: auto; background: white; padding: 20px; border-radius: 10px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    }
+    .container { max-width: 700px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
     h1 { text-align: center; color: #1e3a8a; }
     label { font-weight: bold; display: block; margin-top: 15px; }
-    select, input[type="file"], button {
-      margin-top: 8px; padding: 10px; width: 100%; border-radius: 6px; border: 1px solid #ccc;
-    }
-    button {
-      background: #2563eb; color: white; font-weight: bold; cursor: pointer; margin-top: 20px;
-    }
+    select, input[type="file"], button { margin-top: 8px; padding: 10px; width: 100%; border-radius: 6px; border: 1px solid #ccc; }
+    button { background: #2563eb; color: white; font-weight: bold; cursor: pointer; margin-top: 20px; }
     button:hover { background: #1e40af; }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Upload Reports</h1>
-    <label for="email">Select Approved Appointment (User Email):</label>
+    <label>Select Approved Appointment:</label>
     <select id="email"></select>
 
-    <label for="fileInput">Upload Report File (PDF, JPG, PNG, DOCX...):</label>
+    <label>Upload Report File:</label>
     <input type="file" id="fileInput" multiple />
 
     <button onclick="saveReport()">Save Report</button>
@@ -36,9 +29,8 @@
   <script>
     const emailSelect = document.getElementById("email");
     const appointments = JSON.parse(localStorage.getItem("appointments")) || [];
+    const approved = appointments.filter(a => a.status === "approved");
 
-    // Only approved appointments
-    const approved = appointments.filter(a => a.status === "approved" && a.email);
     approved.forEach(appt => {
       let opt = document.createElement("option");
       opt.value = appt.email;
@@ -48,21 +40,14 @@
     });
 
     function saveReport() {
-      if (!emailSelect.value) {
-        alert("Select a user first!");
-        return;
-      }
+      if (!emailSelect.value) return alert("Select a user first!");
       const files = document.getElementById("fileInput").files;
-      if (!files.length) {
-        alert("Select at least one file");
-        return;
-      }
+      if (!files.length) return alert("Select a file!");
 
       const selectedAppt = JSON.parse(emailSelect.options[emailSelect.selectedIndex].dataset.appt);
       const reportsData = JSON.parse(localStorage.getItem("reports")) || {};
       if (!reportsData[selectedAppt.email]) reportsData[selectedAppt.email] = [];
 
-      // Convert each file to base64
       [...files].forEach(file => {
         const reader = new FileReader();
         reader.onload = function(e) {
@@ -76,7 +61,7 @@
         reader.readAsDataURL(file);
       });
 
-      alert("✅ Report uploaded successfully!");
+      alert("✅ Report uploaded!");
       document.getElementById("fileInput").value = "";
     }
   </script>
