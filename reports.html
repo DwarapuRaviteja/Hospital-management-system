@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Reports - City Care Hospital</title>
+  <title>My Reports</title>
   <style>
     body { font-family: 'Segoe UI', sans-serif; background: #eef2ff; margin:0; padding:40px; display:flex; justify-content:center; }
     .container { max-width: 800px; width:100%; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 10px 25px rgba(37,99,235,0.3); }
@@ -11,7 +11,6 @@
     .report-card { background:#f9fafb; border-radius:10px; padding:18px 20px; margin-bottom:15px; border:1px solid #ccc; }
     .report-card h2 { margin:0 0 8px; font-size:1.2rem; color:#2563eb; }
     .report-card p { margin:4px 0; font-size:0.95rem; }
-    .files-list li { margin-top:6px; }
     .download-btn { background:#2563eb; color:white; padding:6px 12px; border-radius:6px; text-decoration:none; font-size:0.9rem; }
     .download-btn:hover { background:#1e40af; }
     .no-reports { text-align:center; color:#6b7280; font-size:1.1rem; margin-top:30px; }
@@ -24,24 +23,23 @@
   </div>
 
   <script>
-    // Current logged in user
-    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    const currentUser = { email: "ravi@mail.com" }; // Example login
     const reportsData = JSON.parse(localStorage.getItem("reports")) || {};
     const reportsList = document.getElementById("reportsList");
 
     if (!currentUser || !currentUser.email) {
-      reportsList.innerHTML = `<p class="no-reports">⚠️ Please log in to view your reports.</p>`;
+      reportsList.innerHTML = `<p class="no-reports">⚠️ Please log in.</p>`;
     } else {
       const userReports = reportsData[currentUser.email] || [];
       if (!userReports.length) {
-        reportsList.innerHTML = `<p class="no-reports">No reports available yet.</p>`;
+        reportsList.innerHTML = `<p class="no-reports">No reports yet.</p>`;
       } else {
         userReports.forEach((report, i) => {
           const div = document.createElement("div");
           div.className = "report-card";
           div.innerHTML = `
             <h2>Report #${i+1}</h2>
-            <p><b>Doctor:</b> ${report.appointment?.doctor?.name || "N/A"}</p>
+            <p><b>Doctor:</b> ${report.appointment.doctor?.name || "N/A"}</p>
             <p><b>Date:</b> ${report.appointment.date}</p>
             <p><b>Ward:</b> ${report.appointment.ward}</p>
             <p><b>File:</b> ${report.filename}</p>
