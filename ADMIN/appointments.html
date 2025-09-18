@@ -3,251 +3,184 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Manage Appointments - City Care Hospital</title>
+  <title>Appointments - City Care Hospital</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #eef2ff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
+      background: #eef2ff;
       padding: 40px 20px;
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 30px;
     }
-
     h1 {
       color: #1e3a8a;
+      text-align: center;
+      margin-bottom: 24px;
       font-weight: 700;
-      font-size: 2.2rem;
-      margin: 0;
     }
-
-    .wrapper {
-      display: flex;
-      gap: 30px;
-      max-width: 1100px;
-      width: 100%;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .column {
-      background: #fff;
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
       border-radius: 12px;
       box-shadow: 0 15px 40px rgba(37, 99, 235, 0.3);
-      padding: 25px 30px;
-      flex: 1 1 480px;
-      max-height: 75vh;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
+      padding: 30px 40px;
     }
-
-    .column h2 {
-      text-align: center;
-      margin-bottom: 20px;
+    .section {
+      margin-bottom: 40px;
+    }
+    h2 {
       color: #2563eb;
-      font-weight: 700;
-      font-size: 1.6rem;
+      margin-bottom: 18px;
       border-bottom: 2px solid #2563eb;
-      padding-bottom: 8px;
+      padding-bottom: 6px;
     }
-
     .appointment-card {
+      border: 2px solid #ddd;
       border-radius: 10px;
       padding: 16px 22px;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
       box-shadow: inset 0 0 8px #e5e7eb;
       display: flex;
-      flex-direction: column;
-      gap: 10px;
-      border: 2px solid transparent;
-      position: relative;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
     }
-
-    .appointment-card.approved {
-      border-color: #16a34a;
-      background-color: #dcfce7;
-    }
-
-    .appointment-card.pending {
-      border-color: orange;
-      background-color: #fff7ed;
-    }
-
-    .appointment-info p {
-      margin: 3px 0;
-      font-size: 1rem;
+    .appointment-info {
+      max-width: 60%;
+      font-size: 0.95rem;
       color: #374151;
     }
-
-    .appointment-info p span {
+    .appointment-info p {
+      margin: 4px 0;
+    }
+    .status {
       font-weight: 600;
-      color: #111827;
-    }
-
-    .doctor-select {
-      margin-top: 8px;
-    }
-
-    label {
-      font-weight: 600;
-      font-size: 0.9rem;
-      margin-right: 6px;
-    }
-
-    select {
       padding: 5px 10px;
       border-radius: 6px;
-      border: 1.5px solid #ccc;
-      font-size: 0.9rem;
-      min-width: 220px;
-    }
-
-    .btn-assign,
-    .btn-approve {
-      cursor: pointer;
-      border: none;
-      border-radius: 8px;
-      padding: 8px 14px;
-      font-weight: 600;
-      font-size: 1rem;
-      transition: background-color 0.3s ease;
-    }
-
-    .btn-assign {
-      background-color: #2563eb;
       color: white;
-      margin-top: 10px;
+      font-size: 0.9rem;
     }
-
-    .btn-assign:hover:not(:disabled) {
-      background-color: #1e40af;
+    .pending {
+      border-color: orange;
     }
-
+    .pending .status {
+      background: orange;
+    }
+    .approved {
+      border-color: green;
+    }
+    .approved .status {
+      background: green;
+    }
+    select {
+      padding: 6px 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 0.95rem;
+      min-width: 230px;
+      margin-right: 8px;
+    }
+    .btn-assign {
+      background: #2563eb;
+      border: none;
+      color: white;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.3s ease;
+    }
     .btn-assign:disabled {
-      background-color: #94a3b8;
+      background: #a5b4fc;
       cursor: not-allowed;
     }
-
-    .btn-approve {
-      background-color: #777;
-      color: white;
-      margin-top: 10px;
-    }
-
-    .btn-approve.glow-green {
-      background-color: #16a34a;
-      box-shadow: 0 0 8px #4ade80;
-    }
-
-    .btn-approve:hover {
-      opacity: 0.9;
-    }
-
-    /* Scrollbar style for columns */
-    .column::-webkit-scrollbar {
-      width: 8px;
-    }
-    .column::-webkit-scrollbar-track {
-      background: #f1f1f1;
-      border-radius: 8px;
-    }
-    .column::-webkit-scrollbar-thumb {
-      background: #2563eb;
-      border-radius: 8px;
-    }
-
-    @media (max-width: 1024px) {
-      .wrapper {
-        flex-direction: column;
-        align-items: center;
-      }
-
-      .column {
-        max-height: none;
-        width: 100%;
+    @media (max-width: 600px) {
+      .appointment-info {
+        max-width: 100%;
       }
     }
   </style>
 </head>
 <body>
+  <div class="container">
+    <h1>Appointments Management</h1>
 
-  <h1>Manage Appointments</h1>
-  <div class="wrapper">
-    <section class="column" id="pendingAppointments">
+    <div class="section" id="pendingSection">
       <h2>Pending Appointments</h2>
-      <!-- Pending appointments inserted here -->
-    </section>
+      <div id="pendingAppointments"></div>
+    </div>
 
-    <section class="column" id="approvedAppointments">
+    <div class="section" id="approvedSection">
       <h2>Approved Appointments</h2>
-      <!-- Approved appointments inserted here -->
-    </section>
+      <div id="approvedAppointments"></div>
+    </div>
   </div>
 
 <script>
   // Doctors data as provided
   const doctors = {
     "Orthopedics": [
-      {name: "Dr. Krishna", qualification: "MBBS, MS (Orthopedics)", specialization: "Joint replacement & fracture management specialist."},
-      {name: "Dr. Anjali", qualification: "MBBS, D.Ortho", specialization: "Expert in sports injuries and arthritis care."}
+      { name: "Dr. Krishna", qualification: "MBBS, MS (Orthopedics)", specialization: "Joint replacement & fracture management specialist." },
+      { name: "Dr. Anjali", qualification: "MBBS, D.Ortho", specialization: "Expert in sports injuries and arthritis care." }
     ],
     "Neurology": [
-      {name: "Dr. Ramesh", qualification: "MBBS, DM (Neurology)", specialization: "Stroke and epilepsy specialist."},
-      {name: "Dr. Meera", qualification: "MBBS, MD (Neuro)", specialization: "Dementia and Parkinson's disease specialist."}
+      { name: "Dr. Ramesh", qualification: "MBBS, DM (Neurology)", specialization: "Stroke and epilepsy specialist." },
+      { name: "Dr. Meera", qualification: "MBBS, MD (Neuro)", specialization: "Dementia and Parkinson's disease specialist." }
     ],
     "Cardiology": [
-      {name: "Dr. Rajesh", qualification: "MBBS, DM (Cardiology)", specialization: "Expert in angioplasty and bypass surgery."},
-      {name: "Dr. Kavita", qualification: "MBBS, MD", specialization: "Specialist in arrhythmia and hypertension."}
+      { name: "Dr. Rajesh", qualification: "MBBS, DM (Cardiology)", specialization: "Expert in angioplasty and bypass surgery." },
+      { name: "Dr. Kavita", qualification: "MBBS, MD", specialization: "Specialist in arrhythmia and hypertension." }
     ],
     "ENT": [
-      {name: "Dr. Sameer", qualification: "MBBS, MS (ENT)", specialization: "Specialist in sinus and ear surgeries."},
-      {name: "Dr. Priya", qualification: "MBBS, MS", specialization: "Expert in hearing disorders and allergy care."}
+      { name: "Dr. Sameer", qualification: "MBBS, MS (ENT)", specialization: "Specialist in sinus and ear surgeries." },
+      { name: "Dr. Priya", qualification: "MBBS, MS", specialization: "Expert in hearing disorders and allergy care." }
     ],
     "Dermatology": [
-      {name: "Dr. Neha", qualification: "MBBS, MD (Dermatology)", specialization: "Specialist in acne and skin rejuvenation."},
-      {name: "Dr. Arjun", qualification: "MBBS, MD", specialization: "Expert in psoriasis and cosmetic dermatology."}
+      { name: "Dr. Neha", qualification: "MBBS, MD (Dermatology)", specialization: "Specialist in acne and skin rejuvenation." },
+      { name: "Dr. Arjun", qualification: "MBBS, MD", specialization: "Expert in psoriasis and cosmetic dermatology." }
     ],
     "Gynecology": [
-      {name: "Dr. Lakshmi", qualification: "MBBS, MD (Gynecology)", specialization: "Infertility and maternity care specialist."},
-      {name: "Dr. Divya", qualification: "MBBS, DGO", specialization: "Menstrual disorder and preventive women's health expert."}
+      { name: "Dr. Lakshmi", qualification: "MBBS, MD (Gynecology)", specialization: "Infertility and maternity care specialist." },
+      { name: "Dr. Divya", qualification: "MBBS, DGO", specialization: "Menstrual disorder and preventive women's health expert." }
     ],
     "Oncology": [
-      {name: "Dr. Sanjay", qualification: "MBBS, DM (Oncology)", specialization: "Chemotherapy & radiation specialist."},
-      {name: "Dr. Bhaskar", qualification: "MBBS, MD", specialization: "Immunotherapy & palliative care specialist."}
+      { name: "Dr. Sanjay", qualification: "MBBS, DM (Oncology)", specialization: "Chemotherapy & radiation specialist." },
+      { name: "Dr. Bhaskar", qualification: "MBBS, MD", specialization: "Immunotherapy & palliative care specialist." }
     ],
     "Nephrology": [
-      {name: "Dr. Mohan", qualification: "MBBS, DM (Nephrology)", specialization: "Kidney transplant and dialysis specialist."},
-      {name: "Dr. Sneha", qualification: "MBBS, MD", specialization: "Expert in chronic kidney disease management."}
+      { name: "Dr. Mohan", qualification: "MBBS, DM (Nephrology)", specialization: "Kidney transplant and dialysis specialist." },
+      { name: "Dr. Sneha", qualification: "MBBS, MD", specialization: "Expert in chronic kidney disease management." }
     ],
     "General": [
-      {name: "Dr. Rishi", qualification: "MBBS, MD (Internal Medicine)", specialization: "Specialist in fever, infections, and general health check-ups."},
-      {name: "Dr. Sadhvik", qualification: "MBBS, DNB (General Medicine)", specialization: "Expert in hypertension, diabetes, and common ailments."}
+      { name: "Dr. Rishi", qualification: "MBBS, MD (Internal Medicine)", specialization: "Specialist in fever, infections, and general health check-ups." },
+      { name: "Dr. Sadhvik", qualification: "MBBS, DNB (General Medicine)", specialization: "Expert in hypertension, diabetes, and common ailments." }
     ]
   };
 
-  // Get appointments from localStorage
-  let appointments = JSON.parse(localStorage.getItem('appointments')) || [];
-
-  // Separate appointments into pending and approved
-  function splitAppointments() {
-    const pending = appointments.filter(appt => !appt.doctor);
-    const approved = appointments.filter(appt => appt.doctor);
-    return { pending, approved };
-  }
-
+  // Elements
   const pendingContainer = document.getElementById('pendingAppointments');
   const approvedContainer = document.getElementById('approvedAppointments');
+
+  let appointments = JSON.parse(localStorage.getItem('appointments')) || [];
+
+  function splitAppointments() {
+    const pending = [];
+    const approved = [];
+    appointments.forEach(appt => {
+      if (appt.doctor) approved.push(appt);
+      else pending.push(appt);
+    });
+    return { pending, approved };
+  }
 
   function renderAppointments() {
     const { pending, approved } = splitAppointments();
 
-    // Clear containers
-    pendingContainer.innerHTML = '<h2>Pending Appointments</h2>';
-    approvedContainer.innerHTML = '<h2>Approved Appointments</h2>';
+    pendingContainer.innerHTML = '';
+    approvedContainer.innerHTML = '';
 
     if (pending.length === 0) {
       const p = document.createElement('p');
@@ -265,52 +198,70 @@
       approvedContainer.appendChild(p);
     }
 
-    // Render pending
-    pending.forEach((appt, idx) => {
-      const card = createAppointmentCard(appt, false, idx);
+    // Render pending with real indexes
+    pending.forEach(appt => {
+      const realIndex = appointments.findIndex(a =>
+        a.name === appt.name &&
+        a.date === appt.date &&
+        a.slot === appt.slot
+      );
+      const card = createAppointmentCard(appt, false, realIndex);
       pendingContainer.appendChild(card);
     });
 
-    // Render approved
-    approved.forEach((appt, idx) => {
-      const card = createAppointmentCard(appt, true, idx);
+    // Render approved with real indexes
+    approved.forEach(appt => {
+      const realIndex = appointments.findIndex(a =>
+        a.name === appt.name &&
+        a.date === appt.date &&
+        a.slot === appt.slot
+      );
+      const card = createAppointmentCard(appt, true, realIndex);
       approvedContainer.appendChild(card);
     });
   }
 
-  // Create appointment card element
-  // isApproved: boolean; idx used only for data attributes
   function createAppointmentCard(appt, isApproved, idx) {
     const card = document.createElement('div');
     card.className = 'appointment-card ' + (isApproved ? 'approved' : 'pending');
 
-    // Info section
     const infoDiv = document.createElement('div');
     infoDiv.className = 'appointment-info';
 
     infoDiv.innerHTML = `
-      <p><span>Name:</span> ${appt.name}</p>
-      <p><span>Date:</span> ${appt.date}</p>
-      <p><span>Department:</span> ${appt.department}</p>
-      <p><span>Slot:</span> ${appt.slot}</p>
+      <p><strong>Name:</strong> ${appt.name}</p>
+      <p><strong>Date:</strong> ${appt.date}</p>
+      <p><strong>Department:</strong> ${appt.department}</p>
+      <p><strong>Slot:</strong> ${appt.slot}</p>
     `;
 
-    card.appendChild(infoDiv);
+    if (isApproved) {
+      infoDiv.innerHTML += `<p><strong>Doctor Assigned:</strong> ${appt.doctor}</p>`;
+      card.appendChild(infoDiv);
 
-    if (!isApproved) {
-      // Doctor selection dropdown
+      const statusSpan = document.createElement('span');
+      statusSpan.className = 'status approved';
+      statusSpan.textContent = 'Approved';
+      card.appendChild(statusSpan);
+
+    } else {
+      card.appendChild(infoDiv);
+
+      const statusSpan = document.createElement('span');
+      statusSpan.className = 'status pending';
+      statusSpan.textContent = 'Pending Approval';
+      card.appendChild(statusSpan);
+
+      // Doctor select dropdown
       const doctorSelectDiv = document.createElement('div');
-      doctorSelectDiv.className = 'doctor-select';
-
-      const label = document.createElement('label');
-      label.textContent = "Assign Doctor:";
-      label.setAttribute('for', `doctorSelect-${idx}`);
+      doctorSelectDiv.style.display = 'flex';
+      doctorSelectDiv.style.alignItems = 'center';
+      doctorSelectDiv.style.marginTop = '10px';
 
       const select = document.createElement('select');
       select.id = `doctorSelect-${idx}`;
       select.dataset.apptIndex = idx;
 
-      // Populate doctors for department, if any
       const deptDoctors = doctors[appt.department] || [];
       select.innerHTML = `<option value="">-- Select Doctor --</option>`;
 
@@ -321,17 +272,16 @@
         select.appendChild(option);
       });
 
-      doctorSelectDiv.appendChild(label);
       doctorSelectDiv.appendChild(select);
-      card.appendChild(doctorSelectDiv);
 
-      // Assign button
       const assignBtn = document.createElement('button');
       assignBtn.className = 'btn-assign';
-      assignBtn.textContent = "Assign Doctor & Approve";
+      assignBtn.textContent = 'Assign Doctor & Approve';
       assignBtn.disabled = true;
 
-      // Enable button only if doctor selected
+      doctorSelectDiv.appendChild(assignBtn);
+      card.appendChild(doctorSelectDiv);
+
       select.addEventListener('change', () => {
         assignBtn.disabled = (select.value === "");
       });
@@ -340,39 +290,24 @@
         const selectedIndex = select.value;
         if (selectedIndex === "") return;
 
-        // Assign doctor data to appointment
-        const docData = deptDoctors[selectedIndex];
+        // Load latest appointments
         appointments = JSON.parse(localStorage.getItem('appointments')) || [];
-        // Find the matching appointment in the stored array (by name+date+slot unique key)
-        const apptIndex = appointments.findIndex(a =>
-          a.name === appt.name &&
-          a.date === appt.date &&
-          a.slot === appt.slot
-        );
 
-        if (apptIndex !== -1) {
-          appointments[apptIndex].doctor = docData.name;
-          appointments[apptIndex].qualification = docData.qualification;
-          appointments[apptIndex].specialization = docData.specialization;
+        if (idx !== -1 && appointments[idx]) {
+          const docData = deptDoctors[selectedIndex];
 
+          // Assign doctor info
+          appointments[idx].doctor = docData.name;
+          appointments[idx].qualification = docData.qualification;
+          appointments[idx].specialization = docData.specialization;
+
+          // Save back to localStorage
           localStorage.setItem('appointments', JSON.stringify(appointments));
-          // Re-render to reflect change
+
+          // Re-render appointments after update
           renderAppointments();
         }
       });
-
-      card.appendChild(assignBtn);
-    } else {
-      // Approved appointment shows doctor info and an "Approved" glowing button (disabled)
-      const docInfo = document.createElement('p');
-      docInfo.innerHTML = `<strong>Doctor Assigned:</strong> ${appt.doctor} <br><small>${appt.qualification} - ${appt.specialization}</small>`;
-      card.appendChild(docInfo);
-
-      const approvedBtn = document.createElement('button');
-      approvedBtn.className = 'btn-approve glow-green';
-      approvedBtn.textContent = "Approved";
-      approvedBtn.disabled = true;
-      card.appendChild(approvedBtn);
     }
 
     return card;
@@ -382,6 +317,5 @@
   renderAppointments();
 
 </script>
-
 </body>
 </html>
