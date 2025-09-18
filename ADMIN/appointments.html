@@ -3,357 +3,448 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Admin - Manage Appointments</title>
+  <title>Appointments - City Care Hospital</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
+      background: #f4f6f9;
+      margin: 0;
       padding: 20px;
-      background: #eef2ff;
-      max-width: 1000px;
-      margin: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      box-sizing: border-box;
     }
     h1 {
       color: #1e3a8a;
-      text-align: center;
+      margin-bottom: 20px;
     }
-    .flex-container {
+
+    .container {
       display: flex;
-      gap: 30px;
-      justify-content: space-between;
-      margin-top: 30px;
+      gap: 20px;
+      width: 100%;
+      max-width: 1200px;
+      margin-bottom: 20px;
     }
-    .box {
+    .column {
+      flex: 1;
       background: white;
-      border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-      padding: 20px;
-      width: 48%;
-      max-height: 80vh;
-      overflow-y: auto;
-    }
-    .appointment-card {
-      border: 2px solid #ccc;
       border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
       padding: 15px;
-      margin-bottom: 15px;
+      min-height: 400px;
       cursor: pointer;
-      transition: border-color 0.3s ease;
+      transition: background-color 0.3s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
-    .appointment-card:hover {
-      border-color: #2563eb;
-      background: #f0f4ff;
-    }
-    .appointment-card.approved {
-      border-color: green;
-      background: #e6ffe6;
+    .column.active {
+      background-color: #e0f2fe;
+      border: 2px solid #2563eb;
       cursor: default;
     }
-    .appointment-header {
-      font-weight: 600;
+    .column h2 {
+      margin-top: 0;
+      margin-bottom: 10px;
       color: #2563eb;
-      margin-bottom: 8px;
     }
-    label {
-      display: block;
-      margin-top: 10px;
-      font-weight: 600;
-      color: #374151;
-    }
-    select, button {
-      margin-top: 6px;
-      padding: 8px;
+
+    .appointment-list {
       width: 100%;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 1rem;
-    }
-    button {
-      background-color: #2563eb;
-      color: white;
-      border: none;
-      cursor: pointer;
-      margin-top: 20px;
-    }
-    button:disabled {
-      background-color: #999;
-      cursor: not-allowed;
-    }
-    .doctor-list {
-      margin-top: 10px;
-      max-height: 150px;
       overflow-y: auto;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      padding: 5px;
+      max-height: 350px;
+      border-top: 1px solid #ddd;
+      padding-top: 10px;
     }
-    .doctor-item {
-      padding: 6px;
+    .appointment-item {
+      padding: 8px 10px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      border: 1px solid #ccc;
+      background: #f9fafb;
       cursor: pointer;
-      border-radius: 4px;
-      margin-bottom: 4px;
       transition: background-color 0.2s;
     }
-    .doctor-item:hover {
-      background-color: #e0e7ff;
+    .appointment-item.selected {
+      background-color: #bfdbfe;
+      border-color: #2563eb;
     }
-    .doctor-item.selected {
-      background-color: #2563eb;
+
+    /* Center info box */
+    .details-container {
+      width: 100%;
+      max-width: 600px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      padding: 20px;
+      margin-bottom: 40px;
+      min-height: 250px;
+    }
+    .details-container h3 {
+      margin-top: 0;
+      color: #1e3a8a;
+    }
+    .details-row {
+      margin-bottom: 10px;
+    }
+    label {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 4px;
+    }
+    select, button {
+      width: 100%;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+      box-sizing: border-box;
+      cursor: pointer;
+    }
+    select:disabled {
+      background: #eee;
+      cursor: not-allowed;
+    }
+    button {
+      background-color: #444444;
       color: white;
+      border: none;
+      margin-top: 15px;
+      transition: background-color 0.3s, box-shadow 0.3s;
     }
-    .no-appointments {
-      text-align: center;
-      color: #6b7280;
-      font-style: italic;
+    button.glow {
+      background-color: #16a34a;
+      box-shadow: 0 0 12px #16a34a;
     }
+    button:disabled {
+      background-color: #999999;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
   </style>
 </head>
 <body>
-  <h1>Manage Appointments</h1>
-  <div class="flex-container">
-    <div class="box" id="pendingAppointmentsBox">
+
+  <h1>🩺 Manage Appointments</h1>
+
+  <div class="container">
+    <div id="pendingColumn" class="column active">
       <h2>Pending Appointments</h2>
-      <div id="pendingAppointmentsList"></div>
-      <p class="no-appointments" id="noPending" style="display:none;">No pending appointments.</p>
+      <div id="pendingList" class="appointment-list"></div>
     </div>
-    <div class="box" id="approvedAppointmentsBox">
+
+    <div id="approvedColumn" class="column">
       <h2>Approved Appointments</h2>
-      <div id="approvedAppointmentsList"></div>
-      <p class="no-appointments" id="noApproved" style="display:none;">No approved appointments.</p>
+      <div id="approvedList" class="appointment-list"></div>
     </div>
   </div>
 
-  <hr style="margin: 40px 0;" />
-
-  <div class="box" id="approvalPanel" style="display:none;">
-    <h2>Approve Appointment</h2>
-    <div id="selectedAppointmentDetails"></div>
-
-    <label for="departmentSelect">Select Department:</label>
-    <select id="departmentSelect" disabled>
-      <option value="">Select department</option>
-    </select>
-
-    <label for="wardSelect">Select Ward:</label>
-    <select id="wardSelect" disabled>
-      <option value="">Select ward</option>
-    </select>
-
-    <label>Available Doctors:</label>
-    <div id="doctorList" class="doctor-list">
-      <p style="color:#888;">Select department and ward to see doctors.</p>
+  <div id="details" class="details-container" style="display:none;">
+    <h3>Appointment Details</h3>
+    <div><strong>Patient Name:</strong> <span id="detailName"></span></div>
+    <div><strong>Department:</strong> <span id="detailDepartment"></span></div>
+    <div><strong>Date:</strong> <span id="detailDate"></span></div>
+    <div id="assignDoctorSection" style="margin-top: 15px;">
+      <div class="details-row">
+        <label for="departmentDropdown">Select Department</label>
+        <select id="departmentDropdown"></select>
+      </div>
+      <div class="details-row">
+        <label for="doctorDropdown">Select Doctor <button id="addDoctorBtn" title="Assign doctor" style="margin-left: 5px; cursor:pointer;">➕</button></label>
+        <select id="doctorDropdown" disabled></select>
+      </div>
+      <button id="approveBtn" disabled>Approve Appointment</button>
     </div>
-
-    <button id="approveBtn" disabled>Approve Appointment</button>
+    <div id="approvedDoctorInfo" style="margin-top: 15px; font-style: italic; color: #16a34a; display:none;">
+      Approved Doctor: <span id="approvedDoctorName"></span>
+    </div>
   </div>
 
-  <script src="doctors.js"></script>
   <script>
-    // Load appointments from localStorage
-    let appointments = JSON.parse(localStorage.getItem("appointments")) || [];
+    // Doctor data as provided
+    const doctors = {
+      "Orthopedics": [
+        "Dr. Krishna - MBBS, MS (Orthopedics) – Joint replacement & fracture management specialist.",
+        "Dr. Anjali - MBBS, D.Ortho – Expert in sports injuries and arthritis care."
+      ],
+      "Neurology": [
+        "Dr. Ramesh - MBBS, DM (Neurology) – Stroke and epilepsy specialist.",
+        "Dr. Meera - MBBS, MD (Neuro) – Dementia and Parkinson's disease specialist."
+      ],
+      "Cardiology": [
+        "Dr. Rajesh - MBBS, DM (Cardiology) – Expert in angioplasty and bypass surgery.",
+        "Dr. Kavita - MBBS, MD – Specialist in arrhythmia and hypertension."
+      ],
+      "ENT": [
+        "Dr. Sameer - MBBS, MS (ENT) – Specialist in sinus and ear surgeries.",
+        "Dr. Priya - MBBS, MS – Expert in hearing disorders and allergy care."
+      ],
+      "Dermatology": [
+        "Dr. Neha - MBBS, MD (Dermatology) – Specialist in acne and skin rejuvenation.",
+        "Dr. Arjun - MBBS, MD – Expert in psoriasis and cosmetic dermatology."
+      ],
+      "Gynecology": [
+        "Dr. Lakshmi - MBBS, MD (Gynecology) – Infertility and maternity care specialist.",
+        "Dr. Divya - MBBS, DGO – Menstrual disorder and preventive women's health expert."
+      ],
+      "Oncology": [
+        "Dr. Sanjay - MBBS, DM (Oncology) – Chemotherapy & radiation specialist.",
+        "Dr. Bhaskar - MBBS, MD – Immunotherapy & palliative care specialist."
+      ],
+      "Nephrology": [
+        "Dr. Mohan - MBBS, DM (Nephrology) – Kidney transplant and dialysis specialist.",
+        "Dr. Sneha - MBBS, MD – Expert in chronic kidney disease management."
+      ],
+      "General": [
+        "Dr. Rishi - MBBS, MD (Internal Medicine) – Specialist in fever, infections, and general health check-ups.",
+        "Dr. Sadhvik - MBBS, DNB (General Medicine) – Expert in hypertension, diabetes, and common ailments."
+      ]
+    };
 
-    // DOM Elements
-    const pendingList = document.getElementById('pendingAppointmentsList');
-    const approvedList = document.getElementById('approvedAppointmentsList');
-    const noPending = document.getElementById('noPending');
-    const noApproved = document.getElementById('noApproved');
-    const approvalPanel = document.getElementById('approvalPanel');
-    const selectedDetails = document.getElementById('selectedAppointmentDetails');
-    const departmentSelect = document.getElementById('departmentSelect');
-    const wardSelect = document.getElementById('wardSelect');
-    const doctorList = document.getElementById('doctorList');
+    // Elements
+    const pendingListEl = document.getElementById('pendingList');
+    const approvedListEl = document.getElementById('approvedList');
+    const detailsEl = document.getElementById('details');
+
+    const detailNameEl = document.getElementById('detailName');
+    const detailDepartmentEl = document.getElementById('detailDepartment');
+    const detailDateEl = document.getElementById('detailDate');
+
+    const departmentDropdown = document.getElementById('departmentDropdown');
+    const doctorDropdown = document.getElementById('doctorDropdown');
+    const addDoctorBtn = document.getElementById('addDoctorBtn');
     const approveBtn = document.getElementById('approveBtn');
 
-    let selectedAppointmentIndex = null;
-    let selectedDoctor = null;
+    const approvedDoctorInfo = document.getElementById('approvedDoctorInfo');
+    const approvedDoctorName = document.getElementById('approvedDoctorName');
 
-    // Utility: get unique departments and wards from appointments
-    function getDepartmentsAndWards() {
-      const departments = new Set();
-      const wards = new Set();
-      appointments.forEach(a => {
-        if(a.department) departments.add(a.department);
-        if(a.ward) wards.add(a.ward);
+    const pendingColumn = document.getElementById('pendingColumn');
+    const approvedColumn = document.getElementById('approvedColumn');
+
+    // Load appointments from localStorage
+    let pendingAppointments = JSON.parse(localStorage.getItem('pendingAppointments')) || [];
+    let approvedAppointments = JSON.parse(localStorage.getItem('approvedAppointments')) || [];
+
+    let selectedAppointment = null;
+    let currentView = 'pending'; // 'pending' or 'approved'
+
+    // Populate department dropdown
+    function populateDepartments(selectedDept = null) {
+      departmentDropdown.innerHTML = '';
+      const deptNames = Object.keys(doctors);
+      deptNames.forEach(dept => {
+        const option = document.createElement('option');
+        option.value = dept;
+        option.textContent = dept;
+        if (dept === selectedDept) option.selected = true;
+        departmentDropdown.appendChild(option);
       });
-      return {
-        departments: Array.from(departments).sort(),
-        wards: Array.from(wards).sort()
-      };
     }
 
-    // Render pending and approved appointments
+    // Populate doctors dropdown based on selected department
+    function populateDoctors(department, selectedDoctor = null) {
+      doctorDropdown.innerHTML = '';
+      if (!department || !doctors[department]) {
+        doctorDropdown.disabled = true;
+        return;
+      }
+      doctorDropdown.disabled = false;
+      doctors[department].forEach(doc => {
+        const option = document.createElement('option');
+        option.value = doc;
+        option.textContent = doc;
+        if (doc === selectedDoctor) option.selected = true;
+        doctorDropdown.appendChild(option);
+      });
+    }
+
+    // Render appointments list in the side column
     function renderAppointments() {
-      pendingList.innerHTML = '';
-      approvedList.innerHTML = '';
-      const pending = appointments.filter(a => !a.doctor);
-      const approved = appointments.filter(a => a.doctor);
+      pendingListEl.innerHTML = '';
+      approvedListEl.innerHTML = '';
 
-      if (pending.length === 0) {
-        noPending.style.display = 'block';
+      pendingAppointments.forEach(app => {
+        const div = document.createElement('div');
+        div.classList.add('appointment-item');
+        if (selectedAppointment && selectedAppointment.id === app.id) {
+          div.classList.add('selected');
+        }
+        div.textContent = `${app.patientName} — ${app.department} — ${app.date}`;
+        div.title = `Patient: ${app.patientName}\nDepartment: ${app.department}\nDate: ${app.date}`;
+        div.onclick = () => selectAppointment(app, 'pending');
+        pendingListEl.appendChild(div);
+      });
+
+      approvedAppointments.forEach(app => {
+        const div = document.createElement('div');
+        div.classList.add('appointment-item');
+        if (selectedAppointment && selectedAppointment.id === app.id) {
+          div.classList.add('selected');
+        }
+        div.textContent = `${app.patientName} — ${app.department} — ${app.date} — Dr: ${app.doctor || 'N/A'}`;
+        div.title = `Patient: ${app.patientName}\nDepartment: ${app.department}\nDate: ${app.date}\nDoctor: ${app.doctor || 'N/A'}`;
+        div.onclick = () => selectAppointment(app, 'approved');
+        approvedListEl.appendChild(div);
+      });
+    }
+
+    // Show appointment details in center
+    function selectAppointment(app, view) {
+      selectedAppointment = app;
+      currentView = view;
+
+      // Highlight columns
+      if(view === 'pending') {
+        pendingColumn.classList.add('active');
+        approvedColumn.classList.remove('active');
       } else {
-        noPending.style.display = 'none';
-        pending.forEach((appt, i) => {
-          const div = document.createElement('div');
-          div.className = 'appointment-card';
-          div.dataset.index = appointments.indexOf(appt);
-          div.innerHTML = `
-            <div class="appointment-header">#${appointments.indexOf(appt) + 1} - ${appt.name}</div>
-            <div><strong>Date:</strong> ${appt.date}</div>
-            <div><strong>Department:</strong> ${appt.department}</div>
-            <div><strong>Ward:</strong> ${appt.ward}</div>
-          `;
-          pendingList.appendChild(div);
-        });
+        approvedColumn.classList.add('active');
+        pendingColumn.classList.remove('active');
       }
 
-      if (approved.length === 0) {
-        noApproved.style.display = 'block';
+      renderAppointments();
+
+      detailNameEl.textContent = app.patientName;
+      detailDepartmentEl.textContent = app.department;
+      detailDateEl.textContent = app.date;
+
+      if(view === 'pending') {
+        // Show assign doctor section
+        detailsEl.style.display = 'block';
+        approvedDoctorInfo.style.display = 'none';
+
+        populateDepartments(app.department);
+        populateDoctors(app.department, app.doctor || null);
+
+        // Enable or disable controls based on doctor assignment
+        if(app.doctor) {
+          doctorDropdown.value = app.doctor;
+          approveBtn.disabled = false;
+          approveBtn.classList.add('glow');
+        } else {
+          doctorDropdown.value = '';
+          approveBtn.disabled = true;
+          approveBtn.classList.remove('glow');
+        }
       } else {
-        noApproved.style.display = 'none';
-        approved.forEach((appt) => {
-          const div = document.createElement('div');
-          div.className = 'appointment-card approved';
-          div.innerHTML = `
-            <div class="appointment-header">#${appointments.indexOf(appt) + 1} - ${appt.name}</div>
-            <div><strong>Date:</strong> ${appt.date}</div>
-            <div><strong>Department:</strong> ${appt.department}</div>
-            <div><strong>Ward:</strong> ${appt.ward}</div>
-            <div><strong>Doctor:</strong> ${appt.doctor.name}</div>
-          `;
-          approvedList.appendChild(div);
-        });
+        // Approved appointment: show doctor info only, hide assign section
+        detailsEl.style.display = 'block';
+        approvedDoctorInfo.style.display = 'block';
+        approvedDoctorName.textContent = app.doctor || 'Not assigned';
+        approveBtn.disabled = true;
+        approveBtn.classList.remove('glow');
+
+        // Disable dropdowns
+        departmentDropdown.innerHTML = '';
+        doctorDropdown.innerHTML = '';
+        doctorDropdown.disabled = true;
       }
     }
 
-    // Fill department select options
-    function populateDepartmentSelect() {
-      const {departments} = getDepartmentsAndWards();
-      departmentSelect.innerHTML = '<option value="">Select department</option>';
-      departments.forEach(dep => {
-        const opt = document.createElement('option');
-        opt.value = dep;
-        opt.textContent = dep;
-        departmentSelect.appendChild(opt);
-      });
-      departmentSelect.disabled = false;
-    }
-
-    // Fill ward select options filtered by department
-    function populateWardSelect(department) {
-      const wards = new Set();
-      appointments.forEach(a => {
-        if(a.department === department && a.ward) wards.add(a.ward);
-      });
-      wardSelect.innerHTML = '<option value="">Select ward</option>';
-      Array.from(wards).sort().forEach(w => {
-        const opt = document.createElement('option');
-        opt.value = w;
-        opt.textContent = w;
-        wardSelect.appendChild(opt);
-      });
-      wardSelect.disabled = false;
-    }
-
-    // Show doctors matching selected department and ward
-    function showDoctors(department, ward) {
-      doctorList.innerHTML = '';
-      selectedDoctor = null;
+    // Update doctor dropdown when department changes
+    departmentDropdown.addEventListener('change', () => {
+      const dept = departmentDropdown.value;
+      populateDoctors(dept);
+      doctorDropdown.value = '';
       approveBtn.disabled = true;
+      approveBtn.classList.remove('glow');
 
-      const filteredDoctors = doctors.filter(doc => doc.department === department && doc.ward === ward);
+      // Update selected appointment's department
+      if (selectedAppointment) {
+        selectedAppointment.department = dept;
+        detailDepartmentEl.textContent = dept;
+      }
+    });
 
-      if (filteredDoctors.length === 0) {
-        doctorList.innerHTML = '<p style="color:#888;">No doctors found for this department and ward.</p>';
+    // Enable approve button only if doctor selected
+    doctorDropdown.addEventListener('change', () => {
+      if (doctorDropdown.value) {
+        approveBtn.disabled = false;
+        approveBtn.classList.add('glow');
+
+        if(selectedAppointment) {
+          selectedAppointment.doctor = doctorDropdown.value;
+        }
+      } else {
+        approveBtn.disabled = true;
+        approveBtn.classList.remove('glow');
+
+        if(selectedAppointment) {
+          selectedAppointment.doctor = null;
+        }
+      }
+    });
+
+    // Assign doctor button (+) fills doctor dropdown with first doctor of selected department (for convenience)
+    addDoctorBtn.addEventListener('click', () => {
+      const dept = departmentDropdown.value;
+      if (!dept || !doctors[dept]) return;
+      doctorDropdown.value = doctors[dept][0];
+      approveBtn.disabled = false;
+      approveBtn.classList.add('glow');
+
+      if(selectedAppointment) {
+        selectedAppointment.doctor = doctorDropdown.value;
+      }
+    });
+
+    // Approve appointment
+    approveBtn.addEventListener('click', () => {
+      if(!selectedAppointment || !selectedAppointment.doctor) {
+        alert('Please assign a doctor before approving.');
         return;
       }
 
-      filteredDoctors.forEach((doc, idx) => {
-        const div = document.createElement('div');
-        div.className = 'doctor-item';
-        div.textContent = `${doc.name} (${doc.qualification}) - ${doc.specialization}`;
-        div.dataset.index = idx;
-        div.addEventListener('click', () => {
-          // Deselect all
-          doctorList.querySelectorAll('.doctor-item').forEach(d => d.classList.remove('selected'));
-          div.classList.add('selected');
-          selectedDoctor = doc;
-          approveBtn.disabled = false;
-        });
-        doctorList.appendChild(div);
-      });
-    }
+      // Remove from pending
+      pendingAppointments = pendingAppointments.filter(a => a.id !== selectedAppointment.id);
+      // Add to approved
+      approvedAppointments.push(selectedAppointment);
 
-    // When an appointment card is clicked in pending list
-    pendingList.addEventListener('click', e => {
-      let card = e.target.closest('.appointment-card');
-      if (!card) return;
-      selectedAppointmentIndex = parseInt(card.dataset.index);
-      const appt = appointments[selectedAppointmentIndex];
-      approvalPanel.style.display = 'block';
-      selectedDetails.innerHTML = `
-        <p><strong>Name:</strong> ${appt.name}</p>
-        <p><strong>Date:</strong> ${appt.date}</p>
-        <p><strong>Problem:</strong> ${appt.problem || 'N/A'}</p>
-      `;
+      // Save to localStorage
+      localStorage.setItem('pendingAppointments', JSON.stringify(pendingAppointments));
+      localStorage.setItem('approvedAppointments', JSON.stringify(approvedAppointments));
 
-      // Populate department and ward selects based on this appointment
-      populateDepartmentSelect();
-      departmentSelect.value = appt.department || '';
-      populateWardSelect(departmentSelect.value);
-      wardSelect.value = appt.ward || '';
+      alert(`Appointment for ${selectedAppointment.patientName} approved with ${selectedAppointment.doctor}.`);
 
-      // Show doctors for current selections
-      if(departmentSelect.value && wardSelect.value){
-        showDoctors(departmentSelect.value, wardSelect.value);
-      } else {
-        doctorList.innerHTML = '<p style="color:#888;">Select department and ward to see doctors.</p>';
-      }
-      approveBtn.disabled = true;
-      selectedDoctor = null;
-    });
-
-    // Update wards when department changes
-    departmentSelect.addEventListener('change', () => {
-      populateWardSelect(departmentSelect.value);
-      wardSelect.value = '';
-      doctorList.innerHTML = '<p style="color:#888;">Select ward to see doctors.</p>';
-      approveBtn.disabled = true;
-      selectedDoctor = null;
-    });
-
-    // Update doctors when ward changes
-    wardSelect.addEventListener('change', () => {
-      if(departmentSelect.value && wardSelect.value){
-        showDoctors(departmentSelect.value, wardSelect.value);
-      } else {
-        doctorList.innerHTML = '<p style="color:#888;">Select department and ward to see doctors.</p>';
-      }
-      approveBtn.disabled = true;
-      selectedDoctor = null;
-    });
-
-    // Approve button click: assign doctor and update appointment
-    approveBtn.addEventListener('click', () => {
-      if(selectedAppointmentIndex === null || !selectedDoctor) return;
-
-      // Update appointment
-      appointments[selectedAppointmentIndex].doctor = selectedDoctor;
-      appointments[selectedAppointmentIndex].department = departmentSelect.value;
-      appointments[selectedAppointmentIndex].ward = wardSelect.value;
-
-      // Save back to localStorage
-      localStorage.setItem('appointments', JSON.stringify(appointments));
-
-      // Refresh UI
-      approvalPanel.style.display = 'none';
-      selectedAppointmentIndex = null;
-      selectedDoctor = null;
+      selectedAppointment = null;
+      detailsEl.style.display = 'none';
       renderAppointments();
 
-      alert('Appointment approved with doctor assigned!');
+      // Default to pending view and no selection
+      pendingColumn.classList.add('active');
+      approvedColumn.classList.remove('active');
+    });
+
+    // Column click toggles view and clears selection
+    pendingColumn.addEventListener('click', () => {
+      if(currentView !== 'pending') {
+        currentView = 'pending';
+        selectedAppointment = null;
+        detailsEl.style.display = 'none';
+        pendingColumn.classList.add('active');
+        approvedColumn.classList.remove('active');
+        renderAppointments();
+      }
+    });
+    approvedColumn.addEventListener('click', () => {
+      if(currentView !== 'approved') {
+        currentView = 'approved';
+        selectedAppointment = null;
+        detailsEl.style.display = 'none';
+        approvedColumn.classList.add('active');
+        pendingColumn.classList.remove('active');
+        renderAppointments();
+      }
     });
 
     // Initial render
     renderAppointments();
+
   </script>
 </body>
 </html>
