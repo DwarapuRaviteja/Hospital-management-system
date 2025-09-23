@@ -6,6 +6,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>City Care Hospital Portal</title>
   <style>
+    /* Scrollable area inside registration form */
+.scrollable-form {
+  max-height: 350px;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+/* Optional: Customize scrollbar for better look */
+.scrollable-form::-webkit-scrollbar {
+  width: 6px;
+}
+.scrollable-form::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollable-form::-webkit-scrollbar-thumb {
+  background: #2563eb;
+  border-radius: 5px;
+}
+
     /* Body & Background */
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -244,41 +263,52 @@
     </div>
 
     <!-- Register Form -->
-    <div id="registerForm" class="hidden">
-      <h2>User Register</h2>
-      <label>Full Name</label>
-      <input type="text" id="regName">
-      <label>Email ID</label>
-      <input type="email" id="regEmail">
-      <div id="emailError" class="error"></div>
-      <label>Mobile Number</label>
-      <input type="text" id="regPhone">
-      <label>Gender</label>
-      <select id="regGender">
-        <option value="">Select Gender</option>
-        <option>Male</option>
-        <option>Female</option>
-        <option>Other</option>
-      </select>
-      <label>Date of Birth</label>
-      <input type="date" id="regDob">
-      <label>Create Password</label>
-      <div class="password-box">
-        <input type="password" id="regPassword">
-        <span class="toggle-password" onclick="togglePassword('regPassword', this)">👁</span>
-      </div>
-      <div id="passwordError" class="error"></div>
-      <label>Confirm Password</label>
-      <div class="password-box">
-        <input type="password" id="regConfirmPassword">
-        <span class="toggle-password" onclick="togglePassword('regConfirmPassword', this)">👁</span>
-      </div>
-      <label>Address</label>
-      <textarea id="regAddress" rows="3"></textarea>
-      <button onclick="register()">Register</button>
-      <p class="toggle-link">Already have an account? <a onclick="toggleForm()">Login here</a></p>
+    <!-- Register Form -->
+<div id="registerForm" class="hidden">
+  <h2>User Register</h2>
+  <div class="scrollable-form">
+    <label>Full Name</label>
+    <input type="text" id="regName">
+
+    <label>Email ID</label>
+    <input type="email" id="regEmail">
+    <div id="emailError" class="error"></div>
+
+    <label>Mobile Number</label>
+    <input type="text" id="regPhone">
+
+    <label>Gender</label>
+    <select id="regGender">
+      <option value="">Select Gender</option>
+      <option>Male</option>
+      <option>Female</option>
+      <option>Other</option>
+    </select>
+
+    <label>Date of Birth</label>
+    <input type="date" id="regDob">
+
+    <label>Create Password</label>
+    <div class="password-box">
+      <input type="password" id="regPassword">
+      <span class="toggle-password" onclick="togglePassword('regPassword', this)">👁</span>
     </div>
+    <div id="passwordError" class="error"></div>
+
+    <label>Confirm Password</label>
+    <div class="password-box">
+      <input type="password" id="regConfirmPassword">
+      <span class="toggle-password" onclick="togglePassword('regConfirmPassword', this)">👁</span>
+    </div>
+
+    <label>Address</label>
+    <textarea id="regAddress" rows="3"></textarea>
   </div>
+
+  <button onclick="register()">Register</button>
+  <p class="toggle-link">Already have an account? <a onclick="toggleForm()">Login here</a></p>
+</div>
+
 
   <script>
     const validUsers = [
