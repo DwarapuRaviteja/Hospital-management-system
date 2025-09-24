@@ -1,69 +1,170 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Send Report</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Send Reports - City Care Hospital</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #eef2ff; padding: 30px; }
-    .container { max-width: 700px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-    h1 { text-align: center; color: #1e3a8a; }
-    label { font-weight: bold; display: block; margin-top: 15px; }
-    select, input[type="file"], button { margin-top: 8px; padding: 10px; width: 100%; border-radius: 6px; border: 1px solid #ccc; }
-    button { background: #2563eb; color: white; font-weight: bold; cursor: pointer; margin-top: 20px; }
-    button:hover { background: #1e40af; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      background: #f0f4ff;
+      padding: 20px;
+      min-height: 100vh;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #2563eb;
+      color: white;
+      padding: 15px 25px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+    header h1 {
+      margin: 0;
+    }
+    .profile img {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid white;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      padding: 25px 30px;
+      box-shadow: 0 8px 25px rgba(37, 99, 235, 0.2);
+      animation: fadeIn 0.6s ease;
+    }
+    h2 {
+      color: #2563eb;
+      border-bottom: 2px solid #2563eb;
+      padding-bottom: 6px;
+      margin-top: 0;
+    }
+    select, input[type="file"] {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin: 12px 0;
+      font-size: 1rem;
+    }
+    .btn-send {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s ease;
+    }
+    .btn-send:hover {
+      background: #1e40af;
+    }
+    .info {
+      margin: 8px 0;
+      font-size: 0.95rem;
+      color: #374151;
+    }
+    @keyframes fadeIn {
+      from {opacity:0; transform: translateY(15px);}
+      to {opacity:1; transform: translateY(0);}
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Upload Reports</h1>
-    <label>Select Approved Appointment:</label>
-    <select id="email"></select>
-
-    <label>Upload Report File:</label>
-    <input type="file" id="fileInput" multiple />
-
-    <button onclick="saveReport()">Save Report</button>
+<header>
+  <h1>Send Reports</h1>
+  <div class="profile">
+    <span>Admin</span>
+    <img src="https://via.placeholder.com/45" alt="Profile Picture">
   </div>
+</header>
 
-  <script>
-    const emailSelect = document.getElementById("email");
-    const appointments = JSON.parse(localStorage.getItem("appointments")) || [];
-    const approved = appointments.filter(a => a.status === "approved");
+<div class="container">
+  <h2>Select Appointment</h2>
+  <select id="appointmentSelect">
+    <option value="">-- Select Approved Appointment --</option>
+  </select>
+  
+  <div id="userInfo" class="info"></div>
 
-    approved.forEach(appt => {
-      let opt = document.createElement("option");
-      opt.value = appt.email;
-      opt.textContent = `${appt.name} (${appt.email}) - ${appt.date}`;
-      opt.dataset.appt = JSON.stringify(appt);
-      emailSelect.appendChild(opt);
+  <input type="file" id="fileInput" accept=".pdf,image/*">
+  <button class="btn-send" id="sendBtn" disabled>Send Report</button>
+</div>
+
+<script>
+const appointmentSelect = document.getElementById('appointmentSelect');
+const userInfo = document.getElementById('userInfo');
+const fileInput = document.getElementById('fileInput');
+const sendBtn = document.getElementById('sendBtn');
+
+// Fetch approved appointments
+let appointments = JSON.parse(localStorage.getItem('appointments')) || [];
+let approvedAppointments = appointments.filter(a => a.doctor);
+
+// Populate dropdown
+approvedAppointments.forEach((appt, idx) => {
+  const option = document.createElement('option');
+  option.value = idx;
+  option.textContent = `${appt.name} | ${appt.date} | ${appt.department}`;
+  appointmentSelect.appendChild(option);
+});
+
+// Display email info and enable send
+appointmentSelect.addEventListener('change', () => {
+  const idx = appointmentSelect.value;
+  if (idx === "") {
+    userInfo.textContent = "";
+    sendBtn.disabled = true;
+    return;
+  }
+  const appt = approvedAppointments[idx];
+  userInfo.textContent = `User Email: ${appt.email || "No email found"}`;
+  sendBtn.disabled = !fileInput.files.length;
+});
+
+// Enable send button if file selected
+fileInput.addEventListener('change', () => {
+  sendBtn.disabled = !(fileInput.files.length && appointmentSelect.value !== "");
+});
+
+// Send report
+sendBtn.addEventListener('click', () => {
+  const idx = appointmentSelect.value;
+  if(idx === "") return;
+
+  const appt = approvedAppointments[idx];
+  const file = fileInput.files[0];
+
+  if(!file) return alert("Please select a file.");
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const reports = JSON.parse(localStorage.getItem('reports')) || [];
+    reports.push({
+      patientName: appt.name,
+      email: appt.email,
+      department: appt.department,
+      fileName: file.name,
+      fileData: e.target.result,
+      date: new Date().toLocaleString()
     });
-
-    function saveReport() {
-      if (!emailSelect.value) return alert("Select a user first!");
-      const files = document.getElementById("fileInput").files;
-      if (!files.length) return alert("Select a file!");
-
-      const selectedAppt = JSON.parse(emailSelect.options[emailSelect.selectedIndex].dataset.appt);
-      const reportsData = JSON.parse(localStorage.getItem("reports")) || {};
-      if (!reportsData[selectedAppt.email]) reportsData[selectedAppt.email] = [];
-
-      [...files].forEach(file => {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          reportsData[selectedAppt.email].push({
-            appointment: selectedAppt,
-            filename: file.name,
-            filedata: e.target.result
-          });
-          localStorage.setItem("reports", JSON.stringify(reportsData));
-        };
-        reader.readAsDataURL(file);
-      });
-
-      alert("✅ Report uploaded!");
-      document.getElementById("fileInput").value = "";
-    }
-  </script>
+    localStorage.setItem('reports', JSON.stringify(reports));
+    alert("Report sent successfully!");
+    fileInput.value = "";
+    sendBtn.disabled = true;
+  }
+  reader.readAsDataURL(file);
+});
+</script>
 </body>
 </html>
