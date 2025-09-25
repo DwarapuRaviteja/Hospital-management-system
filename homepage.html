@@ -13,10 +13,9 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
- .glow-btn {
+    .glow-btn {
       display: block;
-    margin: 0 auto;
-  
+      margin: 0 auto;
       padding: 15px 30px;
       font-size: 18px;
       font-weight: bold;
@@ -24,7 +23,6 @@
       background: #007bff;
       border: none;
       border-radius: 12px;
-  
       cursor: pointer;
       text-decoration: none;
       box-shadow: 0 0 10px #007bff, 0 0 20px #00bfff, 0 0 30px #1e90ff;
@@ -101,10 +99,49 @@
       padding: 15px 20px;
       cursor: pointer;
       border-bottom: 1px solid rgba(255,255,255,0.2);
+      position: relative;
     }
 
     .side-menu ul li:hover {
       background: #3b82f6;
+    }
+
+    /* 🔴 Notification dot */
+    .notify-dot::after {
+      content: '';
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 10px;
+      height: 10px;
+      background: red;
+      border-radius: 50%;
+      display: none;
+    }
+
+    .notify-dot.active::after {
+      display: block;
+    }
+
+    /* 🔔 Toast notification */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: #1e3a8a;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.4s ease-in-out;
+      z-index: 1000;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
     }
 
     /* Scrolling text */
@@ -228,11 +265,10 @@
     }
     
     .button-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px; /* optional */
-}
-
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
 
     .appointment-btn:hover {
       background-color: #1e40af;
@@ -299,7 +335,6 @@
       <li onclick="navigateTo('about_us.html')">About Us</li>
       <li onclick="navigateTo('department.html')">Departments</li>
       <li onclick="navigateTo('contact_us.html')">Contact Us</li>
-
     </ul>
   </nav>
 
@@ -308,11 +343,14 @@
     <ul>
       <li onclick="navigateTo('profile.html')">👤 Profile</li>
       <li onclick="navigateTo('wallet.html')">💳 Wallet</li>
-      <li onclick="navigateTo('reports.html')">📄 My Reports</li>
-      <li onclick="navigateTo('bookings.html')">📅 My Bookings</li>
+      <li id="reports-menu" class="notify-dot" onclick="openReports()">📄 My Reports</li>
+      <li id="bookings-menu" class="notify-dot" onclick="openBookings()">📅 My Bookings</li>
       <li id="logout-side">🚪 Logout</li>
     </ul>
   </div>
+
+  <!-- 🔔 Toast notification -->
+  <div id="toast" class="toast"></div>
 
   <!-- Scrolling Hospital Info -->
   <div class="scroll-text">
@@ -327,14 +365,11 @@
     </p>
   </div>
 
-
-<div class="button-container">
+  <div class="button-container">
     <button id="glow-btn" class="glow-btn" onclick="navigateTo('explore.html')" target="_blank">
         Explore Different Hospitals
     </button>
-</div>
-
-  
+  </div>
 
   <!-- Appointment & Process Section -->
   <div class="process">
@@ -379,7 +414,6 @@
   <!-- Doctors Button -->
   <button id="doctors-btn" class="doctors-btn" onclick="navigateTo('doctors.html')">👨‍⚕️ Our Doctors</button>
 
-
   <footer>
     &copy; 2025 City Care Hospital. All Rights Reserved.
   </footer>
@@ -411,9 +445,6 @@
         }
       }
     });
-function navigateTo(page) {
-  window.location.href = page;
-}
 
     // Logout functionality
     document.getElementById('logout-side').addEventListener('click', () => {
@@ -434,6 +465,39 @@ function navigateTo(page) {
         }, 4000);
       }, 800);
     });
+
+    /* 🔔 Notifications */
+    const toast = document.getElementById("toast");
+
+    function showToast(message) {
+      toast.innerText = message;
+      toast.classList.add("show");
+      setTimeout(() => {
+        toast.classList.remove("show");
+      }, 3000);
+    }
+
+    if (localStorage.getItem("newReports") === "true") {
+      document.getElementById("reports-menu").classList.add("active");
+      showToast("📄 You have new reports!");
+    }
+
+    if (localStorage.getItem("newBookings") === "true") {
+      document.getElementById("bookings-menu").classList.add("active");
+      showToast("📅 You have new booking updates!");
+    }
+
+    function openReports() {
+      localStorage.removeItem("newReports");
+      document.getElementById("reports-menu").classList.remove("active");
+      navigateTo('reports.html');
+    }
+
+    function openBookings() {
+      localStorage.removeItem("newBookings");
+      document.getElementById("bookings-menu").classList.remove("active");
+      navigateTo('bookings.html');
+    }
   </script>
 </body>
 </html>
