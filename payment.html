@@ -15,7 +15,7 @@
       align-items: center;
       min-height: 100vh;
       flex-direction: column;
-      transition: background-color 0.3s ease;
+      transition: background-color 0.5s ease;
     }
 
     .payment-container {
@@ -29,6 +29,7 @@
       animation: fadeIn 0.8s ease forwards;
       position: relative;
       z-index: 10;
+      transition: all 0.5s ease;
     }
 
     h1 {
@@ -111,6 +112,35 @@
       z-index: 9999;
       display: none;
     }
+
+    /* Success tick animation */
+    .success-container {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      color: #fff;
+    }
+
+    .tick-circle {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 5px solid #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 4rem;
+      animation: pop 0.7s ease forwards;
+      transform: scale(0);
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
   </style>
 </head>
 <body>
@@ -125,6 +155,12 @@
     <button id="buyCoinsBtn" class="btn">💳 Buy Coins</button>
   </div>
 
+  <!-- Success animation container -->
+  <div class="success-container" id="successContainer">
+    <div class="tick-circle">✔️</div>
+    <h2>Payment Successful!</h2>
+  </div>
+
   <canvas id="confetti-canvas"></canvas>
 
   <script>
@@ -135,6 +171,8 @@
     const payBtn = document.getElementById('payBtn');
     const walletBalanceSpan = document.getElementById('walletBalance');
     const buyCoinsBtn = document.getElementById('buyCoinsBtn');
+    const paymentContainer = document.querySelector('.payment-container');
+    const successContainer = document.getElementById('successContainer');
 
     // Confetti setup
     const confettiCanvas = document.getElementById("confetti-canvas");
@@ -200,14 +238,14 @@
       setTimeout(() => {
         confettiCanvas.style.display = "none";
         cancelAnimationFrame(confettiAnimationFrame);
-      }, 5000);
+      }, 2500);
     }
 
-    // Blink background
+    // Blink background only on failure
     function blinkBackground(color, duration, callback) {
       let visible = true;
       const blinkInterval = setInterval(() => {
-        document.body.style.backgroundColor = visible ? color : 'transparent';
+        document.body.style.backgroundColor = visible ? color : '#f0f4ff';
         visible = !visible;
       }, 500);
 
@@ -239,6 +277,12 @@
         return;
       }
 
+      // Successful payment: hide old container
+      paymentContainer.style.opacity = 0;
+      setTimeout(() => { paymentContainer.style.display = 'none'; }, 500);
+
+      document.body.style.backgroundColor = '#16a34a'; // green background
+
       payBtn.disabled = true;
       balance -= FEE;
       currentUser.coins = balance;
@@ -260,10 +304,13 @@
 
       walletBalanceSpan.textContent = balance;
 
+      // Show success tick
+      successContainer.style.display = "flex";
       startConfetti();
-      blinkBackground('rgba(22, 163, 74, 0.7)', 5000, () => {
+
+      setTimeout(() => {
         window.location.href = "op-sheet.html";
-      });
+      }, 2200);
     });
 
     // Buy coins button redirect
