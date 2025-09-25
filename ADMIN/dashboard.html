@@ -7,7 +7,7 @@
   <style>
     * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 
-    body { background: #ffffff; color: #1e3a8a; overflow-x:hidden; height:100vh; display:flex; flex-direction:column; }
+    body { background:#ffffff; color:#1e3a8a; overflow-x:hidden; height:100vh; display:flex; flex-direction:column; }
 
     /* Navigation Bar */
     nav {
@@ -18,41 +18,11 @@
       align-items: center;
       padding: 15px 30px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-      position: relative;
     }
-
     nav .logo { font-size: 22px; font-weight: bold; }
     nav ul { list-style:none; display:flex; gap:25px; }
     nav ul li { cursor:pointer; transition:0.3s; }
     nav ul li:hover { text-decoration: underline; }
-    #menu-btn { font-size:28px; cursor:pointer; }
-
-    /* Side Menu */
-    .side-menu {
-      position: fixed;
-      top:0;
-      left:-260px;
-      width:260px;
-      height:100%;
-      background:#2563eb;
-      color:white;
-      padding-top:70px;
-      transition:0.4s;
-      z-index:999;
-      display:flex;
-      flex-direction:column;
-    }
-    .side-menu ul { list-style:none; padding:0; }
-    .side-menu ul li {
-      padding:15px 20px;
-      cursor:pointer;
-      border-bottom:1px solid rgba(255,255,255,0.2);
-      font-weight:600;
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
-    .side-menu ul li:hover { background:#3b82f6; }
 
     /* Scrolling text */
     .scroll-text { background-color:#1d4ed8; color:white; padding:10px; overflow:hidden; white-space:nowrap; }
@@ -114,25 +84,13 @@
 
   <!-- Navigation Bar -->
   <nav>
-    <div id="menu-btn">☰</div>
-    <div class="logo">🏥 City Care Hospital</div>
+    <div class="logo"> City Care Hospital</div>
     <ul>
-      <li onclick="navigateTo('users.html')">Users Info</li>
       <li onclick="navigateTo('wallet.html')">Wallet</li>
       <li onclick="navigateTo('schedule.html')">Schedule</li>
       <li onclick="logout()">Logout</li>
     </ul>
   </nav>
-
-  <!-- Side Menu -->
-  <div id="side-menu" class="side-menu">
-    <ul>
-      <li onclick="navigateTo('appointments.html')">📅 Appointments</li>
-      <li onclick="navigateTo('sendreport.html')">📄 Send Reports</li>
-      <li onclick="navigateTo('schedule.html')">🗓️ Manage Dates</li>
-      <li onclick="logout()">🚪 Logout</li>
-    </ul>
-  </div>
 
   <!-- Scrolling Text -->
   <div class="scroll-text">
@@ -142,9 +100,10 @@
   <!-- Main Content -->
   <div class="container">
     <h1>Admin Dashboard</h1>
-    <p>Manage all aspects of City Care Hospital from this dashboard. Use the buttons below to access appointments, send reports, and manage schedules.</p>
+    <p>Manage all aspects of City Care Hospital from this dashboard. Use the buttons below to access users, appointments, send reports, and manage schedules.</p>
 
     <div class="admin-buttons">
+      <button class="btn" onclick="navigateTo('users.html')">👥 Patient details </button>
       <button class="btn" onclick="navigateTo('appointments.html')">📅 Appointments</button>
       <button class="btn" onclick="navigateTo('sendreport.html')">📄 Send Reports</button>
       <button class="btn" onclick="navigateTo('schedule.html')">🗓️ Manage Dates</button>
@@ -156,19 +115,6 @@
   </footer>
 
   <script>
-    const menuBtn = document.getElementById("menu-btn");
-    const sideMenu = document.getElementById("side-menu");
-
-    menuBtn.addEventListener("click", () => {
-      sideMenu.style.left = "0px";
-    });
-
-    document.addEventListener("click", (e) => {
-      if (!sideMenu.contains(e.target) && e.target !== menuBtn) {
-        sideMenu.style.left = "-260px";
-      }
-    });
-
     function navigateTo(page) {
       window.location.href = page;
     }
