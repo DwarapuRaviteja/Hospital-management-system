@@ -40,7 +40,9 @@
       box-shadow: 0 8px 24px rgba(0,0,0,0.1);
       transition: transform 0.3s, box-shadow 0.3s;
       position: relative;
+      cursor: pointer;
       overflow: hidden;
+      text-align: center;
     }
 
     .user-card:hover {
@@ -49,17 +51,21 @@
     }
 
     .user-pic {
-      width: 70px;
-      height: 70px;
+      width: 100px;
+      height: 100px;
       border-radius: 50%;
       object-fit: cover;
-      border: 2px solid #3b82f6;
+      border: 3px solid #3b82f6;
       margin-bottom: 15px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     .user-info {
       color: #1e3a8a;
       font-size: 14px;
+      margin-bottom: 6px;
     }
 
     .user-info strong {
@@ -85,6 +91,58 @@
       transform: scale(1.05);
     }
 
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      animation: fadeInBg 0.3s ease;
+    }
+
+    .modal-content {
+      background: #fff;
+      border-radius: 16px;
+      padding: 30px;
+      max-width: 500px;
+      width: 100%;
+      position: relative;
+      text-align: center;
+      animation: zoomIn 0.3s ease;
+    }
+
+    .modal-content img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #3b82f6;
+      margin-bottom: 15px;
+    }
+
+    .modal-content .user-info {
+      text-align: left;
+      margin-bottom: 8px;
+    }
+
+    @keyframes zoomIn {
+      0% { transform: scale(0.7); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes fadeInBg {
+      0% { background: rgba(0,0,0,0); }
+      100% { background: rgba(0,0,0,0.5); }
+    }
+
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(-20px); }
       to { opacity: 1; transform: translateY(0); }
@@ -100,14 +158,17 @@
 
   <h1>📋 Registered Users</h1>
 
-  <div class="user-list" id="userList">
-    <!-- User cards will be inserted here dynamically -->
-  </div>
+  <div class="user-list" id="userList"></div>
 
   <button class="back-btn" onclick="window.location.href='dashboard.html'">⬅ Back to Dashboard</button>
 
+  <!-- Modal -->
+  <div id="userModal" class="modal">
+    <div class="modal-content" id="modalContent"></div>
+  </div>
+
   <script>
-    // Utility function to remove duplicates by email
+    // Remove duplicate users by email
     function removeDuplicateUsers(users) {
       const uniqueEmails = new Set();
       return users.filter(user => {
@@ -119,11 +180,15 @@
       });
     }
 
+    // Render all users
     function renderUsers() {
       const userList = document.getElementById("userList");
       userList.innerHTML = "";
 
       let storedUsers = JSON.parse(localStorage.getItem("users")) || [];
+      const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+      if (currentUser) storedUsers.push(currentUser);
+
       storedUsers = removeDuplicateUsers(storedUsers);
 
       if (storedUsers.length === 0) {
@@ -137,33 +202,49 @@
 
         const profileImg = document.createElement("img");
         profileImg.src = user.profilePic || "default-avatar.png";
-        profileImg.alt = "User Pic";
+        profileImg.alt = user.name || "User Pic";
         profileImg.className = "user-pic";
 
         const info = `
           <div class="user-info"><strong>Name:</strong> ${user.name || "N/A"}</div>
           <div class="user-info"><strong>Email:</strong> ${user.email || "N/A"}</div>
           <div class="user-info"><strong>Phone:</strong> ${user.phone || "N/A"}</div>
-          <div class="user-info"><strong>Gender:</strong> ${user.gender || "N/A"}</div>
-          <div class="user-info"><strong>DOB:</strong> ${user.dob || "N/A"}</div>
-          <div class="user-info"><strong>Address:</strong> ${user.address || "N/A"}</div>
         `;
 
         card.appendChild(profileImg);
         card.insertAdjacentHTML("beforeend", info);
 
+        card.addEventListener("click", () => openModal(user));
+
         userList.appendChild(card);
       });
     }
 
-    // Auto-refresh list when users are updated
-    window.addEventListener("storage", function(e) {
-      if (e.key === "users") {
-        renderUsers();
-      }
+    // Modal logic
+    const modal = document.getElementById("userModal");
+    const modalContent = document.getElementById("modalContent");
+
+    function openModal(user) {
+      modalContent.innerHTML = `
+        <img src="${user.profilePic || 'default-avatar.png'}" alt="Profile Picture">
+        <div class="user-info"><strong>Name:</strong> ${user.name || "N/A"}</div>
+        <div class="user-info"><strong>Email:</strong> ${user.email || "N/A"}</div>
+        <div class="user-info"><strong>Phone:</strong> ${user.phone || "N/A"}</div>
+        <div class="user-info"><strong>Gender:</strong> ${user.gender || "N/A"}</div>
+        <div class="user-info"><strong>DOB:</strong> ${user.dob || "N/A"}</div>
+        <div class="user-info"><strong>Address:</strong> ${user.address || "N/A"}</div>
+      `;
+      modal.style.display = "flex";
+    }
+
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) modal.style.display = "none";
     });
 
-    // Initial render
+    window.addEventListener("storage", function(e) {
+      if (e.key === "users" || e.key === "currentUser") renderUsers();
+    });
+
     renderUsers();
   </script>
 </body>
