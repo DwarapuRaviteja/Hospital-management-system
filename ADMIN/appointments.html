@@ -344,9 +344,12 @@
         if (idx !== -1 && appointments[idx]) {
           const docData = deptDoctors[selectedIndex];
 
-          appointments[idx].doctor = docData.name;
-          appointments[idx].qualification = docData.qualification;
-          appointments[idx].specialization = docData.specialization;
+        
+appointments[idx].doctor = {
+  name: docData.name,
+  qualification: docData.qualification,
+  specialization: docData.specialization
+};
 
           localStorage.setItem('appointments', JSON.stringify(appointments));
           renderAppointments();
