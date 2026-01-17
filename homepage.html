@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>City Care Hospital</title>
   <style>
-    /* Reset & Fonts */
     * {
       margin: 0;
       padding: 0;
@@ -39,7 +38,6 @@
       color: #1e3a8a;
     }
 
-    /* Navigation Bar */
     nav {
       background-color: #2563eb;
       color: white;
@@ -76,7 +74,6 @@
       margin-right: 20px;
     }
 
-    /* Side Menu */
     .side-menu {
       position: fixed;
       top: 0;
@@ -106,7 +103,7 @@
       background: #3b82f6;
     }
 
-    /* 🔴 Notification dot */
+
     .notify-dot::after {
       content: '';
       position: absolute;
@@ -123,7 +120,6 @@
       display: block;
     }
 
-    /* 🔔 Toast notification */
     .toast {
       position: fixed;
       bottom: 30px;
@@ -144,7 +140,6 @@
       transform: translateY(0);
     }
 
-    /* Scrolling text */
     .scroll-text {
       background-color: #1d4ed8;
       color: white;
@@ -194,7 +189,6 @@
       color: #334155;
     }
 
-    /* Process Section */
     .process {
       background: #f9fafb;
       padding: 50px 20px;
@@ -250,7 +244,7 @@
       color: #4b5563;
     }
 
-    /* Appointment Button (bottom of process) */
+
     .appointment-btn {
       margin-top: 40px;
       padding: 15px 30px;
@@ -274,7 +268,6 @@
       background-color: #1e40af;
     }
 
-    /* Shimmer Effect */
     .shine {
       background-image: linear-gradient(
         -60deg,
@@ -291,7 +284,7 @@
       100% { background-position: -200% 0; }
     }
 
-    /* Doctors Button (fixed bottom-left) */
+
     .doctors-btn {
       position: fixed;
       bottom: 30px;
@@ -327,7 +320,6 @@
 </head>
 <body>
 
-  <!-- Navigation Bar -->
   <nav>
     <div id="menu-btn">☰</div>
     <div class="logo">🏥 City Care Hospital</div>
@@ -338,7 +330,6 @@
     </ul>
   </nav>
 
-  <!-- Side Menu -->
   <div id="side-menu" class="side-menu">
     <ul>
       <li onclick="navigateTo('profile.html')">👤 Profile</li>
@@ -349,15 +340,11 @@
     </ul>
   </div>
 
-  <!-- 🔔 Toast notification -->
   <div id="toast" class="toast"></div>
 
-  <!-- Scrolling Hospital Info -->
   <div class="scroll-text">
     <p>Welcome to City Care Hospital – Your health is our priority. Open 24/7 with world-class facilities and expert doctors in every department. Book your appointment now!</p>
   </div>
-
-  <!-- Main Section -->
   <div class="container">
     <h1>Welcome to City Care Hospital</h1>
     <p>
@@ -371,7 +358,23 @@
     </button>
   </div>
 
-  <!-- Appointment & Process Section -->
+<button onclick="window.location='chatbot.html'"
+style="
+position: fixed;
+bottom: 20px;
+right: 20px;
+z-index: 9999;
+padding: 12px 18px;
+background: #0066ff;
+color: white;
+border: none;
+border-radius: 6px;
+cursor: pointer;
+">
+Ask AI
+</button>
+
+
   <div class="process">
     <a href="#appointment-btn" style="display:block;margin-bottom:20px;font-size:18px;color:#2563eb;text-decoration:underline;cursor:pointer;">
       👉 Click here to book your appointment
@@ -408,11 +411,9 @@
       </div>
     </div>
 
-    <!-- Appointment Button placed after steps -->
     <button id="appointment-btn" class="appointment-btn" onclick="navigateTo('appointment.html')">📅 Book an Appointment</button>
   </div>
 
-  <!-- Doctors Button -->
   <button id="doctors-btn" class="doctors-btn" onclick="navigateTo('doctors.html')">👨‍⚕️ Our Doctors</button>
 
   <footer>
@@ -420,7 +421,6 @@
   </footer>
 
   <script>
-    // Navigation
     function navigateTo(page) {
       window.location.href = page;
     }
@@ -429,32 +429,28 @@
     const sideMenu = document.getElementById("side-menu");
     const doctorsBtn = document.getElementById("doctors-btn");
 
-    // Menu toggle
     menuBtn.addEventListener("click", () => {
       sideMenu.style.left = "0px";
       document.body.classList.add("menu-open");
-      doctorsBtn.style.display = "none"; // hide doctors button when menu open
+      doctorsBtn.style.display = "none"; 
     });
 
-    // Close side menu when clicking outside
     document.addEventListener("click", (e) => {
       if (document.body.classList.contains("menu-open")) {
         if (!sideMenu.contains(e.target) && e.target !== menuBtn) {
           sideMenu.style.left = "-250px";
           document.body.classList.remove("menu-open");
-          doctorsBtn.style.display = "block"; // show doctors button again
+          doctorsBtn.style.display = "block"; 
         }
       }
     });
 
-    // Logout functionality
     document.getElementById('logout-side').addEventListener('click', () => {
       localStorage.removeItem('currentUser');
       alert('You have been logged out.');
       window.location.href = 'login.html';
     });
 
-    // Scroll trigger for shimmer effect
     const appointmentBtn = document.getElementById("appointment-btn");
     const link = document.querySelector(".process a");
 
@@ -467,7 +463,6 @@
       }, 800);
     });
 
-    /* 🔔 Notifications */
     const toast = document.getElementById("toast");
 
     function showToast(message) {
